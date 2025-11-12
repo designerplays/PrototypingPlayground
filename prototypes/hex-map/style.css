@@ -1,0 +1,139 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+#game-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+}
+
+#game-canvas.dragging {
+    cursor: grabbing;
+}
+
+#tile-selection {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    min-width: 400px;
+}
+
+#tile-selection h3 {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+#tile-options {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.tile-option {
+    padding: 20px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.tile-option:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+.tile-option:active {
+    transform: translateY(-1px);
+}
+
+#game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    z-index: 100;
+}
+
+#game-over h2 {
+    margin-bottom: 15px;
+    color: #667eea;
+}
+
+#game-over p {
+    margin-bottom: 25px;
+    color: #666;
+}
+
+#restart-btn {
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: transform 0.2s;
+}
+
+#restart-btn:hover {
+    transform: scale(1.05);
+}
+
+#tile-counter {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    color: #333;
+    z-index: 50;
+}
+
+#remaining-count {
+    color: #667eea;
+    font-size: 18px;
+}
+
+.hidden {
+    display: none !important;
+}
