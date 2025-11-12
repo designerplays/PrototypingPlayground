@@ -60,9 +60,30 @@ class HexMapGame {
     }
 
     resizeCanvas() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
+        // Account for device pixel ratio for sharper rendering on high-DPI screens
+        const dpr = window.devicePixelRatio || 1;
+        const displayWidth = window.innerWidth;
+        const displayHeight = window.innerHeight;
+
+        this.canvas.width = displayWidth * dpr;
+        this.canvas.height = displayHeight * dpr;
+
+        // Scale context to match device pixel ratio
+        this.ctx.scale(dpr, dpr);
+
         this.render();
+    }
+
+    // Get properly scaled coordinates from mouse/touch event
+    getCanvasCoordinates(clientX, clientY) {
+        const rect = this.canvas.getBoundingClientRect();
+
+        // No need to scale by DPR here since we're already scaling the context
+        // Just convert from client coordinates to canvas coordinates
+        return {
+            x: clientX - rect.left,
+            y: clientY - rect.top
+        };
     }
 
     placeCenterTile() {
@@ -76,18 +97,18 @@ class HexMapGame {
         this.canvas.addEventListener('mouseup', (e) => this.onMouseUp(e));
         this.canvas.addEventListener('mouseleave', (e) => this.onMouseUp(e));
 
-        // Touch events
-        this.canvas.addEventListener('touchstart', (e) => this.onTouchStart(e));
-        this.canvas.addEventListener('touchmove', (e) => this.onTouchMove(e));
-        this.canvas.addEventListener('touchend', (e) => this.onTouchEnd(e));
+        // Touch events - passive: false allows preventDefault to work
+        this.canvas.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: false });
+        this.canvas.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
+        this.canvas.addEventListener('touchend', (e) => this.onTouchEnd(e), { passive: false });
 
         this.restartBtn.addEventListener('click', () => this.restart());
     }
 
     onMouseDown(e) {
-        const rect = this.canvas.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
+        const coords = this.getCanvasCoordinates(e.clientX, e.clientY);
+        const mouseX = coords.x;
+        const mouseY = coords.y;
 
         const hex = this.pixelToHex(mouseX, mouseY);
         const adjacentHexes = this.getAdjacentEmptyHexes();
@@ -107,9 +128,9 @@ class HexMapGame {
     }
 
     onMouseMove(e) {
-        const rect = this.canvas.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
+        const coords = this.getCanvasCoordinates(e.clientX, e.clientY);
+        const mouseX = coords.x;
+        const mouseY = coords.y;
 
         if (this.isDragging) {
             const dx = mouseX - this.lastMousePos.x;
@@ -129,9 +150,9 @@ class HexMapGame {
     onTouchStart(e) {
         if (e.touches.length === 1) {
             const touch = e.touches[0];
-            const rect = this.canvas.getBoundingClientRect();
-            const touchX = touch.clientX - rect.left;
-            const touchY = touch.clientY - rect.top;
+            const coords = this.getCanvasCoordinates(touch.clientX, touch.clientY);
+            const touchX = coords.x;
+            const touchY = coords.y;
 
             const hex = this.pixelToHex(touchX, touchY);
             const adjacentHexes = this.getAdjacentEmptyHexes();
@@ -144,6 +165,7 @@ class HexMapGame {
                 this.isDragging = true;
                 this.dragStart = { x: touchX, y: touchY };
                 this.lastMousePos = { x: touchX, y: touchY };
+                e.preventDefault(); // Prevent default touch behaviors
             }
         }
     }
@@ -152,9 +174,9 @@ class HexMapGame {
         if (this.isDragging && e.touches.length === 1) {
             e.preventDefault();
             const touch = e.touches[0];
-            const rect = this.canvas.getBoundingClientRect();
-            const touchX = touch.clientX - rect.left;
-            const touchY = touch.clientY - rect.top;
+            const coords = this.getCanvasCoordinates(touch.clientX, touch.clientY);
+            const touchX = coords.x;
+            const touchY = coords.y;
 
             const dx = touchX - this.lastMousePos.x;
             const dy = touchY - this.lastMousePos.y;
@@ -173,16 +195,25 @@ class HexMapGame {
     hexToPixel(q, r) {
         const x = this.hexSize * (Math.sqrt(3) * q + Math.sqrt(3) / 2 * r);
         const y = this.hexSize * (3 / 2 * r);
+
+        // Use display size (not internal canvas size) since we scale the context
+        const displayWidth = this.canvas.getBoundingClientRect().width;
+        const displayHeight = this.canvas.getBoundingClientRect().height;
+
         return {
-            x: x + this.canvas.width / 2 + this.camera.x,
-            y: y + this.canvas.height / 2 + this.camera.y
+            x: x + displayWidth / 2 + this.camera.x,
+            y: y + displayHeight / 2 + this.camera.y
         };
     }
 
     pixelToHex(x, y) {
+        // Use display size (not internal canvas size) since we scale the context
+        const displayWidth = this.canvas.getBoundingClientRect().width;
+        const displayHeight = this.canvas.getBoundingClientRect().height;
+
         // Adjust for camera
-        const adjX = x - this.canvas.width / 2 - this.camera.x;
-        const adjY = y - this.canvas.height / 2 - this.camera.y;
+        const adjX = x - displayWidth / 2 - this.camera.x;
+        const adjY = y - displayHeight / 2 - this.camera.y;
 
         const q = (Math.sqrt(3) / 3 * adjX - 1 / 3 * adjY) / this.hexSize;
         const r = (2 / 3 * adjY) / this.hexSize;
@@ -276,9 +307,12 @@ class HexMapGame {
     }
 
     render() {
-        // Clear canvas
+        // Clear canvas - use display size since we scale the context
+        const displayWidth = this.canvas.getBoundingClientRect().width;
+        const displayHeight = this.canvas.getBoundingClientRect().height;
+
         this.ctx.fillStyle = '#f0f0f0';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillRect(0, 0, displayWidth, displayHeight);
 
         // Draw placed tiles
         this.tiles.forEach((tileType, key) => {
