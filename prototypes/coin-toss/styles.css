@@ -1,0 +1,196 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+    position: relative;
+}
+
+.back-button {
+    display: inline-block;
+    color: #666;
+    text-decoration: none;
+    margin-bottom: 20px;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.back-button:hover {
+    color: #333;
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 32px;
+}
+
+.game-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.coin-container {
+    perspective: 1000px;
+    width: 200px;
+    height: 200px;
+}
+
+.coin {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+}
+
+.coin-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backface-visibility: hidden;
+    border: 8px solid #d4af37;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.heads {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    color: #333;
+}
+
+.tails {
+    background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+    color: #333;
+    transform: rotateY(180deg);
+}
+
+.coin-text {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Flip animations */
+@keyframes flipHeads {
+    0% {
+        transform: rotateY(0deg) rotateX(0deg);
+    }
+    100% {
+        transform: rotateY(1800deg) rotateX(0deg);
+    }
+}
+
+@keyframes flipTails {
+    0% {
+        transform: rotateY(0deg) rotateX(0deg);
+    }
+    100% {
+        transform: rotateY(1980deg) rotateX(0deg);
+    }
+}
+
+.coin.flipping-heads {
+    animation: flipHeads 2s ease-in-out forwards;
+}
+
+.coin.flipping-tails {
+    animation: flipTails 2s ease-in-out forwards;
+}
+
+.result {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    min-height: 35px;
+    text-align: center;
+}
+
+.result.show {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.flip-button {
+    padding: 15px 40px;
+    font-size: 20px;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.flip-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.flip-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.flip-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #eee;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    color: #333;
+    font-size: 24px;
+    font-weight: bold;
+}
