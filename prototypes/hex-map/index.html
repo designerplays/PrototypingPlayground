@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hex Map Explorer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        <div id="tile-selection" class="hidden">
+            <h3>Choose a tile:</h3>
+            <div id="tile-options"></div>
+        </div>
+        <div id="game-over" class="hidden">
+            <h2>Game Over!</h2>
+            <p>All tiles have been placed.</p>
+            <button id="restart-btn">Restart Game</button>
+        </div>
+        <div id="tile-counter">
+            Tiles remaining: <span id="remaining-count">36</span>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

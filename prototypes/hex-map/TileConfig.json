@@ -1,0 +1,10 @@
+{
+  "tiles": [
+    { "type": "Forest", "count": 10 },
+    { "type": "Plain", "count": 10 },
+    { "type": "Road", "count": 5 },
+    { "type": "River", "count": 5 },
+    { "type": "House", "count": 4 },
+    { "type": "Warehouse", "count": 2 }
+  ]
+}
