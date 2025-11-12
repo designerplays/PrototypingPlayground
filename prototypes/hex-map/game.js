@@ -248,7 +248,7 @@ class HexMapGame {
     drawHex(x, y, fillStyle, strokeStyle = '#333', text = '') {
         this.ctx.beginPath();
         for (let i = 0; i < 6; i++) {
-            const angle = Math.PI / 3 * i;
+            const angle = Math.PI / 3 * i + Math.PI / 6;
             const hx = x + this.hexSize * Math.cos(angle);
             const hy = y + this.hexSize * Math.sin(angle);
             if (i === 0) {
