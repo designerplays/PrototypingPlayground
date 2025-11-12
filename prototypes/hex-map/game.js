@@ -20,6 +20,14 @@ class HexMapGame {
         this.dragStart = { x: 0, y: 0 };
         this.lastMousePos = { x: 0, y: 0 };
 
+        // Display dimensions (cached for consistency)
+        this.displayWidth = 0;
+        this.displayHeight = 0;
+
+        // Debug touch visualization
+        this.lastTouchPos = null;
+        this.touchDebugTimeout = null;
+
         // Game state
         this.tiles = new Map(); // key: "q,r" -> value: tile type
         this.tilePool = [];
@@ -60,13 +68,15 @@ class HexMapGame {
     }
 
     resizeCanvas() {
+        // Cache display dimensions for consistent coordinate calculations
+        this.displayWidth = window.innerWidth;
+        this.displayHeight = window.innerHeight;
+
         // Account for device pixel ratio for sharper rendering on high-DPI screens
         const dpr = window.devicePixelRatio || 1;
-        const displayWidth = window.innerWidth;
-        const displayHeight = window.innerHeight;
 
-        this.canvas.width = displayWidth * dpr;
-        this.canvas.height = displayHeight * dpr;
+        this.canvas.width = this.displayWidth * dpr;
+        this.canvas.height = this.displayHeight * dpr;
 
         // Scale context to match device pixel ratio
         this.ctx.scale(dpr, dpr);
@@ -154,6 +164,9 @@ class HexMapGame {
             const touchX = coords.x;
             const touchY = coords.y;
 
+            // Debug: visualize touch point
+            this.showTouchDebug(touchX, touchY);
+
             const hex = this.pixelToHex(touchX, touchY);
             const adjacentHexes = this.getAdjacentEmptyHexes();
             const isAdjacent = adjacentHexes.some(h => h.q === hex.q && h.r === hex.r);
@@ -191,29 +204,36 @@ class HexMapGame {
         this.isDragging = false;
     }
 
+    showTouchDebug(x, y) {
+        // Show touch point for debugging
+        this.lastTouchPos = { x, y };
+        this.render();
+
+        // Clear after 1 second
+        if (this.touchDebugTimeout) {
+            clearTimeout(this.touchDebugTimeout);
+        }
+        this.touchDebugTimeout = setTimeout(() => {
+            this.lastTouchPos = null;
+            this.render();
+        }, 1000);
+    }
+
     // Axial coordinate system for hexagons
     hexToPixel(q, r) {
         const x = this.hexSize * (Math.sqrt(3) * q + Math.sqrt(3) / 2 * r);
         const y = this.hexSize * (3 / 2 * r);
 
-        // Use display size (not internal canvas size) since we scale the context
-        const displayWidth = this.canvas.getBoundingClientRect().width;
-        const displayHeight = this.canvas.getBoundingClientRect().height;
-
         return {
-            x: x + displayWidth / 2 + this.camera.x,
-            y: y + displayHeight / 2 + this.camera.y
+            x: x + this.displayWidth / 2 + this.camera.x,
+            y: y + this.displayHeight / 2 + this.camera.y
         };
     }
 
     pixelToHex(x, y) {
-        // Use display size (not internal canvas size) since we scale the context
-        const displayWidth = this.canvas.getBoundingClientRect().width;
-        const displayHeight = this.canvas.getBoundingClientRect().height;
-
-        // Adjust for camera
-        const adjX = x - displayWidth / 2 - this.camera.x;
-        const adjY = y - displayHeight / 2 - this.camera.y;
+        // Adjust for camera and center offset
+        const adjX = x - this.displayWidth / 2 - this.camera.x;
+        const adjY = y - this.displayHeight / 2 - this.camera.y;
 
         const q = (Math.sqrt(3) / 3 * adjX - 1 / 3 * adjY) / this.hexSize;
         const r = (2 / 3 * adjY) / this.hexSize;
@@ -307,12 +327,9 @@ class HexMapGame {
     }
 
     render() {
-        // Clear canvas - use display size since we scale the context
-        const displayWidth = this.canvas.getBoundingClientRect().width;
-        const displayHeight = this.canvas.getBoundingClientRect().height;
-
+        // Clear canvas
         this.ctx.fillStyle = '#f0f0f0';
-        this.ctx.fillRect(0, 0, displayWidth, displayHeight);
+        this.ctx.fillRect(0, 0, this.displayWidth, this.displayHeight);
 
         // Draw placed tiles
         this.tiles.forEach((tileType, key) => {
@@ -329,6 +346,27 @@ class HexMapGame {
             const pos = this.hexToPixel(hex.q, hex.r);
             this.drawHex(pos.x, pos.y, 'rgba(200, 200, 200, 0.5)', '#999', '?');
         });
+
+        // Draw touch debug indicator
+        if (this.lastTouchPos) {
+            this.ctx.beginPath();
+            this.ctx.arc(this.lastTouchPos.x, this.lastTouchPos.y, 20, 0, Math.PI * 2);
+            this.ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+            this.ctx.fill();
+            this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+            this.ctx.lineWidth = 3;
+            this.ctx.stroke();
+
+            // Draw crosshair
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.lastTouchPos.x - 25, this.lastTouchPos.y);
+            this.ctx.lineTo(this.lastTouchPos.x + 25, this.lastTouchPos.y);
+            this.ctx.moveTo(this.lastTouchPos.x, this.lastTouchPos.y - 25);
+            this.ctx.lineTo(this.lastTouchPos.x, this.lastTouchPos.y + 25);
+            this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+            this.ctx.lineWidth = 2;
+            this.ctx.stroke();
+        }
     }
 
     getTileColor(tileType) {
