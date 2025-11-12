@@ -12,6 +12,13 @@ body {
     align-items: center;
     min-height: 100vh;
     overflow: hidden;
+    /* Prevent unwanted touch behaviors on mobile */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
 }
 
 #game-container {
@@ -25,6 +32,11 @@ body {
     width: 100%;
     height: 100%;
     cursor: grab;
+    /* Optimize for touch on mobile */
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
 }
 
 #game-canvas.dragging {
@@ -41,7 +53,14 @@ body {
     border-radius: 15px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     z-index: 100;
-    min-width: 400px;
+    min-width: 300px;
+    max-width: 90vw;
+}
+
+@media (min-width: 600px) {
+    #tile-selection {
+        min-width: 400px;
+    }
 }
 
 #tile-selection h3 {
@@ -52,8 +71,15 @@ body {
 
 #tile-options {
     display: flex;
+    flex-direction: column;
     gap: 15px;
     justify-content: center;
+}
+
+@media (min-width: 600px) {
+    #tile-options {
+        flex-direction: row;
+    }
 }
 
 .tile-option {
@@ -66,6 +92,16 @@ body {
     font-size: 16px;
     font-weight: bold;
     transition: transform 0.2s, box-shadow 0.2s;
+    /* Better touch targets for mobile */
+    min-height: 48px;
+    min-width: 100%;
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (min-width: 600px) {
+    .tile-option {
+        min-width: auto;
+    }
 }
 
 .tile-option:hover {
