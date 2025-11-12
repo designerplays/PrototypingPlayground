@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coin Toss - Game Prototype</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-button">← Back to Menu</a>
+
+        <h1>Coin Toss</h1>
+
+        <div class="game-area">
+            <div class="coin-container">
+                <div id="coin" class="coin">
+                    <div class="coin-face heads">
+                        <div class="coin-text">HEADS</div>
+                    </div>
+                    <div class="coin-face tails">
+                        <div class="coin-text">TAILS</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="result" class="result"></div>
+
+            <button id="flipButton" class="flip-button">Flip Coin</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-label">Heads</div>
+                <div id="headsCount" class="stat-value">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Tails</div>
+                <div id="tailsCount" class="stat-value">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Total Flips</div>
+                <div id="totalFlips" class="stat-value">0</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../../dist/coin-toss/main.js"></script>
+</body>
+</html>
