@@ -442,12 +442,24 @@ class WordBlocksGame {
 
         if (emptyCells.length === 0) return;
 
-        // Fill empty cells with new random letters
+        // Fill empty cells with new random letters and set initial position
         emptyCells.forEach(cell => {
             const newLetter = this.getRandomLetter();
             this.grid[cell.row][cell.col] = newLetter;
-            this.cellElements[cell.row][cell.col].textContent = newLetter;
+            const cellElement = this.cellElements[cell.row][cell.col];
+
+            // Set initial transform position BEFORE setting content
+            const fallDistance = (cell.row + 1) * 100; // Fall from above the grid
+            cellElement.style.transform = `translateY(-${fallDistance}%)`;
+
+            // Now set the content
+            cellElement.textContent = newLetter;
         });
+
+        // Force a reflow to ensure initial positions are applied
+        if (emptyCells.length > 0) {
+            void this.cellElements[emptyCells[0].row][emptyCells[0].col].offsetHeight;
+        }
 
         // Sort cells: bottom to top, then left to right
         emptyCells.sort((a, b) => {
@@ -455,16 +467,18 @@ class WordBlocksGame {
             return a.col - b.col; // Left to right
         });
 
+        // Use requestAnimationFrame to ensure transforms are applied before animation
+        await new Promise(resolve => requestAnimationFrame(resolve));
+
         // Apply staggered animation to each cell
         const staggerDelay = 50; // ms between each block animation start
         emptyCells.forEach((cell, index) => {
             const delay = index * staggerDelay;
             const cellElement = this.cellElements[cell.row][cell.col];
 
-            // Calculate fall distance based on position from top
-            const fallDistance = (cell.row + 1) * 100; // Fall from above the grid
             cellElement.style.animationDelay = `${delay}ms`;
-            cellElement.style.setProperty('--fall-distance', `-${fallDistance}%`);
+            cellElement.style.setProperty('--fall-distance', `-${(cell.row + 1) * 100}%`);
+            cellElement.style.transform = ''; // Clear inline transform to let animation take over
             cellElement.classList.add('falling');
         });
 
