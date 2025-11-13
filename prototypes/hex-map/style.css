@@ -83,34 +83,79 @@ body {
 }
 
 .tile-option {
-    padding: 20px 30px;
+    padding: 20px;
+    background: white;
+    border: 2px solid #667eea;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 100%;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.tile-option-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+}
+
+.tile-option-resources {
+    text-align: left;
+}
+
+.tile-option-resources-label {
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.tile-option-resource-item {
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+.resource-low {
+    color: #e74c3c;
+}
+
+.resource-mid {
+    color: #f39c12;
+}
+
+.resource-high {
+    color: #27ae60;
+}
+
+.tile-option-btn {
+    padding: 12px 20px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
     transition: transform 0.2s, box-shadow 0.2s;
-    /* Better touch targets for mobile */
     min-height: 48px;
-    min-width: 100%;
     -webkit-tap-highlight-color: transparent;
+}
+
+.tile-option-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+.tile-option-btn:active {
+    transform: translateY(0);
 }
 
 @media (min-width: 600px) {
     .tile-option {
         min-width: auto;
     }
-}
-
-.tile-option:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-}
-
-.tile-option:active {
-    transform: translateY(-1px);
 }
 
 #game-over {
@@ -501,6 +546,8 @@ body {
     color: #333;
     line-height: 1.6;
     font-size: 16px;
+    text-align: left;
+    white-space: pre-line;
 }
 
 #welcome-close-btn {
@@ -573,4 +620,34 @@ body {
 
 #win-restart-btn:active {
     transform: scale(0.95);
+}
+
+#resources-found-popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    z-index: 150;
+    min-width: 250px;
+    max-width: 90vw;
+    text-align: center;
+}
+
+#resources-found-popup h3 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 18px;
+}
+
+#resources-found-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 16px;
+    color: #555;
+    font-weight: bold;
 }

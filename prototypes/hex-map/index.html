@@ -45,6 +45,10 @@
             <p id="win-message"></p>
             <button id="win-restart-btn">Restart Game</button>
         </div>
+        <div id="resources-found-popup" class="hidden">
+            <h3>Resources Found:</h3>
+            <div id="resources-found-list"></div>
+        </div>
         <div id="resource-counters">
             <div id="food-counter">
                 🍕 <span id="food-count">10</span>
@@ -61,8 +65,8 @@
             <h3>Debug Settings</h3>
             <button id="debug-close-btn">✕</button>
             <div class="debug-section">
-                <p><strong>Version:</strong> <span id="version-display">0.8</span></p>
-                <p style="font-size: 0.9em; color: #666; margin-top: 5px;">Note: Increment by 0.1 for each change unless specified otherwise</p>
+                <!-- Version: Increment by 0.1 for each change unless specified otherwise -->
+                <p><strong>Version:</strong> <span id="version-display">0.9</span></p>
             </div>
             <div class="debug-section">
                 <button id="force-restart-btn">Force Restart</button>
