@@ -254,19 +254,11 @@ body {
         gap: 6px;
         padding: 15px;
     }
-
-    .letter-cell {
-        font-size: 1.5em;
-    }
 }
 
 @media (max-height: 600px) {
     #grid-container {
         gap: 4px;
         padding: 10px;
-    }
-
-    .letter-cell {
-        font-size: 1.2em;
     }
 }

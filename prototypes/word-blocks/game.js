@@ -1,5 +1,5 @@
 // Word Blocks Game - Mobile-First Word Puzzle
-// VERSION: 0.4 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 0.5 (increment by 0.1 for each change unless specified otherwise)
 
 class WordBlocksGame {
     constructor() {
@@ -20,7 +20,7 @@ class WordBlocksGame {
         this.blockSizeValue = document.getElementById('block-size-value');
 
         // Version info
-        this.version = '0.4';
+        this.version = '0.5';
 
         // Config values
         this.disappearTime = 300; // ms
