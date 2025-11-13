@@ -1,0 +1,219 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    /* Prevent unwanted touch behaviors on mobile */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#grid-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 8px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    max-width: 90vmin;
+    max-height: 90vmin;
+    aspect-ratio: 1;
+}
+
+.letter-cell {
+    background: white;
+    border: 3px solid #333;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+}
+
+.letter-cell:hover {
+    transform: scale(1.05);
+}
+
+.letter-cell.selected {
+    background: #ffd700;
+    border-color: #ff6b6b;
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+}
+
+.letter-cell.removing {
+    animation: fadeOut 0.3s ease-out forwards;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+}
+
+.letter-cell.falling {
+    transition: all 0.3s ease-in-out;
+}
+
+#debug-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    z-index: 50;
+    transition: transform 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#debug-btn:hover {
+    transform: scale(1.1);
+}
+
+#debug-btn:active {
+    transform: scale(0.95);
+}
+
+#debug-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    z-index: 150;
+    min-width: 300px;
+    max-width: 90vw;
+}
+
+#debug-overlay h3 {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+#debug-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#debug-close-btn:hover {
+    color: #333;
+}
+
+.debug-section {
+    margin-bottom: 20px;
+}
+
+.debug-section:last-child {
+    margin-bottom: 0;
+}
+
+#force-restart-btn {
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: transform 0.2s;
+    width: 100%;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 48px;
+}
+
+#force-restart-btn:hover {
+    transform: scale(1.05);
+}
+
+#force-restart-btn:active {
+    transform: scale(0.95);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    #grid-container {
+        gap: 6px;
+        padding: 15px;
+    }
+
+    .letter-cell {
+        font-size: 1.5em;
+    }
+}
+
+@media (max-height: 600px) {
+    #grid-container {
+        gap: 4px;
+        padding: 10px;
+    }
+
+    .letter-cell {
+        font-size: 1.2em;
+    }
+}
