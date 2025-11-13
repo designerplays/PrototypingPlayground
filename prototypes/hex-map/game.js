@@ -1,6 +1,6 @@
 // Hex Map Explorer Game - Mobile-First Rebuild
 // Complete rewrite for pixel-perfect visual and tap alignment
-// VERSION: 0.8 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 0.9 (increment by 0.1 for each change unless specified otherwise)
 
 class HexMapGame {
     constructor() {
@@ -33,9 +33,11 @@ class HexMapGame {
         this.winPopup = document.getElementById('win-popup');
         this.winRestartBtn = document.getElementById('win-restart-btn');
         this.winMessage = document.getElementById('win-message');
+        this.resourcesFoundPopup = document.getElementById('resources-found-popup');
+        this.resourcesFoundList = document.getElementById('resources-found-list');
 
         // Version info
-        this.version = '0.8';
+        this.version = '0.9';
 
         // Game config (messages, etc.)
         this.gameConfig = {};
@@ -724,12 +726,27 @@ class HexMapGame {
         // Clear and populate tile options
         this.tileOptionsDiv.innerHTML = '';
         options.forEach(tileType => {
-            const button = document.createElement('button');
-            button.className = 'tile-option';
+            // Create tile option container
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'tile-option';
+
+            // Tile name
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'tile-option-name';
+            nameDiv.textContent = tileType;
+            optionDiv.appendChild(nameDiv);
+
+            // Resources section
+            const resourcesDiv = document.createElement('div');
+            resourcesDiv.className = 'tile-option-resources';
+
+            const resourcesLabel = document.createElement('div');
+            resourcesLabel.className = 'tile-option-resources-label';
+            resourcesLabel.textContent = 'Resources:';
+            resourcesDiv.appendChild(resourcesLabel);
 
             // Get resource info for this tile type
             const resources = this.tileConfig[tileType];
-            let resourceParts = [];
 
             if (resources) {
                 // Calculate average and threshold for food
@@ -740,16 +757,23 @@ class HexMapGame {
                 if (foodMin > 0 || foodMax > 0) {
                     const foodAvg = foodMin + (foodMax - foodMin) / 2;
                     let foodThreshold;
+                    let foodClass;
 
                     if (foodAvg >= 1 && foodAvg <= 3) {
                         foodThreshold = 'low';
+                        foodClass = 'resource-low';
                     } else if (foodAvg >= 4 && foodAvg <= 6) {
                         foodThreshold = 'mid';
+                        foodClass = 'resource-mid';
                     } else if (foodAvg >= 7) {
                         foodThreshold = 'high';
+                        foodClass = 'resource-high';
                     }
 
-                    resourceParts.push(`🍕 ${foodThreshold}`);
+                    const foodItem = document.createElement('div');
+                    foodItem.className = 'tile-option-resource-item';
+                    foodItem.innerHTML = `🍕 Food: <span class="${foodClass}">${foodThreshold}</span>`;
+                    resourcesDiv.appendChild(foodItem);
                 }
 
                 // Calculate average and threshold for materials
@@ -760,25 +784,36 @@ class HexMapGame {
                 if (materialsMin > 0 || materialsMax > 0) {
                     const materialsAvg = materialsMin + (materialsMax - materialsMin) / 2;
                     let materialsThreshold;
+                    let materialsClass;
 
                     if (materialsAvg >= 1 && materialsAvg <= 3) {
                         materialsThreshold = 'low';
+                        materialsClass = 'resource-low';
                     } else if (materialsAvg >= 4 && materialsAvg <= 6) {
                         materialsThreshold = 'mid';
+                        materialsClass = 'resource-mid';
                     } else if (materialsAvg >= 7) {
                         materialsThreshold = 'high';
+                        materialsClass = 'resource-high';
                     }
 
-                    resourceParts.push(`🛠️ ${materialsThreshold}`);
+                    const materialsItem = document.createElement('div');
+                    materialsItem.className = 'tile-option-resource-item';
+                    materialsItem.innerHTML = `🛠️ Materials: <span class="${materialsClass}">${materialsThreshold}</span>`;
+                    resourcesDiv.appendChild(materialsItem);
                 }
             }
 
-            const resourceText = resourceParts.length > 0 ?
-                `<br>${resourceParts.join(' ')}` : '';
+            optionDiv.appendChild(resourcesDiv);
 
-            button.innerHTML = tileType + resourceText;
-            button.addEventListener('click', () => this.selectTile(tileType));
-            this.tileOptionsDiv.appendChild(button);
+            // Pick Tile button
+            const pickButton = document.createElement('button');
+            pickButton.className = 'tile-option-btn';
+            pickButton.textContent = 'Pick Tile';
+            pickButton.addEventListener('click', () => this.selectTile(tileType));
+            optionDiv.appendChild(pickButton);
+
+            this.tileOptionsDiv.appendChild(optionDiv);
         });
 
         this.tileSelectionDiv.classList.remove('hidden');
@@ -849,6 +884,32 @@ class HexMapGame {
             this.winMessage.textContent = this.gameConfig.winMessage;
         }
         this.winPopup.classList.remove('hidden');
+    }
+
+    showResourcesFoundPopup(foodAmount, materialsAmount) {
+        // Clear previous content
+        this.resourcesFoundList.innerHTML = '';
+
+        // Only show resources that were actually found (non-zero amounts)
+        if (foodAmount > 0) {
+            const foodDiv = document.createElement('div');
+            foodDiv.textContent = `🍕 Food: ${foodAmount}`;
+            this.resourcesFoundList.appendChild(foodDiv);
+        }
+
+        if (materialsAmount > 0) {
+            const materialsDiv = document.createElement('div');
+            materialsDiv.textContent = `🛠️ Materials: ${materialsAmount}`;
+            this.resourcesFoundList.appendChild(materialsDiv);
+        }
+
+        // Show the popup
+        this.resourcesFoundPopup.classList.remove('hidden');
+
+        // Hide after 1 second
+        setTimeout(() => {
+            this.resourcesFoundPopup.classList.add('hidden');
+        }, 1000);
     }
 
     // Check if there's a secured path from home base to Ark using BFS
@@ -950,16 +1011,20 @@ class HexMapGame {
         const key = `${this.pendingHex.q},${this.pendingHex.r}`;
         this.tiles.set(key, { type: tileType, secured: false });
 
+        // Track resources found
+        let foodAmount = 0;
+        let materialsAmount = 0;
+
         // Add random resources from the placed tile based on min/max ranges
         if (this.tileConfig[tileType]) {
             const config = this.tileConfig[tileType];
 
             // Generate random food amount
-            const foodAmount = Math.floor(Math.random() * (config.foodMax - config.foodMin + 1)) + config.foodMin;
+            foodAmount = Math.floor(Math.random() * (config.foodMax - config.foodMin + 1)) + config.foodMin;
             this.food += foodAmount;
 
             // Generate random materials amount
-            const materialsAmount = Math.floor(Math.random() * (config.materialsMax - config.materialsMin + 1)) + config.materialsMin;
+            materialsAmount = Math.floor(Math.random() * (config.materialsMax - config.materialsMin + 1)) + config.materialsMin;
             this.materials += materialsAmount;
         }
 
@@ -971,6 +1036,9 @@ class HexMapGame {
         this.updateTileCounter();
         this.updateResourceCounters();
         this.render();
+
+        // Show resources found popup
+        this.showResourcesFoundPopup(foodAmount, materialsAmount);
 
         // Check game over
         if (this.tilePool.length === 0) {
@@ -1022,6 +1090,7 @@ class HexMapGame {
         this.starvationPopup.classList.add('hidden');
         this.welcomePopup.classList.add('hidden');
         this.winPopup.classList.add('hidden');
+        this.resourcesFoundPopup.classList.add('hidden');
 
         // Reinitialize game
         this.loadTileConfig().then(() => {
