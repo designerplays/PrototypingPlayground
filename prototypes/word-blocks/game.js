@@ -1,5 +1,5 @@
 // Word Blocks Game - Mobile-First Word Puzzle
-// VERSION: 0.3 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 0.4 (increment by 0.1 for each change unless specified otherwise)
 
 class WordBlocksGame {
     constructor() {
@@ -20,7 +20,7 @@ class WordBlocksGame {
         this.blockSizeValue = document.getElementById('block-size-value');
 
         // Version info
-        this.version = '0.3';
+        this.version = '0.4';
 
         // Config values
         this.disappearTime = 300; // ms
@@ -124,14 +124,33 @@ class WordBlocksGame {
         }, { passive: false });
 
         document.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            this.handlePointerMove(e);
+            // Don't prevent default if touch is within debug overlay
+            if (!this.debugOverlay.contains(e.target)) {
+                e.preventDefault();
+                this.handlePointerMove(e);
+            }
         }, { passive: false });
 
         document.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            this.handlePointerUp(e);
+            // Don't prevent default if touch is within debug overlay
+            if (!this.debugOverlay.contains(e.target)) {
+                e.preventDefault();
+                this.handlePointerUp(e);
+            }
         }, { passive: false });
+
+        // Prevent touch event propagation from debug overlay to grid
+        this.debugOverlay.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+        }, { passive: true });
+
+        this.debugOverlay.addEventListener('touchmove', (e) => {
+            e.stopPropagation();
+        }, { passive: true });
+
+        this.debugOverlay.addEventListener('touchend', (e) => {
+            e.stopPropagation();
+        }, { passive: true });
 
         // Debug buttons - support both click and touch events for better mobile support
         this.debugBtn.addEventListener('click', () => this.openDebugPanel());
