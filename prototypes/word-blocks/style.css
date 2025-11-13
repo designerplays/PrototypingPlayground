@@ -31,20 +31,20 @@ body {
 }
 
 #grid-container {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    gap: 8px;
+    position: relative;
+    /* Container size: 5 blocks × blockSize + 4 gaps × 8px */
+    width: calc(5 * var(--block-size, 2.5em) + 4 * 8px);
+    height: calc(5 * var(--block-size, 2.5em) + 4 * 8px);
     padding: 20px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 15px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     max-width: 90vmin;
     max-height: 90vmin;
-    aspect-ratio: 1;
 }
 
 .letter-cell {
+    position: absolute;
     background: white;
     border: 3px solid #333;
     border-radius: 8px;
@@ -60,7 +60,7 @@ body {
     transition: all 0.15s ease;
     touch-action: none;
     -webkit-tap-highlight-color: transparent;
-    position: relative;
+    /* Position will be set dynamically via inline styles */
 }
 
 .letter-cell:hover {
@@ -86,21 +86,6 @@ body {
     100% {
         opacity: 0;
         transform: scale(0.5);
-    }
-}
-
-.letter-cell.falling {
-    animation: fallDown var(--fall-time, 300ms) ease forwards;
-}
-
-@keyframes fallDown {
-    0% {
-        transform: translateY(var(--fall-distance, -100%));
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(0);
-        opacity: 1;
     }
 }
 
@@ -250,14 +235,12 @@ body {
 /* Responsive adjustments */
 @media (max-width: 600px) {
     #grid-container {
-        gap: 6px;
         padding: 15px;
     }
 }
 
 @media (max-height: 600px) {
     #grid-container {
-        gap: 4px;
         padding: 10px;
     }
 }
