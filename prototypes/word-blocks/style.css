@@ -145,6 +145,8 @@ body {
     z-index: 150;
     min-width: 300px;
     max-width: 90vw;
+    /* Re-enable touch interactions for the debug overlay */
+    touch-action: auto;
 }
 
 #debug-overlay h3 {
