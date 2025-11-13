@@ -31,6 +31,14 @@
             <p>All tiles have been placed.</p>
             <button id="restart-btn">Restart Game</button>
         </div>
+        <div id="starvation-popup" class="hidden">
+            <h2>You Starved!</h2>
+            <p>You don't have enough food to continue.</p>
+            <button id="starvation-restart-btn">Restart Game</button>
+        </div>
+        <div id="instruction-text">
+            Explore new tiles or secure discovered ones
+        </div>
         <div id="resource-counters">
             <div id="food-counter">
                 🍕 <span id="food-count">10</span>
@@ -47,7 +55,7 @@
             <h3>Debug Settings</h3>
             <button id="debug-close-btn">✕</button>
             <div class="debug-section">
-                <p><strong>Version:</strong> <span id="version-display">0.2</span></p>
+                <p><strong>Version:</strong> <span id="version-display">0.4</span></p>
                 <p style="font-size: 0.9em; color: #666; margin-top: 5px;">Note: Increment by 0.1 for each change unless specified otherwise</p>
             </div>
             <div class="debug-section">
