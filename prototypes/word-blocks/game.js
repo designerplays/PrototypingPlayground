@@ -1,5 +1,5 @@
 // Word Blocks Game - Mobile-First Word Puzzle
-// VERSION: 0.1 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 0.2 (increment by 0.1 for each change unless specified otherwise)
 
 class WordBlocksGame {
     constructor() {
@@ -11,8 +11,21 @@ class WordBlocksGame {
         this.forceRestartBtn = document.getElementById('force-restart-btn');
         this.versionDisplay = document.getElementById('version-display');
 
+        // Config sliders
+        this.disappearTimeSlider = document.getElementById('disappear-time-slider');
+        this.disappearTimeValue = document.getElementById('disappear-time-value');
+        this.fallTimeSlider = document.getElementById('fall-time-slider');
+        this.fallTimeValue = document.getElementById('fall-time-value');
+        this.blockSizeSlider = document.getElementById('block-size-slider');
+        this.blockSizeValue = document.getElementById('block-size-value');
+
         // Version info
-        this.version = '0.1';
+        this.version = '0.2';
+
+        // Config values
+        this.disappearTime = 300; // ms
+        this.fallTime = 300; // ms
+        this.blockSize = 2.5; // em
 
         // Grid settings
         this.gridSize = 5;
@@ -37,6 +50,8 @@ class WordBlocksGame {
     async init() {
         await this.loadLetterDistribution();
         this.setupEventListeners();
+        this.setupConfigListeners();
+        this.updateCSSVariables();
         this.initializeGrid();
         this.renderGrid();
 
@@ -125,6 +140,35 @@ class WordBlocksGame {
             this.closeDebugPanel();
             this.restart();
         });
+    }
+
+    setupConfigListeners() {
+        // Disappear time slider
+        this.disappearTimeSlider.addEventListener('input', (e) => {
+            this.disappearTime = parseInt(e.target.value);
+            this.disappearTimeValue.textContent = this.disappearTime;
+            this.updateCSSVariables();
+        });
+
+        // Fall time slider
+        this.fallTimeSlider.addEventListener('input', (e) => {
+            this.fallTime = parseInt(e.target.value);
+            this.fallTimeValue.textContent = this.fallTime;
+            this.updateCSSVariables();
+        });
+
+        // Block size slider
+        this.blockSizeSlider.addEventListener('input', (e) => {
+            this.blockSize = parseFloat(e.target.value);
+            this.blockSizeValue.textContent = this.blockSize;
+            this.updateCSSVariables();
+        });
+    }
+
+    updateCSSVariables() {
+        document.documentElement.style.setProperty('--disappear-time', `${this.disappearTime}ms`);
+        document.documentElement.style.setProperty('--fall-time', `${this.fallTime}ms`);
+        document.documentElement.style.setProperty('--block-size', `${this.blockSize}em`);
     }
 
     getCellFromEvent(e) {
@@ -269,7 +313,7 @@ class WordBlocksGame {
         });
 
         // Wait for animation to complete
-        await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise(resolve => setTimeout(resolve, this.disappearTime));
 
         // Clear the cells
         this.selectedCells.forEach(cell => {
@@ -309,7 +353,7 @@ class WordBlocksGame {
         }
 
         // Wait for falling animation
-        await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise(resolve => setTimeout(resolve, this.fallTime));
 
         // Remove falling class
         for (let row = 0; row < this.gridSize; row++) {
@@ -333,7 +377,7 @@ class WordBlocksGame {
         }
 
         // Wait for animation
-        await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise(resolve => setTimeout(resolve, this.fallTime));
 
         // Remove falling class
         for (let row = 0; row < this.gridSize; row++) {

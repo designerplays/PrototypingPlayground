@@ -51,7 +51,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 2em;
+    font-size: var(--block-size, 2.5em);
     font-weight: bold;
     color: #333;
     cursor: pointer;
@@ -73,7 +73,7 @@ body {
 }
 
 .letter-cell.removing {
-    animation: fadeOut 0.3s ease-out forwards;
+    animation: fadeOut var(--disappear-time, 300ms) ease-out forwards;
 }
 
 @keyframes fadeOut {
@@ -88,7 +88,21 @@ body {
 }
 
 .letter-cell.falling {
-    transition: all 0.3s ease-in-out;
+    animation: fallDown var(--fall-time, 300ms) ease-in-out;
+}
+
+@keyframes fallDown {
+    0% {
+        transform: translateY(-200%);
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 #debug-btn {
@@ -166,6 +180,43 @@ body {
 
 .debug-section:last-child {
     margin-bottom: 0;
+}
+
+.debug-section label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.debug-section input[type="range"] {
+    width: 100%;
+    margin-top: 8px;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    background: #ddd;
+    border-radius: 4px;
+    outline: none;
+}
+
+.debug-section input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.debug-section input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    cursor: pointer;
+    border-radius: 50%;
+    border: none;
 }
 
 #force-restart-btn {
