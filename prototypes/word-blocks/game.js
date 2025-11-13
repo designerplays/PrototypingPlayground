@@ -1,5 +1,5 @@
 // Word Blocks Game - Mobile-First Word Puzzle
-// VERSION: 0.6 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 0.7 (increment by 0.1 for each change unless specified otherwise)
 
 class WordBlocksGame {
     constructor() {
@@ -20,12 +20,13 @@ class WordBlocksGame {
         this.blockSizeValue = document.getElementById('block-size-value');
 
         // Version info
-        this.version = '0.6';
+        this.version = '0.7';
 
         // Config values
         this.disappearTime = 300; // ms
         this.fallTime = 300; // ms
         this.blockSize = 2.5; // em
+        this.blockGap = 8; // px - gap between blocks
 
         // Grid settings
         this.gridSize = 5;
@@ -45,6 +46,18 @@ class WordBlocksGame {
         this.lastTouchedCell = null;
 
         this.init();
+    }
+
+    // Calculate the pixel position for a block at given row/col
+    getBlockPosition(row, col) {
+        // Convert em to pixels based on current font size
+        const emInPixels = parseFloat(getComputedStyle(document.documentElement).fontSize);
+        const blockSizeInPx = this.blockSize * emInPixels;
+
+        const top = row * (blockSizeInPx + this.blockGap);
+        const left = col * (blockSizeInPx + this.blockGap);
+
+        return { top, left };
     }
 
     async init() {
@@ -95,7 +108,7 @@ class WordBlocksGame {
         this.gridContainer.innerHTML = '';
         this.cellElements = [];
 
-        // Create grid cells
+        // Create grid cells with absolute positioning
         for (let row = 0; row < this.gridSize; row++) {
             this.cellElements[row] = [];
             for (let col = 0; col < this.gridSize; col++) {
@@ -105,8 +118,24 @@ class WordBlocksGame {
                 cell.dataset.row = row;
                 cell.dataset.col = col;
 
+                // Set absolute position
+                const { top, left } = this.getBlockPosition(row, col);
+                cell.style.top = `${top}px`;
+                cell.style.left = `${left}px`;
+
                 this.cellElements[row][col] = cell;
                 this.gridContainer.appendChild(cell);
+            }
+        }
+    }
+
+    // Update all block positions (useful when block size changes)
+    updateAllBlockPositions() {
+        for (let row = 0; row < this.gridSize; row++) {
+            for (let col = 0; col < this.gridSize; col++) {
+                const { top, left } = this.getBlockPosition(row, col);
+                this.cellElements[row][col].style.top = `${top}px`;
+                this.cellElements[row][col].style.left = `${left}px`;
             }
         }
     }
@@ -196,6 +225,8 @@ class WordBlocksGame {
             this.blockSize = parseFloat(e.target.value);
             this.blockSizeValue.textContent = this.blockSize;
             this.updateCSSVariables();
+            // Update all block positions when size changes
+            this.updateAllBlockPositions();
         });
     }
 
@@ -361,7 +392,7 @@ class WordBlocksGame {
     }
 
     async applyGravity() {
-        // Track which cells will have the falling animation with their info
+        // Track which cells will move and their animation info
         const cellsToAnimate = [];
 
         // Process each column from bottom to top
@@ -384,8 +415,15 @@ class WordBlocksGame {
 
                     // Only animate if the block moved to a different position
                     if (originalRow !== row) {
-                        const distance = row - originalRow;
-                        cellsToAnimate.push({ row, col, distance });
+                        const fromPosition = this.getBlockPosition(originalRow, col);
+                        const toPosition = this.getBlockPosition(row, col);
+                        cellsToAnimate.push({
+                            row,
+                            col,
+                            fromRow: originalRow,
+                            fromTop: fromPosition.top,
+                            toTop: toPosition.top
+                        });
                     }
                     letterIndex++;
                 } else {
@@ -397,34 +435,34 @@ class WordBlocksGame {
 
         // Only animate if there are cells to animate
         if (cellsToAnimate.length > 0) {
-            // Sort cells: bottom to top, then left to right
+            // Sort cells: bottom to top (by destination row), then left to right
             cellsToAnimate.sort((a, b) => {
                 if (b.row !== a.row) return b.row - a.row; // Bottom first (higher row number)
                 return a.col - b.col; // Left to right
             });
 
-            // Apply staggered animation to each cell
-            const staggerDelay = 50; // ms between each block animation start
-            cellsToAnimate.forEach((cell, index) => {
-                const delay = index * staggerDelay;
+            // Animate blocks sequentially (one at a time)
+            for (const cell of cellsToAnimate) {
                 const cellElement = this.cellElements[cell.row][cell.col];
 
-                // Set animation delay and fall distance
-                cellElement.style.animationDelay = `${delay}ms`;
-                cellElement.style.setProperty('--fall-distance', `${-cell.distance * 100}%`);
-                cellElement.classList.add('falling');
-            });
+                // Set initial position (where it's coming from)
+                cellElement.style.top = `${cell.fromTop}px`;
+                cellElement.style.transition = 'none';
 
-            // Wait for all animations to complete
-            const totalAnimationTime = this.fallTime + (cellsToAnimate.length - 1) * staggerDelay;
-            await new Promise(resolve => setTimeout(resolve, totalAnimationTime));
+                // Force reflow
+                void cellElement.offsetHeight;
 
-            // Remove falling class and inline styles
+                // Animate to final position
+                cellElement.style.transition = `top ${this.fallTime}ms ease`;
+                cellElement.style.top = `${cell.toTop}px`;
+
+                // Wait for animation to complete
+                await new Promise(resolve => setTimeout(resolve, this.fallTime));
+            }
+
+            // Clean up transitions
             cellsToAnimate.forEach(cell => {
-                const cellElement = this.cellElements[cell.row][cell.col];
-                cellElement.classList.remove('falling');
-                cellElement.style.animationDelay = '';
-                cellElement.style.removeProperty('--fall-distance');
+                this.cellElements[cell.row][cell.col].style.transition = '';
             });
         }
     }
@@ -442,56 +480,44 @@ class WordBlocksGame {
 
         if (emptyCells.length === 0) return;
 
-        // Fill empty cells with new random letters and set initial position
-        emptyCells.forEach(cell => {
-            const newLetter = this.getRandomLetter();
-            this.grid[cell.row][cell.col] = newLetter;
-            const cellElement = this.cellElements[cell.row][cell.col];
-
-            // Set initial transform position BEFORE setting content
-            const fallDistance = (cell.row + 1) * 100; // Fall from above the grid
-            cellElement.style.transform = `translateY(-${fallDistance}%)`;
-
-            // Now set the content
-            cellElement.textContent = newLetter;
-        });
-
-        // Force a reflow to ensure initial positions are applied
-        if (emptyCells.length > 0) {
-            void this.cellElements[emptyCells[0].row][emptyCells[0].col].offsetHeight;
-        }
-
         // Sort cells: bottom to top, then left to right
         emptyCells.sort((a, b) => {
             if (b.row !== a.row) return b.row - a.row; // Bottom first (higher row number)
             return a.col - b.col; // Left to right
         });
 
-        // Use requestAnimationFrame to ensure transforms are applied before animation
-        await new Promise(resolve => requestAnimationFrame(resolve));
-
-        // Apply staggered animation to each cell
-        const staggerDelay = 50; // ms between each block animation start
-        emptyCells.forEach((cell, index) => {
-            const delay = index * staggerDelay;
+        // Animate blocks dropping in sequentially (one at a time)
+        for (const cell of emptyCells) {
+            const newLetter = this.getRandomLetter();
+            this.grid[cell.row][cell.col] = newLetter;
             const cellElement = this.cellElements[cell.row][cell.col];
 
-            cellElement.style.animationDelay = `${delay}ms`;
-            cellElement.style.setProperty('--fall-distance', `-${(cell.row + 1) * 100}%`);
-            cellElement.style.transform = ''; // Clear inline transform to let animation take over
-            cellElement.classList.add('falling');
-        });
+            // Calculate positions
+            const finalPosition = this.getBlockPosition(cell.row, cell.col);
+            const emInPixels = parseFloat(getComputedStyle(document.documentElement).fontSize);
+            const blockSizeInPx = this.blockSize * emInPixels;
+            // Start from above the grid
+            const startTop = -blockSizeInPx - this.blockGap;
 
-        // Wait for all animations to complete
-        const totalAnimationTime = this.fallTime + (emptyCells.length - 1) * staggerDelay;
-        await new Promise(resolve => setTimeout(resolve, totalAnimationTime));
+            // Set content and initial position
+            cellElement.textContent = newLetter;
+            cellElement.style.top = `${startTop}px`;
+            cellElement.style.transition = 'none';
 
-        // Remove falling class and inline styles
+            // Force reflow
+            void cellElement.offsetHeight;
+
+            // Animate to final position
+            cellElement.style.transition = `top ${this.fallTime}ms ease`;
+            cellElement.style.top = `${finalPosition.top}px`;
+
+            // Wait for animation to complete
+            await new Promise(resolve => setTimeout(resolve, this.fallTime));
+        }
+
+        // Clean up transitions
         emptyCells.forEach(cell => {
-            const cellElement = this.cellElements[cell.row][cell.col];
-            cellElement.classList.remove('falling');
-            cellElement.style.animationDelay = '';
-            cellElement.style.removeProperty('--fall-distance');
+            this.cellElements[cell.row][cell.col].style.transition = '';
         });
     }
 
