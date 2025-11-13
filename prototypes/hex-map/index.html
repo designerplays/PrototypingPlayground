@@ -23,6 +23,18 @@
         <div id="tile-counter">
             Tiles remaining: <span id="remaining-count">36</span>
         </div>
+        <button id="debug-btn" title="Debug">🐛</button>
+        <div id="debug-overlay" class="hidden">
+            <h3>Debug Settings</h3>
+            <button id="debug-close-btn">✕</button>
+            <div class="debug-section">
+                <button id="force-restart-btn">Force Restart</button>
+            </div>
+            <div class="debug-section">
+                <label for="hex-radius-slider">Hex Tap Radius: <span id="hex-radius-value">50</span>px</label>
+                <input type="range" id="hex-radius-slider" min="10" max="200" value="50" step="1">
+            </div>
+        </div>
     </div>
     <script src="game.js"></script>
 </body>
