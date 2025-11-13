@@ -1,6 +1,6 @@
 // Hex Map Explorer Game - Mobile-First Rebuild
 // Complete rewrite for pixel-perfect visual and tap alignment
-// VERSION: 0.1 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 0.2 (increment by 0.1 for each change unless specified otherwise)
 
 class HexMapGame {
     constructor() {
@@ -12,6 +12,8 @@ class HexMapGame {
         this.gameOverDiv = document.getElementById('game-over');
         this.restartBtn = document.getElementById('restart-btn');
         this.remainingCountSpan = document.getElementById('remaining-count');
+        this.foodCountSpan = document.getElementById('food-count');
+        this.materialsCountSpan = document.getElementById('materials-count');
         this.debugBtn = document.getElementById('debug-btn');
         this.debugOverlay = document.getElementById('debug-overlay');
         this.debugCloseBtn = document.getElementById('debug-close-btn');
@@ -21,7 +23,7 @@ class HexMapGame {
         this.versionDisplay = document.getElementById('version-display');
 
         // Version info
-        this.version = '0.1';
+        this.version = '0.2';
 
         // Hex geometry - using pointy-top orientation
         // Mobile-first: larger hex size for better touch targets
@@ -42,7 +44,12 @@ class HexMapGame {
         // Game state
         this.tiles = new Map(); // key: "q,r" -> value: tile type
         this.tilePool = [];
+        this.tileConfig = {}; // Store tile configuration with resources
         this.pendingHex = null; // Hex awaiting tile selection
+
+        // Resources
+        this.food = 10;
+        this.materials = 10;
 
         // Debug
         this.showDebugOverlay = false;
@@ -74,6 +81,15 @@ class HexMapGame {
         const response = await fetch('TileConfig.json');
         const config = await response.json();
 
+        // Store tile configuration
+        this.tileConfig = {};
+        config.tiles.forEach(tile => {
+            this.tileConfig[tile.type] = {
+                food: tile.food,
+                materials: tile.materials
+            };
+        });
+
         // Build tile pool
         this.tilePool = [];
         config.tiles.forEach(tile => {
@@ -89,6 +105,7 @@ class HexMapGame {
         }
 
         this.updateTileCounter();
+        this.updateResourceCounters();
     }
 
     setupCanvas() {
@@ -461,15 +478,27 @@ class HexMapGame {
             return;
         }
 
+        // Check if there's enough food to explore
+        if (this.food < 1) {
+            // Not enough food to explore - could show a message here
+            return;
+        }
+
+        // Deduct 1 food for exploring
+        this.food -= 1;
+        this.updateResourceCounters();
+
         this.pendingHex = hex;
 
-        // Get up to 3 random tile options
-        const numOptions = Math.min(3, this.tilePool.length);
+        // Get up to 3 unique random tile options
+        const uniqueTileTypes = [...new Set(this.tilePool)];
+        const numOptions = Math.min(3, uniqueTileTypes.length);
         const options = [];
 
+        // Shuffle unique tile types and pick the first numOptions
+        const shuffled = [...uniqueTileTypes].sort(() => Math.random() - 0.5);
         for (let i = 0; i < numOptions; i++) {
-            const randomIndex = Math.floor(Math.random() * this.tilePool.length);
-            options.push(this.tilePool[randomIndex]);
+            options.push(shuffled[i]);
         }
 
         // Clear and populate tile options
@@ -496,12 +525,19 @@ class HexMapGame {
         const key = `${this.pendingHex.q},${this.pendingHex.r}`;
         this.tiles.set(key, tileType);
 
+        // Add resources from the placed tile
+        if (this.tileConfig[tileType]) {
+            this.food += this.tileConfig[tileType].food;
+            this.materials += this.tileConfig[tileType].materials;
+        }
+
         // Clear selection
         this.tileSelectionDiv.classList.add('hidden');
         this.pendingHex = null;
 
         // Update UI
         this.updateTileCounter();
+        this.updateResourceCounters();
         this.render();
 
         // Check game over
@@ -512,6 +548,11 @@ class HexMapGame {
 
     updateTileCounter() {
         this.remainingCountSpan.textContent = this.tilePool.length;
+    }
+
+    updateResourceCounters() {
+        this.foodCountSpan.textContent = this.food;
+        this.materialsCountSpan.textContent = this.materials;
     }
 
     gameOver() {
@@ -536,6 +577,8 @@ class HexMapGame {
         this.tilePool = [];
         this.pendingHex = null;
         this.camera = { x: 0, y: 0 };
+        this.food = 10;
+        this.materials = 10;
 
         // Hide overlays
         this.gameOverDiv.classList.add('hidden');
