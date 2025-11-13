@@ -68,8 +68,9 @@ class HexMapGame {
         this.canvas.width = displayWidth * dpr;
         this.canvas.height = displayHeight * dpr;
 
-        // Scale context to match device pixel ratio
-        this.ctx.scale(dpr, dpr);
+        // Reset transform and scale context to match device pixel ratio
+        // Use setTransform instead of scale to avoid cumulative scaling
+        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
         this.render();
     }
