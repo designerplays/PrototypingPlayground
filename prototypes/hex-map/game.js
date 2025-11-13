@@ -1,6 +1,6 @@
 // Hex Map Explorer Game - Mobile-First Rebuild
 // Complete rewrite for pixel-perfect visual and tap alignment
-// VERSION: 0.7 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 0.8 (increment by 0.1 for each change unless specified otherwise)
 
 class HexMapGame {
     constructor() {
@@ -29,9 +29,16 @@ class HexMapGame {
         this.starvationRestartBtn = document.getElementById('starvation-restart-btn');
         this.welcomePopup = document.getElementById('welcome-popup');
         this.welcomeCloseBtn = document.getElementById('welcome-close-btn');
+        this.welcomeMessage = document.getElementById('welcome-message');
+        this.winPopup = document.getElementById('win-popup');
+        this.winRestartBtn = document.getElementById('win-restart-btn');
+        this.winMessage = document.getElementById('win-message');
 
         // Version info
-        this.version = '0.7';
+        this.version = '0.8';
+
+        // Game config (messages, etc.)
+        this.gameConfig = {};
 
         // Hex geometry - using pointy-top orientation
         // Mobile-first: larger hex size for better touch targets
@@ -55,6 +62,8 @@ class HexMapGame {
         this.tileConfig = {}; // Store tile configuration with resources
         this.pendingHex = null; // Hex awaiting tile selection
         this.pendingSecureHex = null; // Hex awaiting secure action
+        this.arkPosition = null; // Position of the Ark tile
+        this.hasWon = false; // Track if player has won
 
         // Resources
         this.food = 10;
@@ -69,10 +78,12 @@ class HexMapGame {
     }
 
     async init() {
+        await this.loadGameConfig();
         await this.loadTileConfig();
         this.setupCanvas();
         this.setupEventListeners();
         this.placeCenterTile();
+        this.placeArk();
         this.render();
 
         // Update version display
@@ -88,6 +99,11 @@ class HexMapGame {
             this.setupCanvas();
             this.render();
         });
+    }
+
+    async loadGameConfig() {
+        const response = await fetch('GameConfig.json');
+        this.gameConfig = await response.json();
     }
 
     async loadTileConfig() {
@@ -141,6 +157,47 @@ class HexMapGame {
 
     placeCenterTile() {
         this.tiles.set('0,0', { type: 'Home Base', secured: true });
+    }
+
+    // Calculate distance between two hex coordinates
+    hexDistance(q1, r1, q2, r2) {
+        return (Math.abs(q1 - q2) + Math.abs(q1 + r1 - q2 - r2) + Math.abs(r1 - r2)) / 2;
+    }
+
+    // Get all hexes at exactly a given distance from a position
+    getHexesAtDistance(q, r, distance) {
+        const hexes = [];
+
+        // Use cube coordinates for easier ring generation
+        for (let dq = -distance; dq <= distance; dq++) {
+            for (let dr = -distance; dr <= distance; dr++) {
+                const ds = -dq - dr;
+
+                // Check if this is exactly at the target distance
+                if (Math.abs(dq) <= distance && Math.abs(dr) <= distance && Math.abs(ds) <= distance) {
+                    const actualDist = this.hexDistance(0, 0, dq, dr);
+                    if (actualDist === distance) {
+                        hexes.push({ q: q + dq, r: r + dr });
+                    }
+                }
+            }
+        }
+
+        return hexes;
+    }
+
+    // Place the Ark at a random position exactly 10 tiles from home base
+    placeArk() {
+        const arkDistance = 10;
+        const possiblePositions = this.getHexesAtDistance(0, 0, arkDistance);
+
+        // Pick a random position
+        const randomIndex = Math.floor(Math.random() * possiblePositions.length);
+        this.arkPosition = possiblePositions[randomIndex];
+
+        // Place the Ark tile (not secured by default, not in tile pool)
+        const key = `${this.arkPosition.q},${this.arkPosition.r}`;
+        this.tiles.set(key, { type: 'Ark', secured: false });
     }
 
     setupEventListeners() {
@@ -203,6 +260,9 @@ class HexMapGame {
 
         // Welcome popup button
         this.welcomeCloseBtn.addEventListener('click', () => this.closeWelcomePopup());
+
+        // Win popup button
+        this.winRestartBtn.addEventListener('click', () => this.restart());
     }
 
     // Convert client coordinates to canvas logical coordinates
@@ -436,21 +496,55 @@ class HexMapGame {
     // RENDERING
     // =============================================================================
 
+    // Get all hexes in a radius around the center that should be visible
+    getAllHexesInRadius(radius) {
+        const hexes = [];
+        for (let q = -radius; q <= radius; q++) {
+            for (let r = -radius; r <= radius; r++) {
+                const s = -q - r;
+                if (Math.abs(s) <= radius) {
+                    hexes.push({ q, r });
+                }
+            }
+        }
+        return hexes;
+    }
+
     render() {
         // Clear canvas
         this.ctx.fillStyle = '#f0f0f0';
         this.ctx.fillRect(0, 0, this.viewportWidth, this.viewportHeight);
 
+        // Draw the entire hex grid in light gray (unexplored tiles)
+        const gridRadius = 15; // Show a 15-tile radius grid
+        const allHexes = this.getAllHexesInRadius(gridRadius);
+        allHexes.forEach(hex => {
+            const key = `${hex.q},${hex.r}`;
+            // Only draw if not already placed
+            if (!this.tiles.has(key)) {
+                const pos = this.hexToPixel(hex.q, hex.r);
+                this.drawHexagon(pos.x, pos.y, 'rgba(220, 220, 220, 0.3)', 'rgba(180, 180, 180, 0.5)', '', false, null);
+            }
+        });
+
         // Draw all placed tiles
         this.tiles.forEach((tile, key) => {
             const [q, r] = key.split(',').map(Number);
             const pos = this.hexToPixel(q, r);
-            const textColor = tile.type === 'Home Base' ? '#FFD700' :
-                              (this.tileConfig[tile.type] && this.tileConfig[tile.type].color) || '#CCCCCC';
+            let textColor;
+
+            if (tile.type === 'Home Base') {
+                textColor = '#FFD700';
+            } else if (tile.type === 'Ark') {
+                textColor = '#9B59B6'; // Purple for Ark
+            } else {
+                textColor = (this.tileConfig[tile.type] && this.tileConfig[tile.type].color) || '#CCCCCC';
+            }
+
             this.drawHexagon(pos.x, pos.y, '#fff', '#333', tile.type, tile.secured, textColor);
         });
 
-        // Draw adjacent empty hexes (exploration targets)
+        // Draw adjacent empty hexes (exploration targets) with question marks
         const adjacentEmpty = this.getAllAdjacentEmptyHexes();
         adjacentEmpty.forEach(hex => {
             const pos = this.hexToPixel(hex.q, hex.r);
@@ -740,11 +834,67 @@ class HexMapGame {
     }
 
     showWelcomePopup() {
+        if (this.gameConfig.welcomeMessage) {
+            this.welcomeMessage.textContent = this.gameConfig.welcomeMessage;
+        }
         this.welcomePopup.classList.remove('hidden');
     }
 
     closeWelcomePopup() {
         this.welcomePopup.classList.add('hidden');
+    }
+
+    showWinPopup() {
+        if (this.gameConfig.winMessage) {
+            this.winMessage.textContent = this.gameConfig.winMessage;
+        }
+        this.winPopup.classList.remove('hidden');
+    }
+
+    // Check if there's a secured path from home base to Ark using BFS
+    checkWinCondition() {
+        if (!this.arkPosition || this.hasWon) return false;
+
+        const arkKey = `${this.arkPosition.q},${this.arkPosition.r}`;
+        const arkTile = this.tiles.get(arkKey);
+
+        // Ark must be secured
+        if (!arkTile || !arkTile.secured) return false;
+
+        // Use BFS to check if there's a path of secured tiles from home base to Ark
+        const visited = new Set();
+        const queue = [{ q: 0, r: 0 }]; // Start from home base
+        visited.add('0,0');
+
+        while (queue.length > 0) {
+            const current = queue.shift();
+            const currentKey = `${current.q},${current.r}`;
+
+            // Check if we reached the Ark
+            if (current.q === this.arkPosition.q && current.r === this.arkPosition.r) {
+                return true;
+            }
+
+            // Get adjacent hexes
+            const adjacent = this.getAdjacentHexes(current.q, current.r);
+
+            for (const hex of adjacent) {
+                const hexKey = `${hex.q},${hex.r}`;
+
+                // Skip if already visited
+                if (visited.has(hexKey)) continue;
+
+                const tile = this.tiles.get(hexKey);
+
+                // Only traverse secured tiles
+                if (tile && tile.secured) {
+                    visited.add(hexKey);
+                    queue.push(hex);
+                }
+            }
+        }
+
+        return false;
     }
 
     secureTile() {
@@ -781,6 +931,12 @@ class HexMapGame {
         this.updateResourceCounters();
         this.render();
         this.closeSecurePopup();
+
+        // Check win condition
+        if (this.checkWinCondition()) {
+            this.hasWon = true;
+            this.showWinPopup();
+        }
     }
 
     selectTile(tileType) {
@@ -856,6 +1012,8 @@ class HexMapGame {
         this.camera = { x: 0, y: 0 };
         this.food = 10;
         this.materials = 10;
+        this.arkPosition = null;
+        this.hasWon = false;
 
         // Hide overlays
         this.gameOverDiv.classList.add('hidden');
@@ -863,10 +1021,12 @@ class HexMapGame {
         this.securePopup.classList.add('hidden');
         this.starvationPopup.classList.add('hidden');
         this.welcomePopup.classList.add('hidden');
+        this.winPopup.classList.add('hidden');
 
         // Reinitialize game
         this.loadTileConfig().then(() => {
             this.placeCenterTile();
+            this.placeArk();
             this.render();
             this.showWelcomePopup();
         });
