@@ -6,7 +6,8 @@ on:
       - main
 jobs:
   auto-merge:
-    if: github.actor == 'claude'
+    # Run this job when either claude or designerplays pushes
+    if: github.actor == 'claude' || github.actor == 'designerplays'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
