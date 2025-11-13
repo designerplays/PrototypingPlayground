@@ -1,0 +1,23 @@
+name: Auto Merge Claude Branches
+
+on:
+  push:
+    branches-ignore:
+      - main
+jobs:
+  auto-merge:
+    if: github.actor == 'claude'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+      - name: Merge branch into main
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout main
+          git merge --no-ff ${{ github.ref }}
+          git push origin HEAD:main
