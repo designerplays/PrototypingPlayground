@@ -1,0 +1,19 @@
+{
+  "prototypes": [
+    {
+      "name": "Coin Toss",
+      "description": "Flip a coin and see if it lands on heads or tails",
+      "path": "prototypes/coin-toss/index.html"
+    },
+    {
+      "name": "Hex Map Explorer",
+      "description": "Explore and build a hexagonal tile map inspired by Dorf Romantik",
+      "path": "prototypes/hex-map/index.html"
+    },
+    {
+      "name": "Word Blocks",
+      "description": "Mobile-first word game - tap and drag to form words on a 5x5 letter grid",
+      "path": "prototypes/word-blocks/index.html"
+    }
+  ]
+}
