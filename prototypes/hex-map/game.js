@@ -8,11 +8,18 @@ class HexMapGame {
         this.gameOverDiv = document.getElementById('game-over');
         this.restartBtn = document.getElementById('restart-btn');
         this.remainingCountSpan = document.getElementById('remaining-count');
+        this.debugBtn = document.getElementById('debug-btn');
+        this.debugOverlay = document.getElementById('debug-overlay');
+        this.debugCloseBtn = document.getElementById('debug-close-btn');
+        this.forceRestartBtn = document.getElementById('force-restart-btn');
+        this.hexRadiusSlider = document.getElementById('hex-radius-slider');
+        this.hexRadiusValue = document.getElementById('hex-radius-value');
 
         // Hex settings
         this.hexSize = 50;
         this.hexWidth = Math.sqrt(3) * this.hexSize;
         this.hexHeight = 2 * this.hexSize;
+        this.tapRadius = 50; // Configurable tap detection radius
 
         // Camera/pan settings
         this.camera = { x: 0, y: 0 };
@@ -104,6 +111,18 @@ class HexMapGame {
         this.canvas.addEventListener('touchend', (e) => this.onTouchEnd(e), { passive: false });
 
         this.restartBtn.addEventListener('click', () => this.restart());
+
+        // Debug controls
+        this.debugBtn.addEventListener('click', () => this.openDebugOverlay());
+        this.debugCloseBtn.addEventListener('click', () => this.closeDebugOverlay());
+        this.forceRestartBtn.addEventListener('click', () => {
+            this.closeDebugOverlay();
+            this.restart();
+        });
+        this.hexRadiusSlider.addEventListener('input', (e) => {
+            this.tapRadius = parseInt(e.target.value);
+            this.hexRadiusValue.textContent = this.tapRadius;
+        });
     }
 
     onMouseDown(e) {
@@ -111,14 +130,11 @@ class HexMapGame {
         const mouseX = coords.x;
         const mouseY = coords.y;
 
-        const hex = this.pixelToHex(mouseX, mouseY);
-        const adjacentHexes = this.getAdjacentEmptyHexes();
+        // Use radius-based detection to find the closest adjacent hex
+        const adjacentHex = this.findClosestAdjacentHex(mouseX, mouseY);
 
-        // Check if clicking on an adjacent empty hex
-        const isAdjacent = adjacentHexes.some(h => h.q === hex.q && h.r === hex.r);
-
-        if (isAdjacent) {
-            this.showTileSelection(hex);
+        if (adjacentHex) {
+            this.showTileSelection(adjacentHex);
         } else {
             // Start dragging
             this.isDragging = true;
@@ -155,12 +171,11 @@ class HexMapGame {
             const touchX = coords.x;
             const touchY = coords.y;
 
-            const hex = this.pixelToHex(touchX, touchY);
-            const adjacentHexes = this.getAdjacentEmptyHexes();
-            const isAdjacent = adjacentHexes.some(h => h.q === hex.q && h.r === hex.r);
+            // Use radius-based detection to find the closest adjacent hex
+            const adjacentHex = this.findClosestAdjacentHex(touchX, touchY);
 
-            if (isAdjacent) {
-                this.showTileSelection(hex);
+            if (adjacentHex) {
+                this.showTileSelection(adjacentHex);
                 e.preventDefault();
             } else {
                 this.isDragging = true;
@@ -275,6 +290,29 @@ class HexMapGame {
         });
 
         return Array.from(emptyHexes).map(str => JSON.parse(str));
+    }
+
+    // Find the closest adjacent hex to a tap point using radius-based detection
+    findClosestAdjacentHex(tapX, tapY) {
+        const adjacentHexes = this.getAdjacentEmptyHexes();
+        let closestHex = null;
+        let closestDistance = Infinity;
+
+        adjacentHexes.forEach(hex => {
+            const hexPos = this.hexToPixel(hex.q, hex.r);
+            const distance = Math.sqrt(
+                Math.pow(tapX - hexPos.x, 2) +
+                Math.pow(tapY - hexPos.y, 2)
+            );
+
+            // Only consider hexes within the tap radius
+            if (distance <= this.tapRadius && distance < closestDistance) {
+                closestDistance = distance;
+                closestHex = hex;
+            }
+        });
+
+        return closestHex;
     }
 
     drawHex(x, y, fillStyle, strokeStyle = '#333', text = '') {
@@ -408,6 +446,14 @@ class HexMapGame {
 
     gameOver() {
         this.gameOverDiv.classList.remove('hidden');
+    }
+
+    openDebugOverlay() {
+        this.debugOverlay.classList.remove('hidden');
+    }
+
+    closeDebugOverlay() {
+        this.debugOverlay.classList.add('hidden');
     }
 
     restart() {
