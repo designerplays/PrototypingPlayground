@@ -1,4 +1,4 @@
 {
-  "welcomeMessage": "You don't have that much food left. You need to explore the world around you.\nTap on unknown tiles to explore them (it costs 🍕 Food) to find more resources. You can only explore from places you have secured (it costs 🛠️ Materials).\nGood luck! 🗺️",
+  "welcomeMessage": "You don't have that much food left. \nYou need to explore the world around you.\nTap on unknown tiles to explore them (it costs 🍕 Food) to find more resources. You can only explore from places you have secured (it costs 🛠️ Materials).\nGood luck! 🗺️",
   "winMessage": "You found and secured the Ark, securing humanity's future"
 }
