@@ -1,6 +1,6 @@
 // Hex Map Explorer Game - Mobile-First Rebuild
 // Complete rewrite for pixel-perfect visual and tap alignment
-// VERSION: 0.3 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 0.4 (increment by 0.1 for each change unless specified otherwise)
 
 class HexMapGame {
     constructor() {
@@ -25,9 +25,11 @@ class HexMapGame {
         this.secureBtn = document.getElementById('secure-btn');
         this.secureCancelBtn = document.getElementById('secure-cancel-btn');
         this.secureMessage = document.getElementById('secure-message');
+        this.starvationPopup = document.getElementById('starvation-popup');
+        this.starvationRestartBtn = document.getElementById('starvation-restart-btn');
 
         // Version info
-        this.version = '0.3';
+        this.version = '0.4';
 
         // Hex geometry - using pointy-top orientation
         // Mobile-first: larger hex size for better touch targets
@@ -187,6 +189,9 @@ class HexMapGame {
         // Secure popup buttons
         this.secureBtn.addEventListener('click', () => this.secureTile());
         this.secureCancelBtn.addEventListener('click', () => this.closeSecurePopup());
+
+        // Starvation popup button
+        this.starvationRestartBtn.addEventListener('click', () => this.restart());
     }
 
     // Convert client coordinates to canvas logical coordinates
@@ -576,7 +581,7 @@ class HexMapGame {
 
         // Check if there's enough food to explore
         if (this.food < 1) {
-            // Not enough food to explore - could show a message here
+            this.showStarvationPopup();
             return;
         }
 
@@ -602,7 +607,13 @@ class HexMapGame {
         options.forEach(tileType => {
             const button = document.createElement('button');
             button.className = 'tile-option';
-            button.textContent = tileType;
+
+            // Get resource info for this tile type
+            const resources = this.tileConfig[tileType];
+            const resourceText = resources ?
+                ` (🍕 +${resources.food} 🛠️ +${resources.materials})` : '';
+
+            button.textContent = tileType + resourceText;
             button.addEventListener('click', () => this.selectTile(tileType));
             this.tileOptionsDiv.appendChild(button);
         });
@@ -616,6 +627,12 @@ class HexMapGame {
         const tile = this.tiles.get(key);
 
         if (!tile || tile.secured) {
+            return;
+        }
+
+        // Check if player has 0 food - show starvation popup
+        if (this.food < this.secureCost.food) {
+            this.showStarvationPopup();
             return;
         }
 
@@ -647,6 +664,10 @@ class HexMapGame {
     closeSecurePopup() {
         this.securePopup.classList.add('hidden');
         this.pendingSecureHex = null;
+    }
+
+    showStarvationPopup() {
+        this.starvationPopup.classList.remove('hidden');
     }
 
     secureTile() {
@@ -756,6 +777,7 @@ class HexMapGame {
         this.gameOverDiv.classList.add('hidden');
         this.tileSelectionDiv.classList.add('hidden');
         this.securePopup.classList.add('hidden');
+        this.starvationPopup.classList.add('hidden');
 
         // Reinitialize game
         this.loadTileConfig().then(() => {

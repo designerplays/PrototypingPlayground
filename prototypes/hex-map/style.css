@@ -435,3 +435,64 @@ body {
 #secure-cancel-btn:active {
     transform: scale(0.95);
 }
+
+#starvation-popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    z-index: 100;
+}
+
+#starvation-popup h2 {
+    margin-bottom: 15px;
+    color: #e74c3c;
+}
+
+#starvation-popup p {
+    margin-bottom: 25px;
+    color: #666;
+}
+
+#starvation-restart-btn {
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: transform 0.2s;
+    min-height: 48px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#starvation-restart-btn:hover {
+    transform: scale(1.05);
+}
+
+#starvation-restart-btn:active {
+    transform: scale(0.95);
+}
+
+#instruction-text {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 15px 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    color: #333;
+    z-index: 50;
+    text-align: center;
+    font-size: 16px;
+}
