@@ -36,8 +36,11 @@
             <p>You don't have enough food to continue.</p>
             <button id="starvation-restart-btn">Restart Game</button>
         </div>
-        <div id="instruction-text">
-            Explore new tiles or secure discovered ones
+        <div id="welcome-popup" class="hidden">
+            <p>You don't have that much food left. You need to explore the world around you.
+Tap on unknown tiles to explore them (it costs 🍕 Food) to find more resources. You can only explore from places you have secured (it costs 🛠️ Materials).
+Good luck! 🗺️</p>
+            <button id="welcome-close-btn">Close</button>
         </div>
         <div id="resource-counters">
             <div id="food-counter">
@@ -55,7 +58,7 @@
             <h3>Debug Settings</h3>
             <button id="debug-close-btn">✕</button>
             <div class="debug-section">
-                <p><strong>Version:</strong> <span id="version-display">0.5</span></p>
+                <p><strong>Version:</strong> <span id="version-display">0.6</span></p>
                 <p style="font-size: 0.9em; color: #666; margin-top: 5px;">Note: Increment by 0.1 for each change unless specified otherwise</p>
             </div>
             <div class="debug-section">

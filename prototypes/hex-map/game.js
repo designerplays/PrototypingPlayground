@@ -1,6 +1,6 @@
 // Hex Map Explorer Game - Mobile-First Rebuild
 // Complete rewrite for pixel-perfect visual and tap alignment
-// VERSION: 0.5 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 0.6 (increment by 0.1 for each change unless specified otherwise)
 
 class HexMapGame {
     constructor() {
@@ -27,9 +27,11 @@ class HexMapGame {
         this.secureMessage = document.getElementById('secure-message');
         this.starvationPopup = document.getElementById('starvation-popup');
         this.starvationRestartBtn = document.getElementById('starvation-restart-btn');
+        this.welcomePopup = document.getElementById('welcome-popup');
+        this.welcomeCloseBtn = document.getElementById('welcome-close-btn');
 
         // Version info
-        this.version = '0.5';
+        this.version = '0.6';
 
         // Hex geometry - using pointy-top orientation
         // Mobile-first: larger hex size for better touch targets
@@ -78,6 +80,9 @@ class HexMapGame {
             this.versionDisplay.textContent = this.version;
         }
 
+        // Show welcome popup on game start
+        this.showWelcomePopup();
+
         // Handle window resize
         window.addEventListener('resize', () => {
             this.setupCanvas();
@@ -94,7 +99,8 @@ class HexMapGame {
         config.tiles.forEach(tile => {
             this.tileConfig[tile.type] = {
                 food: tile.food,
-                materials: tile.materials
+                materials: tile.materials,
+                color: tile.color
             };
         });
 
@@ -192,6 +198,9 @@ class HexMapGame {
 
         // Starvation popup button
         this.starvationRestartBtn.addEventListener('click', () => this.restart());
+
+        // Welcome popup button
+        this.welcomeCloseBtn.addEventListener('click', () => this.closeWelcomePopup());
     }
 
     // Convert client coordinates to canvas logical coordinates
@@ -434,15 +443,16 @@ class HexMapGame {
         this.tiles.forEach((tile, key) => {
             const [q, r] = key.split(',').map(Number);
             const pos = this.hexToPixel(q, r);
-            const color = tile.type === 'Home Base' ? '#FFD700' : this.getTileColor(tile.type);
-            this.drawHexagon(pos.x, pos.y, color, '#333', tile.type, tile.secured);
+            const textColor = tile.type === 'Home Base' ? '#FFD700' :
+                              (this.tileConfig[tile.type] && this.tileConfig[tile.type].color) || '#CCCCCC';
+            this.drawHexagon(pos.x, pos.y, '#fff', '#333', tile.type, tile.secured, textColor);
         });
 
         // Draw adjacent empty hexes (exploration targets)
         const adjacentEmpty = this.getAllAdjacentEmptyHexes();
         adjacentEmpty.forEach(hex => {
             const pos = this.hexToPixel(hex.q, hex.r);
-            this.drawHexagon(pos.x, pos.y, 'rgba(200, 200, 200, 0.5)', '#999', '?');
+            this.drawHexagon(pos.x, pos.y, 'rgba(200, 200, 200, 0.5)', '#999', '?', false, null);
         });
 
         // Debug visualization
@@ -451,7 +461,7 @@ class HexMapGame {
         }
     }
 
-    drawHexagon(centerX, centerY, fillColor, strokeColor, text, secured = false) {
+    drawHexagon(centerX, centerY, fillColor, strokeColor, text, secured = false, textColor = null) {
         this.ctx.beginPath();
 
         // Draw pointy-top hexagon
@@ -524,8 +534,33 @@ class HexMapGame {
             this.ctx.stroke();
         }
 
-        // Text
-        if (text) {
+        // Text with colored square background
+        if (text && textColor) {
+            this.ctx.font = 'bold 14px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+
+            // Measure text width
+            const textMetrics = this.ctx.measureText(text);
+            const textWidth = textMetrics.width;
+            const padding = 6;
+            const boxWidth = textWidth + padding * 2;
+            const boxHeight = 20;
+
+            // Draw colored square background
+            this.ctx.fillStyle = textColor;
+            this.ctx.fillRect(
+                centerX - boxWidth / 2,
+                centerY - boxHeight / 2,
+                boxWidth,
+                boxHeight
+            );
+
+            // Draw text in white for better contrast
+            this.ctx.fillStyle = '#fff';
+            this.ctx.fillText(text, centerX, centerY);
+        } else if (text) {
+            // Fallback for text without color (e.g., "?" on empty tiles)
             this.ctx.fillStyle = '#000';
             this.ctx.font = 'bold 14px Arial';
             this.ctx.textAlign = 'center';
@@ -555,18 +590,6 @@ class HexMapGame {
             this.ctx.lineWidth = 2;
             this.ctx.stroke();
         });
-    }
-
-    getTileColor(tileType) {
-        const colors = {
-            'Forest': '#228B22',
-            'Plain': '#90EE90',
-            'Road': '#808080',
-            'River': '#4682B4',
-            'House': '#CD853F',
-            'Warehouse': '#A0522D'
-        };
-        return colors[tileType] || '#CCCCCC';
     }
 
     // =============================================================================
@@ -681,6 +704,14 @@ class HexMapGame {
         this.starvationPopup.classList.remove('hidden');
     }
 
+    showWelcomePopup() {
+        this.welcomePopup.classList.remove('hidden');
+    }
+
+    closeWelcomePopup() {
+        this.welcomePopup.classList.add('hidden');
+    }
+
     secureTile() {
         if (!this.pendingSecureHex) return;
 
@@ -789,11 +820,13 @@ class HexMapGame {
         this.tileSelectionDiv.classList.add('hidden');
         this.securePopup.classList.add('hidden');
         this.starvationPopup.classList.add('hidden');
+        this.welcomePopup.classList.add('hidden');
 
         // Reinitialize game
         this.loadTileConfig().then(() => {
             this.placeCenterTile();
             this.render();
+            this.showWelcomePopup();
         });
     }
 }

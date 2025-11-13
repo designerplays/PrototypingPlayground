@@ -1,10 +1,10 @@
 {
   "tiles": [
-    { "type": "Forest", "count": 10, "food": 1, "materials": 1 },
-    { "type": "Plain", "count": 10, "food": 0, "materials": 0 },
-    { "type": "Road", "count": 5, "food": 0, "materials": 0 },
-    { "type": "River", "count": 5, "food": 2, "materials": 0 },
-    { "type": "House", "count": 4, "food": 2, "materials": 2 },
-    { "type": "Warehouse", "count": 2, "food": 0, "materials": 4 }
+    { "type": "Forest", "count": 10, "food": 1, "materials": 1, "color": "#228B22" },
+    { "type": "Plain", "count": 10, "food": 0, "materials": 0, "color": "#90EE90" },
+    { "type": "Road", "count": 5, "food": 0, "materials": 0, "color": "#808080" },
+    { "type": "River", "count": 5, "food": 2, "materials": 0, "color": "#4682B4" },
+    { "type": "House", "count": 4, "food": 2, "materials": 2, "color": "#CD853F" },
+    { "type": "Warehouse", "count": 2, "food": 0, "materials": 4, "color": "#A0522D" }
   ]
 }

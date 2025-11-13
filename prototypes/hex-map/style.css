@@ -386,7 +386,7 @@ body {
 
 .cost-item span {
     font-weight: bold;
-    color: #667eea;
+    color: #e74c3c;
 }
 
 #secure-btn, #secure-cancel-btn {
@@ -481,18 +481,46 @@ body {
     transform: scale(0.95);
 }
 
-#instruction-text {
+#welcome-popup {
     position: absolute;
-    bottom: 20px;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     background: white;
-    padding: 15px 30px;
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-    font-weight: bold;
-    color: #333;
-    z-index: 50;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     text-align: center;
+    z-index: 100;
+    min-width: 300px;
+    max-width: 90vw;
+}
+
+#welcome-popup p {
+    margin-bottom: 20px;
+    color: #333;
+    line-height: 1.6;
     font-size: 16px;
+}
+
+#welcome-close-btn {
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: transform 0.2s;
+    min-height: 48px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#welcome-close-btn:hover {
+    transform: scale(1.05);
+}
+
+#welcome-close-btn:active {
+    transform: scale(0.95);
 }
