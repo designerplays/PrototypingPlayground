@@ -1,6 +1,9 @@
-// Hex Map Explorer Game
+// Hex Map Explorer Game - Mobile-First Rebuild
+// Complete rewrite for pixel-perfect visual and tap alignment
+
 class HexMapGame {
     constructor() {
+        // DOM elements
         this.canvas = document.getElementById('game-canvas');
         this.ctx = this.canvas.getContext('2d');
         this.tileSelectionDiv = document.getElementById('tile-selection');
@@ -15,45 +18,51 @@ class HexMapGame {
         this.hexRadiusSlider = document.getElementById('hex-radius-slider');
         this.hexRadiusValue = document.getElementById('hex-radius-value');
 
-        // Hex settings
-        this.hexSize = 50;
-        this.hexWidth = Math.sqrt(3) * this.hexSize;
-        this.hexHeight = 2 * this.hexSize;
-        this.tapRadius = 50; // Configurable tap detection radius
+        // Hex geometry - using pointy-top orientation
+        // Mobile-first: larger hex size for better touch targets
+        this.hexRadius = 60; // Increased from 50 for better mobile touch
 
-        // Camera/pan settings
+        // Camera/viewport
         this.camera = { x: 0, y: 0 };
-        this.isDragging = false;
-        this.dragStart = { x: 0, y: 0 };
-        this.lastMousePos = { x: 0, y: 0 };
+        this.viewportWidth = 0;
+        this.viewportHeight = 0;
 
-        // Display dimensions (logical size, not canvas internal size)
-        this.displayWidth = 0;
-        this.displayHeight = 0;
+        // Interaction state
+        this.isDragging = false;
+        this.dragStartPos = { x: 0, y: 0 };
+        this.dragLastPos = { x: 0, y: 0 };
 
         // Game state
         this.tiles = new Map(); // key: "q,r" -> value: tile type
         this.tilePool = [];
-        this.pendingExploration = null; // Store hex coords when selecting tile
+        this.pendingHex = null; // Hex awaiting tile selection
+
+        // Debug
+        this.showDebugOverlay = false;
+        this.debugTapRadius = 60; // For visualization only
 
         this.init();
     }
 
     async init() {
-        this.resizeCanvas();
-        window.addEventListener('resize', () => this.resizeCanvas());
-
         await this.loadTileConfig();
+        this.setupCanvas();
         this.setupEventListeners();
         this.placeCenterTile();
         this.render();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            this.setupCanvas();
+            this.render();
+        });
     }
 
     async loadTileConfig() {
         const response = await fetch('TileConfig.json');
         const config = await response.json();
 
-        // Create tile pool
+        // Build tile pool
         this.tilePool = [];
         config.tiles.forEach(tile => {
             for (let i = 0; i < tile.count; i++) {
@@ -70,179 +79,154 @@ class HexMapGame {
         this.updateTileCounter();
     }
 
-    resizeCanvas() {
-        // Get the actual rendered size of the canvas element
+    setupCanvas() {
+        // Get actual display size
         const rect = this.canvas.getBoundingClientRect();
-        this.displayWidth = rect.width;
-        this.displayHeight = rect.height;
+        this.viewportWidth = rect.width;
+        this.viewportHeight = rect.height;
 
-        // Account for device pixel ratio for sharper rendering on high-DPI screens
+        // Set internal canvas size with device pixel ratio for sharp rendering
         const dpr = window.devicePixelRatio || 1;
+        this.canvas.width = this.viewportWidth * dpr;
+        this.canvas.height = this.viewportHeight * dpr;
 
-        this.canvas.width = this.displayWidth * dpr;
-        this.canvas.height = this.displayHeight * dpr;
-
-        // Reset transform and scale context to match device pixel ratio
-        // Use setTransform instead of scale to avoid cumulative scaling
+        // Scale context to match DPR, but work in logical pixels
         this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-        this.render();
     }
 
-    // Get properly scaled coordinates from mouse/touch event
-    getCanvasCoordinates(clientX, clientY) {
-        const rect = this.canvas.getBoundingClientRect();
+    placeCenterTile() {
+        this.tiles.set('0,0', 'Home Base');
+    }
 
-        // No need to scale by DPR here since we're already scaling the context
-        // Just convert from client coordinates to canvas coordinates
+    setupEventListeners() {
+        // Mouse events
+        this.canvas.addEventListener('mousedown', (e) => this.handlePointerDown(e.clientX, e.clientY));
+        this.canvas.addEventListener('mousemove', (e) => {
+            if (this.isDragging) this.handlePointerMove(e.clientX, e.clientY);
+        });
+        this.canvas.addEventListener('mouseup', () => this.handlePointerUp());
+        this.canvas.addEventListener('mouseleave', () => this.handlePointerUp());
+
+        // Touch events
+        this.canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                this.handlePointerDown(touch.clientX, touch.clientY);
+            }
+        }, { passive: false });
+
+        this.canvas.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 1 && this.isDragging) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                this.handlePointerMove(touch.clientX, touch.clientY);
+            }
+        }, { passive: false });
+
+        this.canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.handlePointerUp();
+        }, { passive: false });
+
+        // UI buttons
+        this.restartBtn.addEventListener('click', () => this.restart());
+        this.debugBtn.addEventListener('click', () => this.openDebugPanel());
+        this.debugCloseBtn.addEventListener('click', () => this.closeDebugPanel());
+        this.forceRestartBtn.addEventListener('click', () => {
+            this.closeDebugPanel();
+            this.restart();
+        });
+        this.hexRadiusSlider.addEventListener('input', (e) => {
+            this.debugTapRadius = parseInt(e.target.value);
+            this.hexRadiusValue.textContent = this.debugTapRadius;
+            this.render();
+        });
+    }
+
+    // Convert client coordinates to canvas logical coordinates
+    clientToCanvas(clientX, clientY) {
+        const rect = this.canvas.getBoundingClientRect();
         return {
             x: clientX - rect.left,
             y: clientY - rect.top
         };
     }
 
-    placeCenterTile() {
-        // Place home base at 0, 0
-        this.tiles.set('0,0', 'Home Base');
-    }
+    handlePointerDown(clientX, clientY) {
+        const canvasPos = this.clientToCanvas(clientX, clientY);
 
-    setupEventListeners() {
-        this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e));
-        this.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e));
-        this.canvas.addEventListener('mouseup', (e) => this.onMouseUp(e));
-        this.canvas.addEventListener('mouseleave', (e) => this.onMouseUp(e));
+        // Check if clicking on an adjacent empty hex
+        const clickedHex = this.findHexAtPosition(canvasPos.x, canvasPos.y);
 
-        // Touch events - passive: false allows preventDefault to work
-        this.canvas.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: false });
-        this.canvas.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
-        this.canvas.addEventListener('touchend', (e) => this.onTouchEnd(e), { passive: false });
-
-        this.restartBtn.addEventListener('click', () => this.restart());
-
-        // Debug controls
-        this.debugBtn.addEventListener('click', () => this.openDebugOverlay());
-        this.debugCloseBtn.addEventListener('click', () => this.closeDebugOverlay());
-        this.forceRestartBtn.addEventListener('click', () => {
-            this.closeDebugOverlay();
-            this.restart();
-        });
-        this.hexRadiusSlider.addEventListener('input', (e) => {
-            this.tapRadius = parseInt(e.target.value);
-            this.hexRadiusValue.textContent = this.tapRadius;
-        });
-    }
-
-    onMouseDown(e) {
-        const coords = this.getCanvasCoordinates(e.clientX, e.clientY);
-        const mouseX = coords.x;
-        const mouseY = coords.y;
-
-        // Use radius-based detection to find the closest adjacent hex
-        const adjacentHex = this.findClosestAdjacentHex(mouseX, mouseY);
-
-        if (adjacentHex) {
-            this.showTileSelection(adjacentHex);
+        if (clickedHex && this.isAdjacentEmpty(clickedHex.q, clickedHex.r)) {
+            // Found an adjacent empty hex - show tile selection
+            this.showTileSelection(clickedHex);
         } else {
-            // Start dragging
+            // Start panning
             this.isDragging = true;
-            this.dragStart = { x: mouseX, y: mouseY };
-            this.lastMousePos = { x: mouseX, y: mouseY };
+            this.dragStartPos = canvasPos;
+            this.dragLastPos = canvasPos;
             this.canvas.classList.add('dragging');
         }
     }
 
-    onMouseMove(e) {
-        const coords = this.getCanvasCoordinates(e.clientX, e.clientY);
-        const mouseX = coords.x;
-        const mouseY = coords.y;
+    handlePointerMove(clientX, clientY) {
+        if (!this.isDragging) return;
 
-        if (this.isDragging) {
-            const dx = mouseX - this.lastMousePos.x;
-            const dy = mouseY - this.lastMousePos.y;
-            this.camera.x += dx;
-            this.camera.y += dy;
-            this.lastMousePos = { x: mouseX, y: mouseY };
-            this.render();
-        }
+        const canvasPos = this.clientToCanvas(clientX, clientY);
+        const dx = canvasPos.x - this.dragLastPos.x;
+        const dy = canvasPos.y - this.dragLastPos.y;
+
+        this.camera.x += dx;
+        this.camera.y += dy;
+        this.dragLastPos = canvasPos;
+
+        this.render();
     }
 
-    onMouseUp(e) {
+    handlePointerUp() {
         this.isDragging = false;
         this.canvas.classList.remove('dragging');
     }
 
-    onTouchStart(e) {
-        if (e.touches.length === 1) {
-            const touch = e.touches[0];
-            const coords = this.getCanvasCoordinates(touch.clientX, touch.clientY);
-            const touchX = coords.x;
-            const touchY = coords.y;
-
-            // Use radius-based detection to find the closest adjacent hex
-            const adjacentHex = this.findClosestAdjacentHex(touchX, touchY);
-
-            if (adjacentHex) {
-                this.showTileSelection(adjacentHex);
-                e.preventDefault();
-            } else {
-                this.isDragging = true;
-                this.dragStart = { x: touchX, y: touchY };
-                this.lastMousePos = { x: touchX, y: touchY };
-                e.preventDefault(); // Prevent default touch behaviors
-            }
-        }
-    }
-
-    onTouchMove(e) {
-        if (this.isDragging && e.touches.length === 1) {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const coords = this.getCanvasCoordinates(touch.clientX, touch.clientY);
-            const touchX = coords.x;
-            const touchY = coords.y;
-
-            const dx = touchX - this.lastMousePos.x;
-            const dy = touchY - this.lastMousePos.y;
-            this.camera.x += dx;
-            this.camera.y += dy;
-            this.lastMousePos = { x: touchX, y: touchY };
-            this.render();
-        }
-    }
-
-    onTouchEnd(e) {
-        this.isDragging = false;
-    }
-
-    // Axial coordinate system for hexagons (pointy-top orientation)
+    // =============================================================================
+    // HEX COORDINATE SYSTEM - POINTY-TOP ORIENTATION
     // Reference: https://www.redblobgames.com/grids/hexagons/
-    hexToPixel(q, r) {
-        // Calculate hex position using pointy-top formulas
-        const x = this.hexSize * (Math.sqrt(3) * q + Math.sqrt(3) / 2 * r);
-        const y = this.hexSize * (3 / 2 * r);
+    // =============================================================================
 
-        // Use stored display dimensions for consistent coordinate space
-        // Round to integer pixels for crisp rendering and perfect alignment
+    // Convert hex axial coordinates (q, r) to pixel position (x, y)
+    // CRITICAL: No rounding here - return exact floating point position
+    hexToPixel(q, r) {
+        const x = this.hexRadius * (Math.sqrt(3) * q + Math.sqrt(3) / 2 * r);
+        const y = this.hexRadius * (3 / 2 * r);
+
+        // Apply camera offset and center in viewport
         return {
-            x: Math.round(x + this.displayWidth / 2 + this.camera.x),
-            y: Math.round(y + this.displayHeight / 2 + this.camera.y)
+            x: x + this.viewportWidth / 2 + this.camera.x,
+            y: y + this.viewportHeight / 2 + this.camera.y
         };
     }
 
+    // Convert pixel position (x, y) to hex axial coordinates (q, r)
+    // CRITICAL: Uses exact inverse of hexToPixel - no rounding
     pixelToHex(x, y) {
-        // Use stored display dimensions for consistent coordinate space
-        // Adjust for camera
-        const adjX = x - this.displayWidth / 2 - this.camera.x;
-        const adjY = y - this.displayHeight / 2 - this.camera.y;
+        // Remove camera offset and viewport centering
+        const relX = x - this.viewportWidth / 2 - this.camera.x;
+        const relY = y - this.viewportHeight / 2 - this.camera.y;
 
-        const q = (Math.sqrt(3) / 3 * adjX - 1 / 3 * adjY) / this.hexSize;
-        const r = (2 / 3 * adjY) / this.hexSize;
+        // Convert to fractional hex coordinates
+        const q = (Math.sqrt(3) / 3 * relX - 1 / 3 * relY) / this.hexRadius;
+        const r = (2 / 3 * relY) / this.hexRadius;
 
-        return this.hexRound(q, r);
+        // Round to nearest integer hex coordinates
+        return this.roundHex(q, r);
     }
 
-    hexRound(q, r) {
+    // Round fractional hex coordinates to nearest integer hex
+    roundHex(q, r) {
         const s = -q - r;
+
         let rq = Math.round(q);
         let rr = Math.round(r);
         let rs = Math.round(s);
@@ -251,6 +235,7 @@ class HexMapGame {
         const rDiff = Math.abs(rr - r);
         const sDiff = Math.abs(rs - s);
 
+        // Reset the component with the largest rounding error
         if (qDiff > rDiff && qDiff > sDiff) {
             rq = -rr - rs;
         } else if (rDiff > sDiff) {
@@ -260,117 +245,159 @@ class HexMapGame {
         return { q: rq, r: rr };
     }
 
-    getAdjacentHexes(q, r) {
-        // Six directions in axial coordinates
-        const directions = [
-            { q: 1, r: 0 },   // right
-            { q: 1, r: -1 },  // top-right
-            { q: 0, r: -1 },  // top-left
-            { q: -1, r: 0 },  // left
-            { q: -1, r: 1 },  // bottom-left
-            { q: 0, r: 1 }    // bottom-right
-        ];
+    // Find which hex (if any) contains the given pixel position
+    findHexAtPosition(x, y) {
+        const hex = this.pixelToHex(x, y);
+        const hexCenter = this.hexToPixel(hex.q, hex.r);
 
-        return directions.map(dir => ({
-            q: q + dir.q,
-            r: r + dir.r
-        }));
+        // Check if point is actually inside this hex (not just in its bounding box)
+        const distance = Math.sqrt(
+            Math.pow(x - hexCenter.x, 2) +
+            Math.pow(y - hexCenter.y, 2)
+        );
+
+        // Use hex radius as the hit test boundary
+        if (distance <= this.hexRadius) {
+            return hex;
+        }
+
+        return null;
     }
 
-    getAdjacentEmptyHexes() {
+    // Get the six adjacent hex coordinates
+    getAdjacentHexes(q, r) {
+        return [
+            { q: q + 1, r: r },     // right
+            { q: q + 1, r: r - 1 }, // top-right
+            { q: q, r: r - 1 },     // top-left
+            { q: q - 1, r: r },     // left
+            { q: q - 1, r: r + 1 }, // bottom-left
+            { q: q, r: r + 1 }      // bottom-right
+        ];
+    }
+
+    // Check if a hex is adjacent to any placed tile and is empty
+    isAdjacentEmpty(q, r) {
+        const key = `${q},${r}`;
+
+        // Must be empty
+        if (this.tiles.has(key)) return false;
+
+        // Must be adjacent to at least one placed tile
+        const adjacent = this.getAdjacentHexes(q, r);
+        return adjacent.some(hex => this.tiles.has(`${hex.q},${hex.r}`));
+    }
+
+    // Get all hexes that are adjacent to placed tiles and empty
+    getAllAdjacentEmptyHexes() {
         const emptyHexes = new Set();
 
-        // For each placed tile, find adjacent empty hexes
-        this.tiles.forEach((tileType, key) => {
+        this.tiles.forEach((_, key) => {
             const [q, r] = key.split(',').map(Number);
             const adjacent = this.getAdjacentHexes(q, r);
 
             adjacent.forEach(hex => {
                 const hexKey = `${hex.q},${hex.r}`;
                 if (!this.tiles.has(hexKey)) {
-                    emptyHexes.add(JSON.stringify(hex));
+                    emptyHexes.add(hexKey);
                 }
             });
         });
 
-        return Array.from(emptyHexes).map(str => JSON.parse(str));
+        return Array.from(emptyHexes).map(key => {
+            const [q, r] = key.split(',').map(Number);
+            return { q, r };
+        });
     }
 
-    // Find the closest adjacent hex to a tap point using radius-based detection
-    findClosestAdjacentHex(tapX, tapY) {
-        const adjacentHexes = this.getAdjacentEmptyHexes();
-        let closestHex = null;
-        let closestDistance = Infinity;
+    // =============================================================================
+    // RENDERING
+    // =============================================================================
 
-        adjacentHexes.forEach(hex => {
-            const hexPos = this.hexToPixel(hex.q, hex.r);
-            const distance = Math.sqrt(
-                Math.pow(tapX - hexPos.x, 2) +
-                Math.pow(tapY - hexPos.y, 2)
-            );
+    render() {
+        // Clear canvas
+        this.ctx.fillStyle = '#f0f0f0';
+        this.ctx.fillRect(0, 0, this.viewportWidth, this.viewportHeight);
 
-            // Only consider hexes within the tap radius
-            if (distance <= this.tapRadius && distance < closestDistance) {
-                closestDistance = distance;
-                closestHex = hex;
-            }
+        // Draw all placed tiles
+        this.tiles.forEach((tileType, key) => {
+            const [q, r] = key.split(',').map(Number);
+            const pos = this.hexToPixel(q, r);
+            const color = tileType === 'Home Base' ? '#FFD700' : this.getTileColor(tileType);
+            this.drawHexagon(pos.x, pos.y, color, '#333', tileType);
         });
 
-        return closestHex;
+        // Draw adjacent empty hexes (exploration targets)
+        const adjacentEmpty = this.getAllAdjacentEmptyHexes();
+        adjacentEmpty.forEach(hex => {
+            const pos = this.hexToPixel(hex.q, hex.r);
+            this.drawHexagon(pos.x, pos.y, 'rgba(200, 200, 200, 0.5)', '#999', '?');
+        });
+
+        // Debug visualization
+        if (this.showDebugOverlay) {
+            this.drawDebugOverlay(adjacentEmpty);
+        }
     }
 
-    drawHex(x, y, fillStyle, strokeStyle = '#333', text = '') {
+    drawHexagon(centerX, centerY, fillColor, strokeColor, text) {
         this.ctx.beginPath();
+
+        // Draw pointy-top hexagon
         for (let i = 0; i < 6; i++) {
-            // Draw pointy-top hexagon to match coordinate system
-            // Vertices at 30°, 90°, 150°, 210°, 270°, 330° for pointy-top orientation
-            const angle = Math.PI / 6 + Math.PI / 3 * i;
-            // Round vertex positions to integer pixels for perfect alignment
-            const hx = Math.round(x + this.hexSize * Math.cos(angle));
-            const hy = Math.round(y + this.hexSize * Math.sin(angle));
+            const angleDeg = 60 * i - 30;
+            const angleRad = Math.PI / 180 * angleDeg;
+            const x = centerX + this.hexRadius * Math.cos(angleRad);
+            const y = centerY + this.hexRadius * Math.sin(angleRad);
+
             if (i === 0) {
-                this.ctx.moveTo(hx, hy);
+                this.ctx.moveTo(x, y);
             } else {
-                this.ctx.lineTo(hx, hy);
+                this.ctx.lineTo(x, y);
             }
         }
+
         this.ctx.closePath();
 
-        this.ctx.fillStyle = fillStyle;
+        // Fill
+        this.ctx.fillStyle = fillColor;
         this.ctx.fill();
-        this.ctx.strokeStyle = strokeStyle;
-        this.ctx.lineWidth = 1;  // Use 1px stroke to prevent overlap artifacts
+
+        // Stroke
+        this.ctx.strokeStyle = strokeColor;
+        this.ctx.lineWidth = 2;
         this.ctx.stroke();
 
-        // Draw text
+        // Text
         if (text) {
             this.ctx.fillStyle = '#000';
             this.ctx.font = 'bold 14px Arial';
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
-            this.ctx.fillText(text, x, y);
+            this.ctx.fillText(text, centerX, centerY);
         }
     }
 
-    render() {
-        // Clear canvas - use stored display dimensions
-        this.ctx.fillStyle = '#f0f0f0';
-        this.ctx.fillRect(0, 0, this.displayWidth, this.displayHeight);
-
-        // Draw placed tiles
-        this.tiles.forEach((tileType, key) => {
-            const [q, r] = key.split(',').map(Number);
-            const pos = this.hexToPixel(q, r);
-
-            const color = tileType === 'Home Base' ? '#FFD700' : this.getTileColor(tileType);
-            this.drawHex(pos.x, pos.y, color, '#333', tileType);
-        });
-
-        // Draw adjacent empty hexes
-        const adjacentHexes = this.getAdjacentEmptyHexes();
-        adjacentHexes.forEach(hex => {
+    drawDebugOverlay(adjacentEmpty) {
+        // Draw hit test circles for adjacent hexes
+        adjacentEmpty.forEach(hex => {
             const pos = this.hexToPixel(hex.q, hex.r);
-            this.drawHex(pos.x, pos.y, 'rgba(200, 200, 200, 0.5)', '#999', '?');
+
+            this.ctx.beginPath();
+            this.ctx.arc(pos.x, pos.y, this.debugTapRadius, 0, Math.PI * 2);
+            this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+            this.ctx.lineWidth = 2;
+            this.ctx.stroke();
+
+            // Draw crosshair at center
+            this.ctx.beginPath();
+            this.ctx.moveTo(pos.x - 10, pos.y);
+            this.ctx.lineTo(pos.x + 10, pos.y);
+            this.ctx.moveTo(pos.x, pos.y - 10);
+            this.ctx.lineTo(pos.x, pos.y + 10);
+            this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+            this.ctx.lineWidth = 2;
+            this.ctx.stroke();
         });
     }
 
@@ -386,26 +413,29 @@ class HexMapGame {
         return colors[tileType] || '#CCCCCC';
     }
 
+    // =============================================================================
+    // GAME LOGIC
+    // =============================================================================
+
     showTileSelection(hex) {
         if (this.tilePool.length === 0) {
             this.gameOver();
             return;
         }
 
-        this.pendingExploration = hex;
+        this.pendingHex = hex;
 
-        // Get 3 random tiles (or less if pool is running out)
+        // Get up to 3 random tile options
         const numOptions = Math.min(3, this.tilePool.length);
         const options = [];
+
         for (let i = 0; i < numOptions; i++) {
             const randomIndex = Math.floor(Math.random() * this.tilePool.length);
             options.push(this.tilePool[randomIndex]);
         }
 
-        // Clear previous options
+        // Clear and populate tile options
         this.tileOptionsDiv.innerHTML = '';
-
-        // Create option buttons
         options.forEach(tileType => {
             const button = document.createElement('button');
             button.className = 'tile-option';
@@ -418,27 +448,25 @@ class HexMapGame {
     }
 
     selectTile(tileType) {
-        // Remove selected tile from pool
+        // Remove tile from pool
         const index = this.tilePool.indexOf(tileType);
         if (index > -1) {
             this.tilePool.splice(index, 1);
         }
 
         // Place tile
-        const hexKey = `${this.pendingExploration.q},${this.pendingExploration.r}`;
-        this.tiles.set(hexKey, tileType);
+        const key = `${this.pendingHex.q},${this.pendingHex.r}`;
+        this.tiles.set(key, tileType);
 
-        // Hide selection UI
+        // Clear selection
         this.tileSelectionDiv.classList.add('hidden');
-        this.pendingExploration = null;
+        this.pendingHex = null;
 
-        // Update counter
+        // Update UI
         this.updateTileCounter();
-
-        // Re-render
         this.render();
 
-        // Check if game over
+        // Check game over
         if (this.tilePool.length === 0) {
             this.gameOver();
         }
@@ -452,26 +480,30 @@ class HexMapGame {
         this.gameOverDiv.classList.remove('hidden');
     }
 
-    openDebugOverlay() {
+    openDebugPanel() {
         this.debugOverlay.classList.remove('hidden');
+        this.showDebugOverlay = true;
+        this.render();
     }
 
-    closeDebugOverlay() {
+    closeDebugPanel() {
         this.debugOverlay.classList.add('hidden');
+        this.showDebugOverlay = false;
+        this.render();
     }
 
     restart() {
-        // Reset game state
+        // Reset all state
         this.tiles.clear();
         this.tilePool = [];
-        this.pendingExploration = null;
+        this.pendingHex = null;
         this.camera = { x: 0, y: 0 };
 
-        // Hide UI
+        // Hide overlays
         this.gameOverDiv.classList.add('hidden');
         this.tileSelectionDiv.classList.add('hidden');
 
-        // Reinitialize
+        // Reinitialize game
         this.loadTileConfig().then(() => {
             this.placeCenterTile();
             this.render();
@@ -479,7 +511,7 @@ class HexMapGame {
     }
 }
 
-// Start the game when page loads
+// Initialize game when page loads
 window.addEventListener('DOMContentLoaded', () => {
     new HexMapGame();
 });
