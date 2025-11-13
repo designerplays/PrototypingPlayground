@@ -1,5 +1,6 @@
 // Hex Map Explorer Game - Mobile-First Rebuild
 // Complete rewrite for pixel-perfect visual and tap alignment
+// VERSION: 0.1 (increment by 0.1 for each change unless specified otherwise)
 
 class HexMapGame {
     constructor() {
@@ -17,6 +18,10 @@ class HexMapGame {
         this.forceRestartBtn = document.getElementById('force-restart-btn');
         this.hexRadiusSlider = document.getElementById('hex-radius-slider');
         this.hexRadiusValue = document.getElementById('hex-radius-value');
+        this.versionDisplay = document.getElementById('version-display');
+
+        // Version info
+        this.version = '0.1';
 
         // Hex geometry - using pointy-top orientation
         // Mobile-first: larger hex size for better touch targets
@@ -31,6 +36,8 @@ class HexMapGame {
         this.isDragging = false;
         this.dragStartPos = { x: 0, y: 0 };
         this.dragLastPos = { x: 0, y: 0 };
+        this.tapStartHex = null; // Track which hex was tapped initially
+        this.TAP_WIGGLE_THRESHOLD = 10; // pixels - max movement to still count as a tap
 
         // Game state
         this.tiles = new Map(); // key: "q,r" -> value: tile type
@@ -50,6 +57,11 @@ class HexMapGame {
         this.setupEventListeners();
         this.placeCenterTile();
         this.render();
+
+        // Update version display
+        if (this.versionDisplay) {
+            this.versionDisplay.textContent = this.version;
+        }
 
         // Handle window resize
         window.addEventListener('resize', () => {
@@ -104,7 +116,7 @@ class HexMapGame {
         this.canvas.addEventListener('mousemove', (e) => {
             if (this.isDragging) this.handlePointerMove(e.clientX, e.clientY);
         });
-        this.canvas.addEventListener('mouseup', () => this.handlePointerUp());
+        this.canvas.addEventListener('mouseup', (e) => this.handlePointerUp(e.clientX, e.clientY));
         this.canvas.addEventListener('mouseleave', () => this.handlePointerUp());
 
         // Touch events
@@ -126,7 +138,13 @@ class HexMapGame {
 
         this.canvas.addEventListener('touchend', (e) => {
             e.preventDefault();
-            this.handlePointerUp();
+            // Get the last touch position from changedTouches
+            if (e.changedTouches.length > 0) {
+                const touch = e.changedTouches[0];
+                this.handlePointerUp(touch.clientX, touch.clientY);
+            } else {
+                this.handlePointerUp();
+            }
         }, { passive: false });
 
         // UI buttons
@@ -156,19 +174,14 @@ class HexMapGame {
     handlePointerDown(clientX, clientY) {
         const canvasPos = this.clientToCanvas(clientX, clientY);
 
-        // Check if clicking on an adjacent empty hex
-        const clickedHex = this.findHexAtPosition(canvasPos.x, canvasPos.y);
+        // Store the tap start position and hex
+        this.dragStartPos = canvasPos;
+        this.dragLastPos = canvasPos;
+        this.tapStartHex = this.findHexAtPosition(canvasPos.x, canvasPos.y);
 
-        if (clickedHex && this.isAdjacentEmpty(clickedHex.q, clickedHex.r)) {
-            // Found an adjacent empty hex - show tile selection
-            this.showTileSelection(clickedHex);
-        } else {
-            // Start panning
-            this.isDragging = true;
-            this.dragStartPos = canvasPos;
-            this.dragLastPos = canvasPos;
-            this.canvas.classList.add('dragging');
-        }
+        // Always start in dragging mode - we'll determine on pointer up if it was a tap or pan
+        this.isDragging = true;
+        this.canvas.classList.add('dragging');
     }
 
     handlePointerMove(clientX, clientY) {
@@ -185,9 +198,34 @@ class HexMapGame {
         this.render();
     }
 
-    handlePointerUp() {
+    handlePointerUp(clientX, clientY) {
+        if (!this.isDragging) return;
+
         this.isDragging = false;
         this.canvas.classList.remove('dragging');
+
+        // Check if this was a tap (minimal movement) rather than a pan
+        if (clientX !== undefined && clientY !== undefined) {
+            const canvasPos = this.clientToCanvas(clientX, clientY);
+            const distanceMoved = Math.sqrt(
+                Math.pow(canvasPos.x - this.dragStartPos.x, 2) +
+                Math.pow(canvasPos.y - this.dragStartPos.y, 2)
+            );
+
+            // If movement was within wiggle threshold, treat as a tap
+            if (distanceMoved <= this.TAP_WIGGLE_THRESHOLD) {
+                const endHex = this.findHexAtPosition(canvasPos.x, canvasPos.y);
+
+                // Check if we tapped on an adjacent empty hex
+                if (endHex && this.isAdjacentEmpty(endHex.q, endHex.r)) {
+                    // Show tile selection for this hex
+                    this.showTileSelection(endHex);
+                }
+            }
+        }
+
+        // Clear tap state
+        this.tapStartHex = null;
     }
 
     // =============================================================================
