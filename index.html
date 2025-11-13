@@ -79,20 +79,44 @@
         <h1>Game Prototyping Playground</h1>
         <p class="subtitle">A collection of interactive game prototypes</p>
 
-        <ul class="prototype-list">
-            <li class="prototype-item">
-                <a href="prototypes/coin-toss/index.html" class="prototype-link">
-                    <div>Coin Toss</div>
-                    <div class="prototype-description">Flip a coin and see if it lands on heads or tails</div>
-                </a>
-            </li>
-            <li class="prototype-item">
-                <a href="prototypes/hex-map/index.html" class="prototype-link">
-                    <div>Hex Map Explorer</div>
-                    <div class="prototype-description">Explore and build a hexagonal tile map inspired by Dorf Romantik</div>
-                </a>
-            </li>
+        <ul class="prototype-list" id="prototype-list">
+            <!-- Prototypes will be dynamically loaded from PrototypesConfig.json -->
         </ul>
     </div>
+
+    <script>
+        // Load and display prototypes from config file
+        fetch('PrototypesConfig.json')
+            .then(response => response.json())
+            .then(data => {
+                const prototypeList = document.getElementById('prototype-list');
+
+                data.prototypes.forEach(prototype => {
+                    const li = document.createElement('li');
+                    li.className = 'prototype-item';
+
+                    const a = document.createElement('a');
+                    a.href = prototype.path;
+                    a.className = 'prototype-link';
+
+                    const nameDiv = document.createElement('div');
+                    nameDiv.textContent = prototype.name;
+
+                    const descDiv = document.createElement('div');
+                    descDiv.className = 'prototype-description';
+                    descDiv.textContent = prototype.description;
+
+                    a.appendChild(nameDiv);
+                    a.appendChild(descDiv);
+                    li.appendChild(a);
+                    prototypeList.appendChild(li);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading prototypes:', error);
+                document.getElementById('prototype-list').innerHTML =
+                    '<li style="color: #666; text-align: center; padding: 20px;">Error loading prototypes</li>';
+            });
+    </script>
 </body>
 </html>
