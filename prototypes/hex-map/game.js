@@ -27,6 +27,10 @@ class HexMapGame {
         this.dragStart = { x: 0, y: 0 };
         this.lastMousePos = { x: 0, y: 0 };
 
+        // Display dimensions (logical size, not canvas internal size)
+        this.displayWidth = 0;
+        this.displayHeight = 0;
+
         // Game state
         this.tiles = new Map(); // key: "q,r" -> value: tile type
         this.tilePool = [];
@@ -67,13 +71,16 @@ class HexMapGame {
     }
 
     resizeCanvas() {
+        // Get the actual rendered size of the canvas element
+        const rect = this.canvas.getBoundingClientRect();
+        this.displayWidth = rect.width;
+        this.displayHeight = rect.height;
+
         // Account for device pixel ratio for sharper rendering on high-DPI screens
         const dpr = window.devicePixelRatio || 1;
-        const displayWidth = window.innerWidth;
-        const displayHeight = window.innerHeight;
 
-        this.canvas.width = displayWidth * dpr;
-        this.canvas.height = displayHeight * dpr;
+        this.canvas.width = this.displayWidth * dpr;
+        this.canvas.height = this.displayHeight * dpr;
 
         // Reset transform and scale context to match device pixel ratio
         // Use setTransform instead of scale to avoid cumulative scaling
@@ -214,25 +221,19 @@ class HexMapGame {
         const x = this.hexSize * (Math.sqrt(3) * q + Math.sqrt(3) / 2 * r);
         const y = this.hexSize * (3 / 2 * r);
 
-        // Use display size (not internal canvas size) since we scale the context
-        const displayWidth = this.canvas.getBoundingClientRect().width;
-        const displayHeight = this.canvas.getBoundingClientRect().height;
-
+        // Use stored display dimensions for consistent coordinate space
         // Round to integer pixels for crisp rendering and perfect alignment
         return {
-            x: Math.round(x + displayWidth / 2 + this.camera.x),
-            y: Math.round(y + displayHeight / 2 + this.camera.y)
+            x: Math.round(x + this.displayWidth / 2 + this.camera.x),
+            y: Math.round(y + this.displayHeight / 2 + this.camera.y)
         };
     }
 
     pixelToHex(x, y) {
-        // Use display size (not internal canvas size) since we scale the context
-        const displayWidth = this.canvas.getBoundingClientRect().width;
-        const displayHeight = this.canvas.getBoundingClientRect().height;
-
+        // Use stored display dimensions for consistent coordinate space
         // Adjust for camera
-        const adjX = x - displayWidth / 2 - this.camera.x;
-        const adjY = y - displayHeight / 2 - this.camera.y;
+        const adjX = x - this.displayWidth / 2 - this.camera.x;
+        const adjY = y - this.displayHeight / 2 - this.camera.y;
 
         const q = (Math.sqrt(3) / 3 * adjX - 1 / 3 * adjY) / this.hexSize;
         const r = (2 / 3 * adjY) / this.hexSize;
@@ -352,12 +353,9 @@ class HexMapGame {
     }
 
     render() {
-        // Clear canvas - use display size since we scale the context
-        const displayWidth = this.canvas.getBoundingClientRect().width;
-        const displayHeight = this.canvas.getBoundingClientRect().height;
-
+        // Clear canvas - use stored display dimensions
         this.ctx.fillStyle = '#f0f0f0';
-        this.ctx.fillRect(0, 0, displayWidth, displayHeight);
+        this.ctx.fillRect(0, 0, this.displayWidth, this.displayHeight);
 
         // Draw placed tiles
         this.tiles.forEach((tileType, key) => {
