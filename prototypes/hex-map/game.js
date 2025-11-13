@@ -1,6 +1,6 @@
 // Hex Map Explorer Game - Mobile-First Rebuild
 // Complete rewrite for pixel-perfect visual and tap alignment
-// VERSION: 0.2 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 0.3 (increment by 0.1 for each change unless specified otherwise)
 
 class HexMapGame {
     constructor() {
@@ -21,9 +21,13 @@ class HexMapGame {
         this.hexRadiusSlider = document.getElementById('hex-radius-slider');
         this.hexRadiusValue = document.getElementById('hex-radius-value');
         this.versionDisplay = document.getElementById('version-display');
+        this.securePopup = document.getElementById('secure-popup');
+        this.secureBtn = document.getElementById('secure-btn');
+        this.secureCancelBtn = document.getElementById('secure-cancel-btn');
+        this.secureMessage = document.getElementById('secure-message');
 
         // Version info
-        this.version = '0.2';
+        this.version = '0.3';
 
         // Hex geometry - using pointy-top orientation
         // Mobile-first: larger hex size for better touch targets
@@ -42,14 +46,16 @@ class HexMapGame {
         this.TAP_WIGGLE_THRESHOLD = 10; // pixels - max movement to still count as a tap
 
         // Game state
-        this.tiles = new Map(); // key: "q,r" -> value: tile type
+        this.tiles = new Map(); // key: "q,r" -> value: { type, secured }
         this.tilePool = [];
         this.tileConfig = {}; // Store tile configuration with resources
         this.pendingHex = null; // Hex awaiting tile selection
+        this.pendingSecureHex = null; // Hex awaiting secure action
 
         // Resources
         this.food = 10;
         this.materials = 10;
+        this.secureCost = { materials: 5, food: 1 }; // Cost to secure a tile
 
         // Debug
         this.showDebugOverlay = false;
@@ -124,7 +130,7 @@ class HexMapGame {
     }
 
     placeCenterTile() {
-        this.tiles.set('0,0', 'Home Base');
+        this.tiles.set('0,0', { type: 'Home Base', secured: true });
     }
 
     setupEventListeners() {
@@ -177,6 +183,10 @@ class HexMapGame {
             this.hexRadiusValue.textContent = this.debugTapRadius;
             this.render();
         });
+
+        // Secure popup buttons
+        this.secureBtn.addEventListener('click', () => this.secureTile());
+        this.secureCancelBtn.addEventListener('click', () => this.closeSecurePopup());
     }
 
     // Convert client coordinates to canvas logical coordinates
@@ -231,12 +241,26 @@ class HexMapGame {
 
             // If movement was within wiggle threshold, treat as a tap
             if (distanceMoved <= this.TAP_WIGGLE_THRESHOLD) {
-                const endHex = this.findHexAtPosition(canvasPos.x, canvasPos.y);
+                // If secure popup is open, close it and don't process hex taps
+                if (!this.securePopup.classList.contains('hidden')) {
+                    this.closeSecurePopup();
+                } else {
+                    const endHex = this.findHexAtPosition(canvasPos.x, canvasPos.y);
 
-                // Check if we tapped on an adjacent empty hex
-                if (endHex && this.isAdjacentEmpty(endHex.q, endHex.r)) {
-                    // Show tile selection for this hex
-                    this.showTileSelection(endHex);
+                    if (endHex) {
+                        const key = `${endHex.q},${endHex.r}`;
+                        const tile = this.tiles.get(key);
+
+                        // Check if we tapped on a discovered (placed) tile that's not secured
+                        if (tile && !tile.secured) {
+                            this.showSecurePopup(endHex);
+                        }
+                        // Check if we tapped on an adjacent empty hex (for exploration)
+                        else if (this.isAdjacentToSecured(endHex.q, endHex.r) && !tile) {
+                            // Show tile selection for this hex
+                            this.showTileSelection(endHex);
+                        }
+                    }
                 }
             }
         }
@@ -343,11 +367,38 @@ class HexMapGame {
         return adjacent.some(hex => this.tiles.has(`${hex.q},${hex.r}`));
     }
 
-    // Get all hexes that are adjacent to placed tiles and empty
+    // Check if a hex is adjacent to a secured tile
+    isAdjacentToSecured(q, r) {
+        const key = `${q},${r}`;
+
+        // Must be empty
+        if (this.tiles.has(key)) return false;
+
+        // Must be adjacent to at least one secured tile
+        const adjacent = this.getAdjacentHexes(q, r);
+        return adjacent.some(hex => {
+            const tile = this.tiles.get(`${hex.q},${hex.r}`);
+            return tile && tile.secured;
+        });
+    }
+
+    // Check if a tile can be secured (must be adjacent to another secured tile)
+    canSecureTile(q, r) {
+        const adjacent = this.getAdjacentHexes(q, r);
+        return adjacent.some(hex => {
+            const tile = this.tiles.get(`${hex.q},${hex.r}`);
+            return tile && tile.secured;
+        });
+    }
+
+    // Get all hexes that are adjacent to secured tiles and empty
     getAllAdjacentEmptyHexes() {
         const emptyHexes = new Set();
 
-        this.tiles.forEach((_, key) => {
+        this.tiles.forEach((tile, key) => {
+            // Only consider secured tiles
+            if (!tile.secured) return;
+
             const [q, r] = key.split(',').map(Number);
             const adjacent = this.getAdjacentHexes(q, r);
 
@@ -375,11 +426,11 @@ class HexMapGame {
         this.ctx.fillRect(0, 0, this.viewportWidth, this.viewportHeight);
 
         // Draw all placed tiles
-        this.tiles.forEach((tileType, key) => {
+        this.tiles.forEach((tile, key) => {
             const [q, r] = key.split(',').map(Number);
             const pos = this.hexToPixel(q, r);
-            const color = tileType === 'Home Base' ? '#FFD700' : this.getTileColor(tileType);
-            this.drawHexagon(pos.x, pos.y, color, '#333', tileType);
+            const color = tile.type === 'Home Base' ? '#FFD700' : this.getTileColor(tile.type);
+            this.drawHexagon(pos.x, pos.y, color, '#333', tile.type, tile.secured);
         });
 
         // Draw adjacent empty hexes (exploration targets)
@@ -395,7 +446,7 @@ class HexMapGame {
         }
     }
 
-    drawHexagon(centerX, centerY, fillColor, strokeColor, text) {
+    drawHexagon(centerX, centerY, fillColor, strokeColor, text, secured = false) {
         this.ctx.beginPath();
 
         // Draw pointy-top hexagon
@@ -422,6 +473,51 @@ class HexMapGame {
         this.ctx.strokeStyle = strokeColor;
         this.ctx.lineWidth = 2;
         this.ctx.stroke();
+
+        // Draw double inset outline for secured tiles
+        if (secured) {
+            const insetRadius1 = this.hexRadius - 8;
+            const insetRadius2 = this.hexRadius - 12;
+            const secureColor = '#1e7e34'; // Dark green
+
+            // First inset outline
+            this.ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const angleDeg = 60 * i - 30;
+                const angleRad = Math.PI / 180 * angleDeg;
+                const x = centerX + insetRadius1 * Math.cos(angleRad);
+                const y = centerY + insetRadius1 * Math.sin(angleRad);
+
+                if (i === 0) {
+                    this.ctx.moveTo(x, y);
+                } else {
+                    this.ctx.lineTo(x, y);
+                }
+            }
+            this.ctx.closePath();
+            this.ctx.strokeStyle = secureColor;
+            this.ctx.lineWidth = 2;
+            this.ctx.stroke();
+
+            // Second inset outline
+            this.ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const angleDeg = 60 * i - 30;
+                const angleRad = Math.PI / 180 * angleDeg;
+                const x = centerX + insetRadius2 * Math.cos(angleRad);
+                const y = centerY + insetRadius2 * Math.sin(angleRad);
+
+                if (i === 0) {
+                    this.ctx.moveTo(x, y);
+                } else {
+                    this.ctx.lineTo(x, y);
+                }
+            }
+            this.ctx.closePath();
+            this.ctx.strokeStyle = secureColor;
+            this.ctx.lineWidth = 2;
+            this.ctx.stroke();
+        }
 
         // Text
         if (text) {
@@ -514,6 +610,81 @@ class HexMapGame {
         this.tileSelectionDiv.classList.remove('hidden');
     }
 
+    showSecurePopup(hex) {
+        this.pendingSecureHex = hex;
+        const key = `${hex.q},${hex.r}`;
+        const tile = this.tiles.get(key);
+
+        if (!tile || tile.secured) {
+            return;
+        }
+
+        // Check if tile can be secured (adjacent to secured tiles)
+        const canSecure = this.canSecureTile(hex.q, hex.r);
+
+        // Check if player has enough resources
+        const hasEnoughResources = this.materials >= this.secureCost.materials &&
+                                    this.food >= this.secureCost.food;
+
+        // Update button state and message
+        if (!canSecure) {
+            this.secureBtn.disabled = true;
+            this.secureMessage.textContent = 'You can only secure tiles next to other secured tiles';
+            this.secureMessage.style.display = 'block';
+        } else if (!hasEnoughResources) {
+            this.secureBtn.disabled = true;
+            this.secureMessage.textContent = "You don't have enough resources";
+            this.secureMessage.style.display = 'block';
+        } else {
+            this.secureBtn.disabled = false;
+            this.secureMessage.textContent = '';
+            this.secureMessage.style.display = 'none';
+        }
+
+        this.securePopup.classList.remove('hidden');
+    }
+
+    closeSecurePopup() {
+        this.securePopup.classList.add('hidden');
+        this.pendingSecureHex = null;
+    }
+
+    secureTile() {
+        if (!this.pendingSecureHex) return;
+
+        const key = `${this.pendingSecureHex.q},${this.pendingSecureHex.r}`;
+        const tile = this.tiles.get(key);
+
+        if (!tile || tile.secured) {
+            this.closeSecurePopup();
+            return;
+        }
+
+        // Check if can secure and has resources
+        if (!this.canSecureTile(this.pendingSecureHex.q, this.pendingSecureHex.r)) {
+            this.closeSecurePopup();
+            return;
+        }
+
+        if (this.materials < this.secureCost.materials || this.food < this.secureCost.food) {
+            this.closeSecurePopup();
+            return;
+        }
+
+        // Deduct resources
+        this.materials -= this.secureCost.materials;
+        this.food -= this.secureCost.food;
+
+        // Mark tile as secured
+        tile.secured = true;
+        this.tiles.set(key, tile);
+
+        // Update UI
+        this.updateResourceCounters();
+        this.render();
+        this.closeSecurePopup();
+    }
+
     selectTile(tileType) {
         // Remove tile from pool
         const index = this.tilePool.indexOf(tileType);
@@ -521,9 +692,9 @@ class HexMapGame {
             this.tilePool.splice(index, 1);
         }
 
-        // Place tile
+        // Place tile (not secured by default)
         const key = `${this.pendingHex.q},${this.pendingHex.r}`;
-        this.tiles.set(key, tileType);
+        this.tiles.set(key, { type: tileType, secured: false });
 
         // Add resources from the placed tile
         if (this.tileConfig[tileType]) {
@@ -576,6 +747,7 @@ class HexMapGame {
         this.tiles.clear();
         this.tilePool = [];
         this.pendingHex = null;
+        this.pendingSecureHex = null;
         this.camera = { x: 0, y: 0 };
         this.food = 10;
         this.materials = 10;
@@ -583,6 +755,7 @@ class HexMapGame {
         // Hide overlays
         this.gameOverDiv.classList.add('hidden');
         this.tileSelectionDiv.classList.add('hidden');
+        this.securePopup.classList.add('hidden');
 
         // Reinitialize game
         this.loadTileConfig().then(() => {
