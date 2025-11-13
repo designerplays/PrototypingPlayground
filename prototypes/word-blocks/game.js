@@ -1,5 +1,5 @@
 // Word Blocks Game - Mobile-First Word Puzzle
-// VERSION: 0.2 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 0.3 (increment by 0.1 for each change unless specified otherwise)
 
 class WordBlocksGame {
     constructor() {
@@ -20,7 +20,7 @@ class WordBlocksGame {
         this.blockSizeValue = document.getElementById('block-size-value');
 
         // Version info
-        this.version = '0.2';
+        this.version = '0.3';
 
         // Config values
         this.disappearTime = 300; // ms
@@ -133,10 +133,25 @@ class WordBlocksGame {
             this.handlePointerUp(e);
         }, { passive: false });
 
-        // Debug buttons
+        // Debug buttons - support both click and touch events for better mobile support
         this.debugBtn.addEventListener('click', () => this.openDebugPanel());
+        this.debugBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.openDebugPanel();
+        });
+
         this.debugCloseBtn.addEventListener('click', () => this.closeDebugPanel());
+        this.debugCloseBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.closeDebugPanel();
+        });
+
         this.forceRestartBtn.addEventListener('click', () => {
+            this.closeDebugPanel();
+            this.restart();
+        });
+        this.forceRestartBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
             this.closeDebugPanel();
             this.restart();
         });
@@ -327,23 +342,32 @@ class WordBlocksGame {
     }
 
     async applyGravity() {
+        // Track which cells will have the falling animation
+        const cellsToAnimate = new Set();
+
         // Process each column from bottom to top
         for (let col = 0; col < this.gridSize; col++) {
-            // Collect non-null letters from bottom to top
-            const letters = [];
+            // Collect non-null letters with their original row positions
+            const lettersWithPositions = [];
             for (let row = this.gridSize - 1; row >= 0; row--) {
                 if (this.grid[row][col] !== null) {
-                    letters.push(this.grid[row][col]);
+                    lettersWithPositions.push({ letter: this.grid[row][col], originalRow: row });
                 }
             }
 
             // Fill from bottom with collected letters
             let letterIndex = 0;
             for (let row = this.gridSize - 1; row >= 0; row--) {
-                if (letterIndex < letters.length) {
-                    this.grid[row][col] = letters[letterIndex];
-                    this.cellElements[row][col].textContent = letters[letterIndex];
-                    this.cellElements[row][col].classList.add('falling');
+                if (letterIndex < lettersWithPositions.length) {
+                    const { letter, originalRow } = lettersWithPositions[letterIndex];
+                    this.grid[row][col] = letter;
+                    this.cellElements[row][col].textContent = letter;
+
+                    // Only animate if the block moved to a different position
+                    if (originalRow !== row) {
+                        cellsToAnimate.add(`${row}-${col}`);
+                        this.cellElements[row][col].classList.add('falling');
+                    }
                     letterIndex++;
                 } else {
                     this.grid[row][col] = null;
@@ -352,14 +376,15 @@ class WordBlocksGame {
             }
         }
 
-        // Wait for falling animation
-        await new Promise(resolve => setTimeout(resolve, this.fallTime));
+        // Only wait for animation if there are cells to animate
+        if (cellsToAnimate.size > 0) {
+            await new Promise(resolve => setTimeout(resolve, this.fallTime));
 
-        // Remove falling class
-        for (let row = 0; row < this.gridSize; row++) {
-            for (let col = 0; col < this.gridSize; col++) {
+            // Remove falling class only from cells that were animated
+            cellsToAnimate.forEach(cellKey => {
+                const [row, col] = cellKey.split('-').map(Number);
                 this.cellElements[row][col].classList.remove('falling');
-            }
+            });
         }
     }
 
