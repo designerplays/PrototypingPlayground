@@ -207,8 +207,10 @@ class HexMapGame {
         this.isDragging = false;
     }
 
-    // Axial coordinate system for hexagons
+    // Axial coordinate system for hexagons (pointy-top orientation)
+    // Reference: https://www.redblobgames.com/grids/hexagons/
     hexToPixel(q, r) {
+        // Calculate hex position using pointy-top formulas
         const x = this.hexSize * (Math.sqrt(3) * q + Math.sqrt(3) / 2 * r);
         const y = this.hexSize * (3 / 2 * r);
 
@@ -216,9 +218,10 @@ class HexMapGame {
         const displayWidth = this.canvas.getBoundingClientRect().width;
         const displayHeight = this.canvas.getBoundingClientRect().height;
 
+        // Round to integer pixels for crisp rendering and perfect alignment
         return {
-            x: x + displayWidth / 2 + this.camera.x,
-            y: y + displayHeight / 2 + this.camera.y
+            x: Math.round(x + displayWidth / 2 + this.camera.x),
+            y: Math.round(y + displayHeight / 2 + this.camera.y)
         };
     }
 
@@ -319,10 +322,11 @@ class HexMapGame {
         this.ctx.beginPath();
         for (let i = 0; i < 6; i++) {
             // Draw pointy-top hexagon to match coordinate system
-            // Start at 30° (Math.PI/6) for pointy-top orientation
+            // Vertices at 30°, 90°, 150°, 210°, 270°, 330° for pointy-top orientation
             const angle = Math.PI / 6 + Math.PI / 3 * i;
-            const hx = x + this.hexSize * Math.cos(angle);
-            const hy = y + this.hexSize * Math.sin(angle);
+            // Round vertex positions to integer pixels for perfect alignment
+            const hx = Math.round(x + this.hexSize * Math.cos(angle));
+            const hy = Math.round(y + this.hexSize * Math.sin(angle));
             if (i === 0) {
                 this.ctx.moveTo(hx, hy);
             } else {
@@ -334,7 +338,7 @@ class HexMapGame {
         this.ctx.fillStyle = fillStyle;
         this.ctx.fill();
         this.ctx.strokeStyle = strokeStyle;
-        this.ctx.lineWidth = 2;
+        this.ctx.lineWidth = 1;  // Use 1px stroke to prevent overlap artifacts
         this.ctx.stroke();
 
         // Draw text
