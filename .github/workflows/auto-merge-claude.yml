@@ -20,5 +20,5 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git fetch origin main
           git checkout main
-          git merge --no-ff ${{ github.ref }}
+          git merge --allow-unrelated-histories --no-ff ${{ github.ref }} -m "Auto merge"
           git push origin HEAD:main
