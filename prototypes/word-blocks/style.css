@@ -51,7 +51,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: var(--block-size, 2.5em);
+    width: var(--block-size, 2.5em);
+    height: var(--block-size, 2.5em);
+    font-size: calc(var(--block-size, 2.5em) * 0.6);
     font-weight: bold;
     color: #333;
     cursor: pointer;
@@ -88,16 +90,13 @@ body {
 }
 
 .letter-cell.falling {
-    animation: fallDown var(--fall-time, 300ms) ease-in-out;
+    animation: fallDown var(--fall-time, 300ms) ease forwards;
 }
 
 @keyframes fallDown {
     0% {
-        transform: translateY(-200%);
-        opacity: 0;
-    }
-    50% {
-        opacity: 0.5;
+        transform: translateY(var(--fall-distance, -100%));
+        opacity: 1;
     }
     100% {
         transform: translateY(0);
