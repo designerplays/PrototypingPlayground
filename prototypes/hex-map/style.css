@@ -152,9 +152,34 @@ body {
     transform: scale(1.05);
 }
 
-#tile-counter {
+#resource-counters {
     position: absolute;
     top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 50;
+}
+
+#food-counter, #materials-counter {
+    background: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    color: #333;
+    font-size: 18px;
+}
+
+#food-count, #materials-count {
+    color: #667eea;
+    font-size: 20px;
+    margin-left: 5px;
+}
+
+#tile-counter {
+    position: absolute;
+    top: 80px;
     left: 20px;
     background: white;
     padding: 15px 25px;
