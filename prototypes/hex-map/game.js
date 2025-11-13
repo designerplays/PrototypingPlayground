@@ -1,6 +1,6 @@
 // Hex Map Explorer Game - Mobile-First Rebuild
 // Complete rewrite for pixel-perfect visual and tap alignment
-// VERSION: 0.4 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 0.5 (increment by 0.1 for each change unless specified otherwise)
 
 class HexMapGame {
     constructor() {
@@ -29,7 +29,7 @@ class HexMapGame {
         this.starvationRestartBtn = document.getElementById('starvation-restart-btn');
 
         // Version info
-        this.version = '0.4';
+        this.version = '0.5';
 
         // Hex geometry - using pointy-top orientation
         // Mobile-first: larger hex size for better touch targets
@@ -610,10 +610,21 @@ class HexMapGame {
 
             // Get resource info for this tile type
             const resources = this.tileConfig[tileType];
-            const resourceText = resources ?
-                ` (🍕 +${resources.food} 🛠️ +${resources.materials})` : '';
+            let resourceParts = [];
 
-            button.textContent = tileType + resourceText;
+            if (resources) {
+                if (resources.food > 0) {
+                    resourceParts.push(`🍕+${resources.food}`);
+                }
+                if (resources.materials > 0) {
+                    resourceParts.push(`🛠️+${resources.materials}`);
+                }
+            }
+
+            const resourceText = resourceParts.length > 0 ?
+                `<br>${resourceParts.join(' ')}` : '';
+
+            button.innerHTML = tileType + resourceText;
             button.addEventListener('click', () => this.selectTile(tileType));
             this.tileOptionsDiv.appendChild(button);
         });
