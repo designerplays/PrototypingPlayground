@@ -1,10 +1,10 @@
 {
   "tiles": [
-    { "type": "Forest", "count": 10, "food": 1, "materials": 1, "color": "#228B22" },
-    { "type": "Plain", "count": 10, "food": 0, "materials": 0, "color": "#90EE90" },
-    { "type": "Road", "count": 5, "food": 0, "materials": 0, "color": "#808080" },
-    { "type": "River", "count": 5, "food": 2, "materials": 0, "color": "#4682B4" },
-    { "type": "House", "count": 4, "food": 2, "materials": 2, "color": "#CD853F" },
-    { "type": "Warehouse", "count": 2, "food": 0, "materials": 4, "color": "#A0522D" }
+    { "type": "Forest", "count": 10, "foodMin": 1, "foodMax": 3, "materialsMin": 1, "materialsMax": 3, "color": "#228B22" },
+    { "type": "Plain", "count": 10, "foodMin": 0, "foodMax": 0, "materialsMin": 0, "materialsMax": 0, "color": "#90EE90" },
+    { "type": "Road", "count": 5, "foodMin": 0, "foodMax": 0, "materialsMin": 0, "materialsMax": 0, "color": "#808080" },
+    { "type": "River", "count": 5, "foodMin": 2, "foodMax": 4, "materialsMin": 0, "materialsMax": 0, "color": "#4682B4" },
+    { "type": "House", "count": 4, "foodMin": 2, "foodMax": 4, "materialsMin": 2, "materialsMax": 4, "color": "#CD853F" },
+    { "type": "Warehouse", "count": 2, "foodMin": 0, "foodMax": 0, "materialsMin": 4, "materialsMax": 6, "color": "#A0522D" }
   ]
 }
