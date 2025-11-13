@@ -1,6 +1,6 @@
 // Hex Map Explorer Game - Mobile-First Rebuild
 // Complete rewrite for pixel-perfect visual and tap alignment
-// VERSION: 0.6 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 0.7 (increment by 0.1 for each change unless specified otherwise)
 
 class HexMapGame {
     constructor() {
@@ -31,7 +31,7 @@ class HexMapGame {
         this.welcomeCloseBtn = document.getElementById('welcome-close-btn');
 
         // Version info
-        this.version = '0.6';
+        this.version = '0.7';
 
         // Hex geometry - using pointy-top orientation
         // Mobile-first: larger hex size for better touch targets
@@ -98,8 +98,10 @@ class HexMapGame {
         this.tileConfig = {};
         config.tiles.forEach(tile => {
             this.tileConfig[tile.type] = {
-                food: tile.food,
-                materials: tile.materials,
+                foodMin: tile.foodMin,
+                foodMax: tile.foodMax,
+                materialsMin: tile.materialsMin,
+                materialsMax: tile.materialsMax,
                 color: tile.color
             };
         });
@@ -636,11 +638,44 @@ class HexMapGame {
             let resourceParts = [];
 
             if (resources) {
-                if (resources.food > 0) {
-                    resourceParts.push(`🍕+${resources.food}`);
+                // Calculate average and threshold for food
+                const foodMin = resources.foodMin;
+                const foodMax = resources.foodMax;
+
+                // Only show food if not both zero
+                if (foodMin > 0 || foodMax > 0) {
+                    const foodAvg = foodMin + (foodMax - foodMin) / 2;
+                    let foodThreshold;
+
+                    if (foodAvg >= 1 && foodAvg <= 3) {
+                        foodThreshold = 'low';
+                    } else if (foodAvg >= 4 && foodAvg <= 6) {
+                        foodThreshold = 'mid';
+                    } else if (foodAvg >= 7) {
+                        foodThreshold = 'high';
+                    }
+
+                    resourceParts.push(`🍕 ${foodThreshold}`);
                 }
-                if (resources.materials > 0) {
-                    resourceParts.push(`🛠️+${resources.materials}`);
+
+                // Calculate average and threshold for materials
+                const materialsMin = resources.materialsMin;
+                const materialsMax = resources.materialsMax;
+
+                // Only show materials if not both zero
+                if (materialsMin > 0 || materialsMax > 0) {
+                    const materialsAvg = materialsMin + (materialsMax - materialsMin) / 2;
+                    let materialsThreshold;
+
+                    if (materialsAvg >= 1 && materialsAvg <= 3) {
+                        materialsThreshold = 'low';
+                    } else if (materialsAvg >= 4 && materialsAvg <= 6) {
+                        materialsThreshold = 'mid';
+                    } else if (materialsAvg >= 7) {
+                        materialsThreshold = 'high';
+                    }
+
+                    resourceParts.push(`🛠️ ${materialsThreshold}`);
                 }
             }
 
@@ -759,10 +794,17 @@ class HexMapGame {
         const key = `${this.pendingHex.q},${this.pendingHex.r}`;
         this.tiles.set(key, { type: tileType, secured: false });
 
-        // Add resources from the placed tile
+        // Add random resources from the placed tile based on min/max ranges
         if (this.tileConfig[tileType]) {
-            this.food += this.tileConfig[tileType].food;
-            this.materials += this.tileConfig[tileType].materials;
+            const config = this.tileConfig[tileType];
+
+            // Generate random food amount
+            const foodAmount = Math.floor(Math.random() * (config.foodMax - config.foodMin + 1)) + config.foodMin;
+            this.food += foodAmount;
+
+            // Generate random materials amount
+            const materialsAmount = Math.floor(Math.random() * (config.materialsMax - config.materialsMin + 1)) + config.materialsMin;
+            this.materials += materialsAmount;
         }
 
         // Clear selection
