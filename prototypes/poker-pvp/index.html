@@ -423,7 +423,7 @@
             <h3>Debug Settings</h3>
             <button id="debug-close-btn">✕</button>
             <div class="debug-section">
-                <p><strong>Version:</strong> <span id="version-display">0.2</span></p>
+                <p><strong>Version:</strong> <span id="version-display">0.3</span></p>
             </div>
             <div class="debug-section">
                 <button id="force-reset-btn">Reset Game</button>
@@ -563,9 +563,26 @@
             }
         }
 
+        function sortPlayerHand() {
+            // Define suit order: ♥️♦️♠️♣️
+            const suitOrder = { '♥️': 0, '♦️': 1, '♠️': 2, '♣️': 3 };
+
+            gameState.playerHand.sort((a, b) => {
+                // First compare by suit
+                const suitDiff = suitOrder[a.suit] - suitOrder[b.suit];
+                if (suitDiff !== 0) return suitDiff;
+
+                // Same suit, compare by value (descending)
+                return getCardValue(b) - getCardValue(a);
+            });
+        }
+
         function renderPlayerHand() {
             const handContainer = document.getElementById('player-hand');
             handContainer.innerHTML = '';
+
+            // Sort hand before rendering
+            sortPlayerHand();
 
             gameState.playerHand.forEach((card, index) => {
                 const cardElement = createCardElement(card, index);
@@ -955,7 +972,7 @@
         }
 
         function evaluateHand(hand) {
-            if (hand.length !== 5) return { rank: 0, name: 'Invalid Hand' };
+            if (hand.length === 0) return { rank: 0, name: 'No Cards' };
 
             const values = hand.map(c => c.value);
             const suits = hand.map(c => c.suit);
@@ -964,11 +981,54 @@
             values.forEach(v => valueCounts[v] = (valueCounts[v] || 0) + 1);
             const counts = Object.values(valueCounts).sort((a, b) => b - a);
 
+            const highCard = Math.max(...hand.map(c => getCardValue(c)));
+
+            // Evaluate based on number of cards
+            if (hand.length === 1) {
+                // Only high card possible
+                return { rank: 1, name: 'High Card', highCard };
+            }
+
+            if (hand.length === 2) {
+                // Only pair or high card possible
+                if (counts[0] === 2) {
+                    return { rank: 2, name: 'One Pair', highCard };
+                }
+                return { rank: 1, name: 'High Card', highCard };
+            }
+
+            if (hand.length === 3) {
+                // Three of a kind, pair, or high card possible
+                if (counts[0] === 3) {
+                    return { rank: 4, name: 'Three of a Kind', highCard };
+                }
+                if (counts[0] === 2) {
+                    return { rank: 2, name: 'One Pair', highCard };
+                }
+                return { rank: 1, name: 'High Card', highCard };
+            }
+
+            if (hand.length === 4) {
+                // Four of a kind, two pair, pair, or high card possible
+                if (counts[0] === 4) {
+                    return { rank: 8, name: 'Four of a Kind', highCard };
+                }
+                if (counts[0] === 2 && counts[1] === 2) {
+                    return { rank: 3, name: 'Two Pair', highCard };
+                }
+                if (counts[0] === 3) {
+                    return { rank: 4, name: 'Three of a Kind', highCard };
+                }
+                if (counts[0] === 2) {
+                    return { rank: 2, name: 'One Pair', highCard };
+                }
+                return { rank: 1, name: 'High Card', highCard };
+            }
+
+            // 5 cards - full evaluation
             const isFlush = suits.every(s => s === suits[0]);
             const sortedHand = [...hand].sort((a, b) => getCardValue(a) - getCardValue(b));
             const isStraight = isConsecutive(sortedHand);
-
-            const highCard = Math.max(...hand.map(c => getCardValue(c)));
 
             // Royal Flush
             if (isFlush && isStraight && values.includes('A') && values.includes('K')) {
