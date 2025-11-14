@@ -515,11 +515,10 @@
         }
 
         function dealCards() {
-            // Deal 8 cards to player
-            for (let i = 0; i < 8; i++) {
-                if (gameState.playerDeck.length > 0) {
-                    gameState.playerHand.push(gameState.playerDeck.pop());
-                }
+            // Draw cards up to a maximum of 8 in hand
+            const cardsToDraw = Math.min(8 - gameState.playerHand.length, gameState.playerDeck.length);
+            for (let i = 0; i < cardsToDraw; i++) {
+                gameState.playerHand.push(gameState.playerDeck.pop());
             }
             renderPlayerHand();
             setPhase('playing');
