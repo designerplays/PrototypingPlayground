@@ -1,5 +1,5 @@
 // Word Blocks Game - Mobile-First Word Puzzle
-// VERSION: 0.7 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 0.8 (increment by 0.1 for each change unless specified otherwise)
 
 class WordBlocksGame {
     constructor() {
@@ -20,7 +20,7 @@ class WordBlocksGame {
         this.blockSizeValue = document.getElementById('block-size-value');
 
         // Version info
-        this.version = '0.7';
+        this.version = '0.8';
 
         // Config values
         this.disappearTime = 300; // ms
@@ -352,7 +352,7 @@ class WordBlocksGame {
             console.log('Valid word:', word);
             await this.removeSelectedCells();
             await this.applyGravity();
-            await this.fillEmptyCells();
+            this.checkGameOver();
         } else {
             console.log('Invalid word:', word);
             this.clearSelection();
@@ -422,7 +422,8 @@ class WordBlocksGame {
                             col,
                             fromRow: originalRow,
                             fromTop: fromPosition.top,
-                            toTop: toPosition.top
+                            toTop: toPosition.top,
+                            distance: row - originalRow // How many rows it falls
                         });
                     }
                     letterIndex++;
@@ -435,90 +436,59 @@ class WordBlocksGame {
 
         // Only animate if there are cells to animate
         if (cellsToAnimate.length > 0) {
-            // Sort cells: bottom to top (by destination row), then left to right
-            cellsToAnimate.sort((a, b) => {
-                if (b.row !== a.row) return b.row - a.row; // Bottom first (higher row number)
-                return a.col - b.col; // Left to right
+            // Animate blocks individually with physics-like effect
+            // Start all animations at once but with different durations based on fall distance
+            const animationPromises = cellsToAnimate.map((cell, index) => {
+                return new Promise(resolve => {
+                    const cellElement = this.cellElements[cell.row][cell.col];
+
+                    // Stagger start time slightly for visual effect (50ms per block)
+                    setTimeout(() => {
+                        // Set initial position (where it's coming from)
+                        cellElement.style.top = `${cell.fromTop}px`;
+                        cellElement.style.transition = 'none';
+
+                        // Force reflow
+                        void cellElement.offsetHeight;
+
+                        // Animate to final position with easing that simulates physics
+                        // Use cubic-bezier for a bouncy, physics-like effect
+                        const duration = this.fallTime + (cell.distance * 50); // Longer falls take more time
+                        cellElement.style.transition = `top ${duration}ms cubic-bezier(0.34, 1.56, 0.64, 1)`;
+                        cellElement.style.top = `${cell.toTop}px`;
+
+                        // Resolve after animation completes
+                        setTimeout(() => {
+                            cellElement.style.transition = '';
+                            resolve();
+                        }, duration);
+                    }, index * 50); // 50ms stagger between each block
+                });
             });
 
-            // Animate blocks sequentially (one at a time)
-            for (const cell of cellsToAnimate) {
-                const cellElement = this.cellElements[cell.row][cell.col];
-
-                // Set initial position (where it's coming from)
-                cellElement.style.top = `${cell.fromTop}px`;
-                cellElement.style.transition = 'none';
-
-                // Force reflow
-                void cellElement.offsetHeight;
-
-                // Animate to final position
-                cellElement.style.transition = `top ${this.fallTime}ms ease`;
-                cellElement.style.top = `${cell.toTop}px`;
-
-                // Wait for animation to complete
-                await new Promise(resolve => setTimeout(resolve, this.fallTime));
-            }
-
-            // Clean up transitions
-            cellsToAnimate.forEach(cell => {
-                this.cellElements[cell.row][cell.col].style.transition = '';
-            });
+            // Wait for all animations to complete
+            await Promise.all(animationPromises);
         }
     }
 
-    async fillEmptyCells() {
-        // Collect all empty cells
-        const emptyCells = [];
+    checkGameOver() {
+        // Count remaining blocks
+        let remainingBlocks = 0;
         for (let row = 0; row < this.gridSize; row++) {
             for (let col = 0; col < this.gridSize; col++) {
-                if (this.grid[row][col] === null) {
-                    emptyCells.push({ row, col });
+                if (this.grid[row][col] !== null) {
+                    remainingBlocks++;
                 }
             }
         }
 
-        if (emptyCells.length === 0) return;
-
-        // Sort cells: bottom to top, then left to right
-        emptyCells.sort((a, b) => {
-            if (b.row !== a.row) return b.row - a.row; // Bottom first (higher row number)
-            return a.col - b.col; // Left to right
-        });
-
-        // Animate blocks dropping in sequentially (one at a time)
-        for (const cell of emptyCells) {
-            const newLetter = this.getRandomLetter();
-            this.grid[cell.row][cell.col] = newLetter;
-            const cellElement = this.cellElements[cell.row][cell.col];
-
-            // Calculate positions
-            const finalPosition = this.getBlockPosition(cell.row, cell.col);
-            const emInPixels = parseFloat(getComputedStyle(document.documentElement).fontSize);
-            const blockSizeInPx = this.blockSize * emInPixels;
-            // Start from above the grid
-            const startTop = -blockSizeInPx - this.blockGap;
-
-            // Set content and initial position
-            cellElement.textContent = newLetter;
-            cellElement.style.top = `${startTop}px`;
-            cellElement.style.transition = 'none';
-
-            // Force reflow
-            void cellElement.offsetHeight;
-
-            // Animate to final position
-            cellElement.style.transition = `top ${this.fallTime}ms ease`;
-            cellElement.style.top = `${finalPosition.top}px`;
-
-            // Wait for animation to complete
-            await new Promise(resolve => setTimeout(resolve, this.fallTime));
+        if (remainingBlocks === 0) {
+            // Game over - no blocks left
+            setTimeout(() => {
+                alert('Game Over! All blocks are gone.');
+                this.restart();
+            }, 500);
         }
-
-        // Clean up transitions
-        emptyCells.forEach(cell => {
-            this.cellElements[cell.row][cell.col].style.transition = '';
-        });
     }
 
     openDebugPanel() {
