@@ -20,7 +20,7 @@ class WordBlocksGame {
         this.blockSizeValue = document.getElementById('block-size-value');
 
         // Version info
-        this.version = '0.8';
+        this.version = '0.9';
 
         // Config values
         this.disappearTime = 300; // ms
@@ -249,11 +249,17 @@ class WordBlocksGame {
 
         const element = document.elementFromPoint(clientX, clientY);
         if (element && element.classList.contains('letter-cell')) {
-            return {
-                row: parseInt(element.dataset.row),
-                col: parseInt(element.dataset.col),
-                element: element
-            };
+            const row = parseInt(element.dataset.row);
+            const col = parseInt(element.dataset.col);
+
+            // Only return cell if it has content (not empty/null)
+            if (this.grid[row][col] !== null) {
+                return {
+                    row: row,
+                    col: col,
+                    element: element
+                };
+            }
         }
         return null;
     }
@@ -412,6 +418,7 @@ class WordBlocksGame {
                     const { letter, originalRow } = lettersWithPositions[letterIndex];
                     this.grid[row][col] = letter;
                     this.cellElements[row][col].textContent = letter;
+                    this.cellElements[row][col].classList.remove('empty');
 
                     // Only animate if the block moved to a different position
                     if (originalRow !== row) {
@@ -430,6 +437,7 @@ class WordBlocksGame {
                 } else {
                     this.grid[row][col] = null;
                     this.cellElements[row][col].textContent = '';
+                    this.cellElements[row][col].classList.add('empty');
                 }
             }
         }
