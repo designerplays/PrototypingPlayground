@@ -1,5 +1,5 @@
 // Word Blocks Game - Mobile-First Word Puzzle
-// VERSION: 0.8 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 1.0 (increment by 0.1 for each change unless specified otherwise)
 
 class WordBlocksGame {
     constructor() {
@@ -20,12 +20,12 @@ class WordBlocksGame {
         this.blockSizeValue = document.getElementById('block-size-value');
 
         // Version info
-        this.version = '0.9';
+        this.version = '1.0';
 
         // Config values
         this.disappearTime = 300; // ms
         this.fallTime = 300; // ms
-        this.blockSize = 2.5; // em
+        this.blockSize = 50; // px - size of each cell
         this.blockGap = 8; // px - gap between blocks
 
         // Grid settings
@@ -50,12 +50,8 @@ class WordBlocksGame {
 
     // Calculate the pixel position for a block at given row/col
     getBlockPosition(row, col) {
-        // Convert em to pixels based on current font size
-        const emInPixels = parseFloat(getComputedStyle(document.documentElement).fontSize);
-        const blockSizeInPx = this.blockSize * emInPixels;
-
-        const top = row * (blockSizeInPx + this.blockGap);
-        const left = col * (blockSizeInPx + this.blockGap);
+        const top = row * (this.blockSize + this.blockGap);
+        const left = col * (this.blockSize + this.blockGap);
 
         return { top, left };
     }
@@ -233,7 +229,7 @@ class WordBlocksGame {
     updateCSSVariables() {
         document.documentElement.style.setProperty('--disappear-time', `${this.disappearTime}ms`);
         document.documentElement.style.setProperty('--fall-time', `${this.fallTime}ms`);
-        document.documentElement.style.setProperty('--block-size', `${this.blockSize}em`);
+        document.documentElement.style.setProperty('--block-size', `${this.blockSize}px`);
     }
 
     getCellFromEvent(e) {
