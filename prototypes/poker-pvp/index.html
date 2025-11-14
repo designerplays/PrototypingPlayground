@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Poker PVP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            min-height: 100vh;
+            padding-bottom: 10px;
+        }
+
+        /* Score Section */
+        #score-section {
+            text-align: center;
+            color: white;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        #score-section h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        #score-display {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        #phase-indicator {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #ffeb3b;
+        }
+
+        /* Computer Section */
+        #computer-section {
+            margin-bottom: 15px;
+        }
+
+        .section-label {
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        #computer-slots {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            flex-wrap: wrap;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            min-height: 100px;
+        }
+
+        /* Player Slots Section */
+        #player-slots {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            flex-wrap: wrap;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            min-height: 100px;
+            margin-bottom: 15px;
+        }
+
+        /* Card Styling */
+        .card {
+            width: 60px;
+            height: 85px;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .card:active {
+            transform: scale(0.95);
+        }
+
+        .card.selected {
+            transform: translateY(-10px);
+            box-shadow: 0 5px 15px rgba(255, 235, 59, 0.8);
+            border-color: #ffeb3b;
+        }
+
+        .card.discard-selected {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+
+        .card.red {
+            color: #d32f2f;
+        }
+
+        .card.black {
+            color: #000;
+        }
+
+        .card-value {
+            font-size: 24px;
+            margin-bottom: 2px;
+        }
+
+        .card-suit {
+            font-size: 28px;
+        }
+
+        .empty-slot {
+            width: 60px;
+            height: 85px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Player Hand Section */
+        #player-hand {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            flex-wrap: wrap;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* Control Buttons */
+        #controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+            box-shadow: 0 4px 10px rgba(33, 150, 243, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+            box-shadow: 0 4px 10px rgba(244, 67, 54, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Result Display */
+        #result-display {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            z-index: 1000;
+            min-width: 280px;
+        }
+
+        #result-display h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        #result-display p {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        #result-display .winner {
+            color: #4caf50;
+        }
+
+        #result-display .loser {
+            color: #f44336;
+        }
+
+        /* Debug Button */
+        #debug-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #debug-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Debug Overlay */
+        #debug-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            min-width: 300px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        #debug-overlay h3 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        #debug-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background: #f44336;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .debug-section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .debug-section:last-child {
+            border-bottom: none;
+        }
+
+        .debug-section p {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .debug-section button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #2196f3;
+            color: white;
+            font-weight: bold;
+        }
+
+        .debug-section button:active {
+            transform: scale(0.98);
+        }
+
+        /* Hand Rank Display */
+        .hand-rank {
+            font-size: 14px;
+            color: #ffeb3b;
+            margin-top: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Score Section -->
+        <div id="score-section">
+            <h2>Match Score</h2>
+            <div id="score-display">Player: 0 | Computer: 0</div>
+            <div id="phase-indicator">Dealing Phase</div>
+        </div>
+
+        <!-- Computer Section -->
+        <div id="computer-section">
+            <div class="section-label">Computer</div>
+            <div id="computer-slots">
+                <div class="empty-slot"></div>
+                <div class="empty-slot"></div>
+                <div class="empty-slot"></div>
+                <div class="empty-slot"></div>
+                <div class="empty-slot"></div>
+            </div>
+            <div class="hand-rank" id="computer-hand-rank"></div>
+        </div>
+
+        <!-- Player Slots Section -->
+        <div>
+            <div class="section-label">Your Play Area</div>
+            <div id="player-slots">
+                <div class="empty-slot"></div>
+                <div class="empty-slot"></div>
+                <div class="empty-slot"></div>
+                <div class="empty-slot"></div>
+                <div class="empty-slot"></div>
+            </div>
+            <div class="hand-rank" id="player-hand-rank"></div>
+        </div>
+
+        <!-- Player Hand Section -->
+        <div>
+            <div class="section-label">Your Cards</div>
+            <div id="player-hand"></div>
+        </div>
+
+        <!-- Controls -->
+        <div id="controls">
+            <button id="ready-btn" class="btn btn-primary hidden">Ready</button>
+            <button id="discard-btn" class="btn btn-danger hidden">Discard Selected</button>
+            <button id="continue-btn" class="btn btn-secondary hidden">Continue</button>
+        </div>
+
+        <!-- Result Display -->
+        <div id="result-display" class="hidden">
+            <h2 id="result-title"></h2>
+            <p id="result-message"></p>
+            <button id="result-continue-btn" class="btn btn-primary">Continue</button>
+        </div>
+
+        <!-- Debug Button -->
+        <button id="debug-btn" title="Debug">🐛</button>
+
+        <!-- Debug Overlay -->
+        <div id="debug-overlay" class="hidden">
+            <h3>Debug Settings</h3>
+            <button id="debug-close-btn">✕</button>
+            <div class="debug-section">
+                <p><strong>Version:</strong> <span id="version-display">0.1</span></p>
+            </div>
+            <div class="debug-section">
+                <button id="force-reset-btn">Reset Game</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        const gameState = {
+            phase: 'dealing', // dealing, playing, resolution, discard
+            playerDeck: [],
+            computerDeck: [],
+            playerHand: [],
+            computerHand: [],
+            playerSlots: [],
+            computerSlots: [],
+            playerScore: 0,
+            computerScore: 0,
+            handProbabilities: null
+        };
+
+        // Card Suits and Values
+        const suits = ['♠️', '♥️', '♦️', '♣️'];
+        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+
+        // Initialize Game
+        async function initGame() {
+            // Load hand probabilities
+            try {
+                const response = await fetch('HandProbability.json');
+                gameState.handProbabilities = await response.json();
+            } catch (error) {
+                console.error('Error loading hand probabilities:', error);
+                // Fallback probabilities
+                gameState.handProbabilities = {
+                    "royal_flush": 1,
+                    "straight_flush": 2,
+                    "four_of_a_kind": 3,
+                    "full_house": 4,
+                    "flush": 10,
+                    "straight": 10,
+                    "three_of_a_kind": 15,
+                    "two_pair": 20,
+                    "one_pair": 20,
+                    "high_card": 5
+                };
+            }
+
+            resetGame();
+            setupEventListeners();
+        }
+
+        function resetGame() {
+            gameState.playerScore = 0;
+            gameState.computerScore = 0;
+            updateScoreDisplay();
+            startNewRound();
+        }
+
+        function startNewRound() {
+            // Create new decks
+            gameState.playerDeck = createDeck();
+            gameState.computerDeck = createDeck();
+
+            // Clear hands and slots
+            gameState.playerHand = [];
+            gameState.computerHand = [];
+            gameState.playerSlots = [];
+            gameState.computerSlots = [];
+
+            // Start dealing phase
+            setPhase('dealing');
+            dealCards();
+        }
+
+        function createDeck() {
+            const deck = [];
+            for (const suit of suits) {
+                for (const value of values) {
+                    deck.push({ suit, value });
+                }
+            }
+            return shuffle(deck);
+        }
+
+        function shuffle(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function dealCards() {
+            // Deal 8 cards to player
+            for (let i = 0; i < 8; i++) {
+                if (gameState.playerDeck.length > 0) {
+                    gameState.playerHand.push(gameState.playerDeck.pop());
+                }
+            }
+            renderPlayerHand();
+            setPhase('playing');
+        }
+
+        function setPhase(phase) {
+            gameState.phase = phase;
+
+            const phaseIndicator = document.getElementById('phase-indicator');
+            const readyBtn = document.getElementById('ready-btn');
+            const discardBtn = document.getElementById('discard-btn');
+            const continueBtn = document.getElementById('continue-btn');
+
+            // Hide all buttons first
+            readyBtn.classList.add('hidden');
+            discardBtn.classList.add('hidden');
+            continueBtn.classList.add('hidden');
+
+            switch (phase) {
+                case 'dealing':
+                    phaseIndicator.textContent = 'Dealing Phase';
+                    break;
+                case 'playing':
+                    phaseIndicator.textContent = 'Playing Phase - Select your cards';
+                    readyBtn.classList.remove('hidden');
+                    break;
+                case 'resolution':
+                    phaseIndicator.textContent = 'Resolution Phase';
+                    break;
+                case 'discard':
+                    phaseIndicator.textContent = 'Discard Phase';
+                    discardBtn.classList.remove('hidden');
+                    continueBtn.classList.remove('hidden');
+                    break;
+            }
+        }
+
+        function renderPlayerHand() {
+            const handContainer = document.getElementById('player-hand');
+            handContainer.innerHTML = '';
+
+            gameState.playerHand.forEach((card, index) => {
+                const cardElement = createCardElement(card, index);
+                handContainer.appendChild(cardElement);
+            });
+        }
+
+        function renderPlayerSlots() {
+            const slotsContainer = document.getElementById('player-slots');
+            slotsContainer.innerHTML = '';
+
+            // Always show 5 slots
+            for (let i = 0; i < 5; i++) {
+                if (i < gameState.playerSlots.length) {
+                    const card = gameState.playerSlots[i];
+                    const cardElement = createCardElement(card, i, true);
+                    slotsContainer.appendChild(cardElement);
+                } else {
+                    const emptySlot = document.createElement('div');
+                    emptySlot.className = 'empty-slot';
+                    slotsContainer.appendChild(emptySlot);
+                }
+            }
+
+            updatePlayerHandRank();
+        }
+
+        function renderComputerSlots() {
+            const slotsContainer = document.getElementById('computer-slots');
+            slotsContainer.innerHTML = '';
+
+            // Always show 5 slots
+            for (let i = 0; i < 5; i++) {
+                if (i < gameState.computerSlots.length) {
+                    const card = gameState.computerSlots[i];
+                    const cardElement = createCardElement(card, i, false, false);
+                    slotsContainer.appendChild(cardElement);
+                } else {
+                    const emptySlot = document.createElement('div');
+                    emptySlot.className = 'empty-slot';
+                    slotsContainer.appendChild(emptySlot);
+                }
+            }
+
+            updateComputerHandRank();
+        }
+
+        function createCardElement(card, index, isInSlot = false, isPlayerCard = true) {
+            const cardElement = document.createElement('div');
+            cardElement.className = 'card';
+
+            const isRed = card.suit === '♥️' || card.suit === '♦️';
+            cardElement.classList.add(isRed ? 'red' : 'black');
+
+            const valueElement = document.createElement('div');
+            valueElement.className = 'card-value';
+            valueElement.textContent = card.value;
+
+            const suitElement = document.createElement('div');
+            suitElement.className = 'card-suit';
+            suitElement.textContent = card.suit;
+
+            cardElement.appendChild(valueElement);
+            cardElement.appendChild(suitElement);
+
+            if (isPlayerCard) {
+                cardElement.addEventListener('click', () => {
+                    if (gameState.phase === 'playing') {
+                        if (isInSlot) {
+                            moveCardFromSlotToHand(index);
+                        } else {
+                            moveCardFromHandToSlot(index);
+                        }
+                    } else if (gameState.phase === 'discard') {
+                        if (!isInSlot) {
+                            toggleDiscardSelection(index);
+                        }
+                    }
+                });
+            }
+
+            return cardElement;
+        }
+
+        function moveCardFromHandToSlot(handIndex) {
+            if (gameState.playerSlots.length >= 5) {
+                return; // Already have 5 cards in slots
+            }
+
+            const card = gameState.playerHand.splice(handIndex, 1)[0];
+            gameState.playerSlots.push(card);
+
+            renderPlayerHand();
+            renderPlayerSlots();
+        }
+
+        function moveCardFromSlotToHand(slotIndex) {
+            const card = gameState.playerSlots.splice(slotIndex, 1)[0];
+            gameState.playerHand.push(card);
+
+            renderPlayerHand();
+            renderPlayerSlots();
+        }
+
+        function toggleDiscardSelection(handIndex) {
+            const handContainer = document.getElementById('player-hand');
+            const cardElement = handContainer.children[handIndex];
+            cardElement.classList.toggle('discard-selected');
+        }
+
+        function onReadyClicked() {
+            if (gameState.playerSlots.length === 0) {
+                alert('Please select at least 1 card!');
+                return;
+            }
+
+            setPhase('resolution');
+            computerPlayHand();
+            setTimeout(() => {
+                determineRoundWinner();
+            }, 500);
+        }
+
+        function computerPlayHand() {
+            // Pick a hand type based on probabilities
+            const handType = pickWeightedHandType();
+
+            // Try to create that hand
+            const hand = tryCreateHand(handType);
+
+            gameState.computerSlots = hand;
+            renderComputerSlots();
+        }
+
+        function pickWeightedHandType() {
+            const probs = gameState.handProbabilities;
+            const types = Object.keys(probs);
+            const weights = types.map(type => probs[type]);
+            const totalWeight = weights.reduce((a, b) => a + b, 0);
+
+            let random = Math.random() * totalWeight;
+
+            for (let i = 0; i < types.length; i++) {
+                random -= weights[i];
+                if (random <= 0) {
+                    return types[i];
+                }
+            }
+
+            return 'high_card';
+        }
+
+        function tryCreateHand(startingType) {
+            const handOrder = [
+                'royal_flush',
+                'straight_flush',
+                'four_of_a_kind',
+                'full_house',
+                'flush',
+                'straight',
+                'three_of_a_kind',
+                'two_pair',
+                'one_pair',
+                'high_card'
+            ];
+
+            let startIndex = handOrder.indexOf(startingType);
+            if (startIndex === -1) startIndex = handOrder.length - 1;
+
+            // Try to create the hand, falling back to simpler hands
+            for (let i = startIndex; i < handOrder.length; i++) {
+                const hand = createSpecificHand(handOrder[i]);
+                if (hand.length === 5) {
+                    return hand;
+                }
+            }
+
+            // Fallback: return any 5 cards
+            return gameState.computerDeck.slice(0, 5);
+        }
+
+        function createSpecificHand(handType) {
+            const deck = [...gameState.computerDeck];
+
+            switch (handType) {
+                case 'royal_flush':
+                    return createRoyalFlush(deck);
+                case 'straight_flush':
+                    return createStraightFlush(deck);
+                case 'four_of_a_kind':
+                    return createFourOfAKind(deck);
+                case 'full_house':
+                    return createFullHouse(deck);
+                case 'flush':
+                    return createFlush(deck);
+                case 'straight':
+                    return createStraight(deck);
+                case 'three_of_a_kind':
+                    return createThreeOfAKind(deck);
+                case 'two_pair':
+                    return createTwoPair(deck);
+                case 'one_pair':
+                    return createOnePair(deck);
+                case 'high_card':
+                    return createHighCard(deck);
+                default:
+                    return [];
+            }
+        }
+
+        function createRoyalFlush(deck) {
+            const royalValues = ['10', 'J', 'Q', 'K', 'A'];
+            for (const suit of suits) {
+                const cards = royalValues.map(val =>
+                    deck.find(c => c.value === val && c.suit === suit)
+                ).filter(c => c);
+
+                if (cards.length === 5) {
+                    return cards;
+                }
+            }
+            return [];
+        }
+
+        function createStraightFlush(deck) {
+            // Try to find 5 consecutive cards of the same suit
+            for (const suit of suits) {
+                const suitCards = deck.filter(c => c.suit === suit).sort((a, b) => {
+                    return getCardValue(a) - getCardValue(b);
+                });
+
+                for (let i = 0; i <= suitCards.length - 5; i++) {
+                    const hand = suitCards.slice(i, i + 5);
+                    if (isConsecutive(hand)) {
+                        return hand;
+                    }
+                }
+            }
+            return [];
+        }
+
+        function createFourOfAKind(deck) {
+            for (const value of values) {
+                const cards = deck.filter(c => c.value === value);
+                if (cards.length >= 4) {
+                    const hand = cards.slice(0, 4);
+                    const kicker = deck.find(c => c.value !== value);
+                    if (kicker) hand.push(kicker);
+                    return hand.length === 5 ? hand : [];
+                }
+            }
+            return [];
+        }
+
+        function createFullHouse(deck) {
+            // Find three of a kind
+            for (const value of values) {
+                const threeCards = deck.filter(c => c.value === value);
+                if (threeCards.length >= 3) {
+                    // Find a pair of different value
+                    for (const value2 of values) {
+                        if (value2 !== value) {
+                            const pairCards = deck.filter(c => c.value === value2);
+                            if (pairCards.length >= 2) {
+                                return [...threeCards.slice(0, 3), ...pairCards.slice(0, 2)];
+                            }
+                        }
+                    }
+                }
+            }
+            return [];
+        }
+
+        function createFlush(deck) {
+            for (const suit of suits) {
+                const cards = deck.filter(c => c.suit === suit);
+                if (cards.length >= 5) {
+                    return cards.slice(0, 5);
+                }
+            }
+            return [];
+        }
+
+        function createStraight(deck) {
+            const sorted = [...deck].sort((a, b) => getCardValue(a) - getCardValue(b));
+
+            for (let i = 0; i <= sorted.length - 5; i++) {
+                const hand = [];
+                let lastValue = null;
+
+                for (let j = i; j < sorted.length && hand.length < 5; j++) {
+                    const currentValue = getCardValue(sorted[j]);
+
+                    if (lastValue === null || currentValue === lastValue + 1) {
+                        hand.push(sorted[j]);
+                        lastValue = currentValue;
+                    } else if (currentValue !== lastValue) {
+                        break;
+                    }
+                }
+
+                if (hand.length === 5 && isConsecutive(hand)) {
+                    return hand;
+                }
+            }
+            return [];
+        }
+
+        function createThreeOfAKind(deck) {
+            for (const value of values) {
+                const cards = deck.filter(c => c.value === value);
+                if (cards.length >= 3) {
+                    const hand = cards.slice(0, 3);
+                    const kickers = deck.filter(c => c.value !== value).slice(0, 2);
+                    return [...hand, ...kickers];
+                }
+            }
+            return [];
+        }
+
+        function createTwoPair(deck) {
+            const pairs = [];
+            for (const value of values) {
+                const cards = deck.filter(c => c.value === value);
+                if (cards.length >= 2) {
+                    pairs.push(cards.slice(0, 2));
+                }
+                if (pairs.length === 2) break;
+            }
+
+            if (pairs.length === 2) {
+                const hand = [...pairs[0], ...pairs[1]];
+                const kicker = deck.find(c =>
+                    c.value !== pairs[0][0].value &&
+                    c.value !== pairs[1][0].value
+                );
+                if (kicker) hand.push(kicker);
+                return hand.length === 5 ? hand : [];
+            }
+            return [];
+        }
+
+        function createOnePair(deck) {
+            for (const value of values) {
+                const cards = deck.filter(c => c.value === value);
+                if (cards.length >= 2) {
+                    const hand = cards.slice(0, 2);
+                    const kickers = deck.filter(c => c.value !== value).slice(0, 3);
+                    return [...hand, ...kickers];
+                }
+            }
+            return [];
+        }
+
+        function createHighCard(deck) {
+            return deck.slice(0, 5);
+        }
+
+        function getCardValue(card) {
+            const valueMap = {
+                '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8,
+                '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14
+            };
+            return valueMap[card.value];
+        }
+
+        function isConsecutive(hand) {
+            const values = hand.map(c => getCardValue(c)).sort((a, b) => a - b);
+            for (let i = 1; i < values.length; i++) {
+                if (values[i] !== values[i - 1] + 1) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function evaluateHand(hand) {
+            if (hand.length !== 5) return { rank: 0, name: 'Invalid Hand' };
+
+            const values = hand.map(c => c.value);
+            const suits = hand.map(c => c.suit);
+
+            const valueCounts = {};
+            values.forEach(v => valueCounts[v] = (valueCounts[v] || 0) + 1);
+            const counts = Object.values(valueCounts).sort((a, b) => b - a);
+
+            const isFlush = suits.every(s => s === suits[0]);
+            const sortedHand = [...hand].sort((a, b) => getCardValue(a) - getCardValue(b));
+            const isStraight = isConsecutive(sortedHand);
+
+            const highCard = Math.max(...hand.map(c => getCardValue(c)));
+
+            // Royal Flush
+            if (isFlush && isStraight && values.includes('A') && values.includes('K')) {
+                return { rank: 10, name: 'Royal Flush', highCard };
+            }
+
+            // Straight Flush
+            if (isFlush && isStraight) {
+                return { rank: 9, name: 'Straight Flush', highCard };
+            }
+
+            // Four of a Kind
+            if (counts[0] === 4) {
+                return { rank: 8, name: 'Four of a Kind', highCard };
+            }
+
+            // Full House
+            if (counts[0] === 3 && counts[1] === 2) {
+                return { rank: 7, name: 'Full House', highCard };
+            }
+
+            // Flush
+            if (isFlush) {
+                return { rank: 6, name: 'Flush', highCard };
+            }
+
+            // Straight
+            if (isStraight) {
+                return { rank: 5, name: 'Straight', highCard };
+            }
+
+            // Three of a Kind
+            if (counts[0] === 3) {
+                return { rank: 4, name: 'Three of a Kind', highCard };
+            }
+
+            // Two Pair
+            if (counts[0] === 2 && counts[1] === 2) {
+                return { rank: 3, name: 'Two Pair', highCard };
+            }
+
+            // One Pair
+            if (counts[0] === 2) {
+                return { rank: 2, name: 'One Pair', highCard };
+            }
+
+            // High Card
+            return { rank: 1, name: 'High Card', highCard };
+        }
+
+        function updatePlayerHandRank() {
+            const rankDisplay = document.getElementById('player-hand-rank');
+            if (gameState.playerSlots.length > 0) {
+                const evaluation = evaluateHand(gameState.playerSlots);
+                rankDisplay.textContent = evaluation.name;
+            } else {
+                rankDisplay.textContent = '';
+            }
+        }
+
+        function updateComputerHandRank() {
+            const rankDisplay = document.getElementById('computer-hand-rank');
+            if (gameState.computerSlots.length > 0 && gameState.phase === 'resolution') {
+                const evaluation = evaluateHand(gameState.computerSlots);
+                rankDisplay.textContent = evaluation.name;
+            } else {
+                rankDisplay.textContent = '';
+            }
+        }
+
+        function determineRoundWinner() {
+            const playerEval = evaluateHand(gameState.playerSlots);
+            const computerEval = evaluateHand(gameState.computerSlots);
+
+            let winner = '';
+            let message = `Player: ${playerEval.name}\nComputer: ${computerEval.name}\n\n`;
+
+            if (playerEval.rank > computerEval.rank) {
+                winner = 'Player';
+                gameState.playerScore++;
+            } else if (computerEval.rank > playerEval.rank) {
+                winner = 'Computer';
+                gameState.computerScore++;
+            } else {
+                // Same rank, compare high cards
+                if (playerEval.highCard > computerEval.highCard) {
+                    winner = 'Player';
+                    gameState.playerScore++;
+                } else if (computerEval.highCard > playerEval.highCard) {
+                    winner = 'Computer';
+                    gameState.computerScore++;
+                } else {
+                    winner = 'Tie';
+                }
+            }
+
+            updateScoreDisplay();
+
+            // Check if match is over
+            if (gameState.playerScore >= 3 || gameState.computerScore >= 3) {
+                const matchWinner = gameState.playerScore >= 3 ? 'Player' : 'Computer';
+                message += `\n${matchWinner} wins the match!`;
+                showResult(`${winner} wins this round!`, message, true);
+            } else {
+                message += `${winner} wins this round!`;
+                showResult(`${winner} wins!`, message, false);
+            }
+        }
+
+        function showResult(title, message, isMatchOver) {
+            const resultDisplay = document.getElementById('result-display');
+            const resultTitle = document.getElementById('result-title');
+            const resultMessage = document.getElementById('result-message');
+            const resultContinueBtn = document.getElementById('result-continue-btn');
+
+            resultTitle.textContent = title;
+            resultMessage.textContent = message;
+            resultDisplay.classList.remove('hidden');
+
+            resultContinueBtn.onclick = () => {
+                resultDisplay.classList.add('hidden');
+                if (isMatchOver) {
+                    resetGame();
+                } else {
+                    setPhase('discard');
+                }
+            };
+        }
+
+        function onDiscardClicked() {
+            const handContainer = document.getElementById('player-hand');
+            const cardsToDiscard = [];
+
+            Array.from(handContainer.children).forEach((cardElement, index) => {
+                if (cardElement.classList.contains('discard-selected')) {
+                    cardsToDiscard.push(index);
+                }
+            });
+
+            // Remove cards from hand (in reverse order to maintain indices)
+            for (let i = cardsToDiscard.length - 1; i >= 0; i--) {
+                gameState.playerHand.splice(cardsToDiscard[i], 1);
+            }
+
+            proceedToNextRound();
+        }
+
+        function onContinueClicked() {
+            proceedToNextRound();
+        }
+
+        function proceedToNextRound() {
+            // Remove cards from computer deck that were played
+            gameState.computerSlots.forEach(card => {
+                const index = gameState.computerDeck.findIndex(c =>
+                    c.value === card.value && c.suit === card.suit
+                );
+                if (index !== -1) {
+                    gameState.computerDeck.splice(index, 1);
+                }
+            });
+
+            // Remove cards from player deck that were played
+            gameState.playerSlots.forEach(card => {
+                const index = gameState.playerDeck.findIndex(c =>
+                    c.value === card.value && c.suit === card.suit
+                );
+                if (index !== -1) {
+                    gameState.playerDeck.splice(index, 1);
+                }
+            });
+
+            // Clear slots
+            gameState.playerSlots = [];
+            gameState.computerSlots = [];
+
+            renderPlayerSlots();
+            renderComputerSlots();
+
+            // Start new round
+            setPhase('dealing');
+            dealCards();
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('score-display').textContent =
+                `Player: ${gameState.playerScore} | Computer: ${gameState.computerScore}`;
+        }
+
+        function setupEventListeners() {
+            document.getElementById('ready-btn').addEventListener('click', onReadyClicked);
+            document.getElementById('discard-btn').addEventListener('click', onDiscardClicked);
+            document.getElementById('continue-btn').addEventListener('click', onContinueClicked);
+
+            // Debug overlay
+            document.getElementById('debug-btn').addEventListener('click', () => {
+                document.getElementById('debug-overlay').classList.remove('hidden');
+            });
+
+            document.getElementById('debug-close-btn').addEventListener('click', () => {
+                document.getElementById('debug-overlay').classList.add('hidden');
+            });
+
+            document.getElementById('force-reset-btn').addEventListener('click', () => {
+                document.getElementById('debug-overlay').classList.add('hidden');
+                resetGame();
+            });
+        }
+
+        // Start the game
+        initGame();
+    </script>
+</body>
+</html>

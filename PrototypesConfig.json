@@ -14,6 +14,11 @@
       "name": "Word Blocks",
       "description": "Mobile-first word game - tap and drag to form words on a 5x5 letter grid",
       "path": "prototypes/word-blocks/index.html"
+    },
+    {
+      "name": "Poker PVP",
+      "description": "Mobile poker game - play 5-card poker against the computer in a best-of-5 match",
+      "path": "prototypes/poker-pvp/index.html"
     }
   ]
 }

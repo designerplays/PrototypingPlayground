@@ -1,0 +1,12 @@
+{
+  "royal_flush": 1,
+  "straight_flush": 2,
+  "four_of_a_kind": 3,
+  "full_house": 4,
+  "flush": 10,
+  "straight": 10,
+  "three_of_a_kind": 15,
+  "two_pair": 20,
+  "one_pair": 20,
+  "high_card": 5
+}
