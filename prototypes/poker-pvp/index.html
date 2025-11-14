@@ -127,6 +127,11 @@
             border-color: #ffeb3b;
         }
 
+        .card.play-selected {
+            border-color: #4caf50;
+            background: #e8f5e9;
+        }
+
         .card.discard-selected {
             border-color: #f44336;
             background: #ffebee;
@@ -257,7 +262,7 @@
         /* Debug Button */
         #debug-btn {
             position: fixed;
-            bottom: 20px;
+            top: 20px;
             right: 20px;
             width: 50px;
             height: 50px;
@@ -418,7 +423,7 @@
             <h3>Debug Settings</h3>
             <button id="debug-close-btn">✕</button>
             <div class="debug-section">
-                <p><strong>Version:</strong> <span id="version-display">0.1</span></p>
+                <p><strong>Version:</strong> <span id="version-display">0.2</span></p>
             </div>
             <div class="debug-section">
                 <button id="force-reset-btn">Reset Game</button>
@@ -436,6 +441,7 @@
             computerHand: [],
             playerSlots: [],
             computerSlots: [],
+            selectedCardIndices: [], // Indices of selected cards in playerHand
             playerScore: 0,
             computerScore: 0,
             handProbabilities: null
@@ -489,6 +495,7 @@
             gameState.computerHand = [];
             gameState.playerSlots = [];
             gameState.computerSlots = [];
+            gameState.selectedCardIndices = [];
 
             // Start dealing phase
             setPhase('dealing');
@@ -562,6 +569,10 @@
 
             gameState.playerHand.forEach((card, index) => {
                 const cardElement = createCardElement(card, index);
+                // Add play-selected class if this card is selected
+                if (gameState.selectedCardIndices.includes(index)) {
+                    cardElement.classList.add('play-selected');
+                }
                 handContainer.appendChild(cardElement);
             });
         }
@@ -570,11 +581,19 @@
             const slotsContainer = document.getElementById('player-slots');
             slotsContainer.innerHTML = '';
 
+            // Build playerSlots from selectedCardIndices only during playing phase
+            if (gameState.phase === 'playing') {
+                gameState.playerSlots = gameState.selectedCardIndices.map(i => gameState.playerHand[i]);
+            }
+
             // Always show 5 slots
             for (let i = 0; i < 5; i++) {
                 if (i < gameState.playerSlots.length) {
                     const card = gameState.playerSlots[i];
-                    const cardElement = createCardElement(card, i, true);
+                    // During playing phase, pass the hand index for deselection
+                    // During other phases, just pass the slot index
+                    const indexToPass = (gameState.phase === 'playing') ? gameState.selectedCardIndices[i] : i;
+                    const cardElement = createCardElement(card, indexToPass, true);
                     slotsContainer.appendChild(cardElement);
                 } else {
                     const emptySlot = document.createElement('div');
@@ -628,9 +647,11 @@
                 cardElement.addEventListener('click', () => {
                     if (gameState.phase === 'playing') {
                         if (isInSlot) {
-                            moveCardFromSlotToHand(index);
+                            // Deselect card by removing from selectedCardIndices
+                            toggleCardSelection(index);
                         } else {
-                            moveCardFromHandToSlot(index);
+                            // Toggle selection in hand
+                            toggleCardSelection(index);
                         }
                     } else if (gameState.phase === 'discard') {
                         if (!isInSlot) {
@@ -643,21 +664,19 @@
             return cardElement;
         }
 
-        function moveCardFromHandToSlot(handIndex) {
-            if (gameState.playerSlots.length >= 5) {
-                return; // Already have 5 cards in slots
+        function toggleCardSelection(handIndex) {
+            const selectedIndex = gameState.selectedCardIndices.indexOf(handIndex);
+
+            if (selectedIndex === -1) {
+                // Card is not selected, select it
+                if (gameState.selectedCardIndices.length >= 5) {
+                    return; // Already have 5 cards selected
+                }
+                gameState.selectedCardIndices.push(handIndex);
+            } else {
+                // Card is selected, deselect it
+                gameState.selectedCardIndices.splice(selectedIndex, 1);
             }
-
-            const card = gameState.playerHand.splice(handIndex, 1)[0];
-            gameState.playerSlots.push(card);
-
-            renderPlayerHand();
-            renderPlayerSlots();
-        }
-
-        function moveCardFromSlotToHand(slotIndex) {
-            const card = gameState.playerSlots.splice(slotIndex, 1)[0];
-            gameState.playerHand.push(card);
 
             renderPlayerHand();
             renderPlayerSlots();
@@ -670,7 +689,7 @@
         }
 
         function onReadyClicked() {
-            if (gameState.playerSlots.length === 0) {
+            if (gameState.selectedCardIndices.length === 0) {
                 alert('Please select at least 1 card!');
                 return;
             }
@@ -1074,6 +1093,14 @@
                 if (isMatchOver) {
                     resetGame();
                 } else {
+                    // Remove played cards from hand before entering discard phase
+                    // Sort indices in descending order to avoid index shifting issues
+                    const sortedIndices = [...gameState.selectedCardIndices].sort((a, b) => b - a);
+                    sortedIndices.forEach(index => {
+                        gameState.playerHand.splice(index, 1);
+                    });
+                    gameState.selectedCardIndices = [];
+                    renderPlayerHand();
                     setPhase('discard');
                 }
             };
