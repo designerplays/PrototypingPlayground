@@ -423,7 +423,7 @@
             <h3>Debug Settings</h3>
             <button id="debug-close-btn">✕</button>
             <div class="debug-section">
-                <p><strong>Version:</strong> <span id="version-display">0.4</span></p>
+                <p><strong>Version:</strong> <span id="version-display">0.5</span></p>
             </div>
             <div class="debug-section">
                 <button id="force-reset-btn">Reset Game</button>
@@ -1225,6 +1225,9 @@
             // Clear slots
             gameState.playerSlots = [];
             gameState.computerSlots = [];
+
+            // Reset discard flag for the new playing phase
+            gameState.hasDiscardedThisRound = false;
 
             renderPlayerSlots();
             renderComputerSlots();
