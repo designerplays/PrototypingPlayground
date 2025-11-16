@@ -20,8 +20,8 @@
             <div id="secure-message"></div>
             <div id="secure-cost">
                 <div>Cost:</div>
-                <div class="cost-item">🛠️ <span>5</span> Materials</div>
-                <div class="cost-item">🍕 <span>1</span> Food</div>
+                <div class="cost-item"><span id="secure-materials-emoji">🛠️</span><span id="secure-materials-cost">5</span></div>
+                <div class="cost-item"><span id="secure-food-emoji">🍕</span><span id="secure-food-cost">1</span></div>
             </div>
             <button id="secure-btn">Secure</button>
             <button id="secure-cancel-btn">Cancel</button>
@@ -50,14 +50,17 @@
             <div id="resources-found-list"></div>
         </div>
         <div id="resource-counters">
-            <div id="food-counter">
-                🍕 <span id="food-count">10</span>
-            </div>
-            <div id="materials-counter">
-                🛠️ <span id="materials-count">10</span>
+            <div class="resources-label">Resources</div>
+            <div class="resources-container">
+                <div id="food-counter">
+                    🍕<span id="food-count">10</span>
+                </div>
+                <div id="materials-counter">
+                    🛠️<span id="materials-count">10</span>
+                </div>
             </div>
         </div>
-        <div id="tile-counter">
+        <div id="tile-counter" style="display: none;">
             Tiles remaining: <span id="remaining-count">36</span>
         </div>
         <button id="debug-btn" title="Debug">🐛</button>
@@ -66,7 +69,7 @@
             <button id="debug-close-btn">✕</button>
             <div class="debug-section">
                 <!-- Version: Increment by 0.1 for each change unless specified otherwise -->
-                <p><strong>Version:</strong> <span id="version-display">0.9</span></p>
+                <p><strong>Version:</strong> <span id="version-display">1.0</span></p>
             </div>
             <div class="debug-section">
                 <button id="force-restart-btn">Force Restart</button>
@@ -74,6 +77,10 @@
             <div class="debug-section">
                 <label for="hex-radius-slider">Debug Tap Radius: <span id="hex-radius-value">60</span>px</label>
                 <input type="range" id="hex-radius-slider" min="10" max="200" value="60" step="1">
+            </div>
+            <div class="debug-section">
+                <label for="resources-popup-duration">Resources Found Duration: <span id="resources-popup-duration-value">2000</span>ms</label>
+                <input type="range" id="resources-popup-duration" min="500" max="5000" value="2000" step="100">
             </div>
         </div>
     </div>

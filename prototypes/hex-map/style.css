@@ -201,16 +201,28 @@ body {
     position: absolute;
     top: 20px;
     left: 20px;
-    display: flex;
-    gap: 10px;
-    z-index: 50;
-}
-
-#food-counter, #materials-counter {
     background: white;
     padding: 15px 25px;
     border-radius: 10px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    z-index: 50;
+}
+
+.resources-label {
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.resources-container {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+#food-counter, #materials-counter {
     font-weight: bold;
     color: #333;
     font-size: 18px;
@@ -347,11 +359,11 @@ body {
     color: #333;
 }
 
-#hex-radius-value {
+#hex-radius-value, #resources-popup-duration-value {
     color: #667eea;
 }
 
-#hex-radius-slider {
+#hex-radius-slider, #resources-popup-duration {
     width: 100%;
     height: 8px;
     border-radius: 5px;
@@ -360,7 +372,7 @@ body {
     -webkit-appearance: none;
 }
 
-#hex-radius-slider::-webkit-slider-thumb {
+#hex-radius-slider::-webkit-slider-thumb, #resources-popup-duration::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 24px;
@@ -370,7 +382,7 @@ body {
     cursor: pointer;
 }
 
-#hex-radius-slider::-moz-range-thumb {
+#hex-radius-slider::-moz-range-thumb, #resources-popup-duration::-moz-range-thumb {
     width: 24px;
     height: 24px;
     border-radius: 50%;
