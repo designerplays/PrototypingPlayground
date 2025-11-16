@@ -50,8 +50,12 @@ class WordBlocksGame {
 
     // Calculate the pixel position for a block at given row/col
     getBlockPosition(row, col) {
-        const top = row * (this.blockSize + this.blockGap);
-        const left = col * (this.blockSize + this.blockGap);
+        // Get the current padding from the grid container to ensure proper centering
+        const computedStyle = getComputedStyle(this.gridContainer);
+        const padding = parseFloat(computedStyle.paddingTop);
+
+        const top = row * (this.blockSize + this.blockGap) + padding;
+        const left = col * (this.blockSize + this.blockGap) + padding;
 
         return { top, left };
     }
