@@ -423,7 +423,7 @@
             <h3>Debug Settings</h3>
             <button id="debug-close-btn">✕</button>
             <div class="debug-section">
-                <p><strong>Version:</strong> <span id="version-display">0.3</span></p>
+                <p><strong>Version:</strong> <span id="version-display">0.4</span></p>
             </div>
             <div class="debug-section">
                 <button id="force-reset-btn">Reset Game</button>
@@ -434,7 +434,7 @@
     <script>
         // Game State
         const gameState = {
-            phase: 'dealing', // dealing, playing, resolution, discard
+            phase: 'dealing', // dealing, playing, resolution
             playerDeck: [],
             computerDeck: [],
             playerHand: [],
@@ -444,7 +444,8 @@
             selectedCardIndices: [], // Indices of selected cards in playerHand
             playerScore: 0,
             computerScore: 0,
-            handProbabilities: null
+            handProbabilities: null,
+            hasDiscardedThisRound: false // Track if player has discarded this round
         };
 
         // Card Suits and Values
@@ -496,6 +497,7 @@
             gameState.playerSlots = [];
             gameState.computerSlots = [];
             gameState.selectedCardIndices = [];
+            gameState.hasDiscardedThisRound = false;
 
             // Start dealing phase
             setPhase('dealing');
@@ -549,16 +551,14 @@
                     phaseIndicator.textContent = 'Dealing Phase';
                     break;
                 case 'playing':
-                    phaseIndicator.textContent = 'Playing Phase - Select your cards';
+                    phaseIndicator.textContent = 'Playing Phase - Select cards to play or discard';
                     readyBtn.classList.remove('hidden');
+                    discardBtn.classList.remove('hidden');
+                    // Disable discard button if already discarded this round
+                    discardBtn.disabled = gameState.hasDiscardedThisRound;
                     break;
                 case 'resolution':
                     phaseIndicator.textContent = 'Resolution Phase';
-                    break;
-                case 'discard':
-                    phaseIndicator.textContent = 'Discard Phase';
-                    discardBtn.classList.remove('hidden');
-                    continueBtn.classList.remove('hidden');
                     break;
             }
         }
@@ -670,10 +670,6 @@
                             // Toggle selection in hand
                             toggleCardSelection(index);
                         }
-                    } else if (gameState.phase === 'discard') {
-                        if (!isInSlot) {
-                            toggleDiscardSelection(index);
-                        }
                     }
                 });
             }
@@ -697,12 +693,6 @@
 
             renderPlayerHand();
             renderPlayerSlots();
-        }
-
-        function toggleDiscardSelection(handIndex) {
-            const handContainer = document.getElementById('player-hand');
-            const cardElement = handContainer.children[handIndex];
-            cardElement.classList.toggle('discard-selected');
         }
 
         function onReadyClicked() {
@@ -1153,7 +1143,7 @@
                 if (isMatchOver) {
                     resetGame();
                 } else {
-                    // Remove played cards from hand before entering discard phase
+                    // Remove played cards from hand
                     // Sort indices in descending order to avoid index shifting issues
                     const sortedIndices = [...gameState.selectedCardIndices].sort((a, b) => b - a);
                     sortedIndices.forEach(index => {
@@ -1161,31 +1151,54 @@
                     });
                     gameState.selectedCardIndices = [];
                     renderPlayerHand();
-                    setPhase('discard');
+
+                    // Proceed directly to next round
+                    proceedToNextRound();
                 }
             };
         }
 
         function onDiscardClicked() {
-            const handContainer = document.getElementById('player-hand');
-            const cardsToDiscard = [];
-
-            Array.from(handContainer.children).forEach((cardElement, index) => {
-                if (cardElement.classList.contains('discard-selected')) {
-                    cardsToDiscard.push(index);
-                }
-            });
-
-            // Remove cards from hand (in reverse order to maintain indices)
-            for (let i = cardsToDiscard.length - 1; i >= 0; i--) {
-                gameState.playerHand.splice(cardsToDiscard[i], 1);
+            // Check if in playing phase
+            if (gameState.phase !== 'playing') {
+                return;
             }
 
-            proceedToNextRound();
-        }
+            // Check if already discarded
+            if (gameState.hasDiscardedThisRound) {
+                return;
+            }
 
-        function onContinueClicked() {
-            proceedToNextRound();
+            // Check if any cards are selected
+            if (gameState.selectedCardIndices.length === 0) {
+                alert('Please select cards to discard!');
+                return;
+            }
+
+            // Remove selected cards from hand (in reverse order to maintain indices)
+            const sortedIndices = [...gameState.selectedCardIndices].sort((a, b) => b - a);
+            sortedIndices.forEach(index => {
+                gameState.playerHand.splice(index, 1);
+            });
+
+            // Clear selection
+            gameState.selectedCardIndices = [];
+
+            // Draw new cards until player has 8 cards
+            const cardsToDraw = Math.min(8 - gameState.playerHand.length, gameState.playerDeck.length);
+            for (let i = 0; i < cardsToDraw; i++) {
+                gameState.playerHand.push(gameState.playerDeck.pop());
+            }
+
+            // Mark that player has discarded this round
+            gameState.hasDiscardedThisRound = true;
+
+            // Re-render hand and update UI
+            renderPlayerHand();
+            renderPlayerSlots();
+
+            // Update phase to disable discard button
+            setPhase('playing');
         }
 
         function proceedToNextRound() {
@@ -1229,7 +1242,6 @@
         function setupEventListeners() {
             document.getElementById('ready-btn').addEventListener('click', onReadyClicked);
             document.getElementById('discard-btn').addEventListener('click', onDiscardClicked);
-            document.getElementById('continue-btn').addEventListener('click', onContinueClicked);
 
             // Debug overlay
             document.getElementById('debug-btn').addEventListener('click', () => {
