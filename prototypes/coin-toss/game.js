@@ -1,5 +1,5 @@
 // Coin Toss Game - XP and Money
-// VERSION: 0.2
+// VERSION: 0.3
 
 class CoinTossGame {
     constructor() {
@@ -25,7 +25,7 @@ class CoinTossGame {
         this.money = 0;
         this.flipsLeft = 100;
         this.isFlipping = false;
-        this.version = '0.2';
+        this.version = '0.3';
 
         this.initialize();
     }
@@ -85,7 +85,7 @@ class CoinTossGame {
                 this.isFlipping = false;
                 this.flipButton.disabled = false;
             }
-        }, 2000); // Match the animation duration
+        }, 500); // Match the animation duration
     }
 
     processFlipResult(isXP) {
