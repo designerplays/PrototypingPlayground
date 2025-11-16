@@ -40,8 +40,8 @@ body {
 h1 {
     color: #333;
     text-align: center;
-    margin-bottom: 40px;
-    font-size: 32px;
+    margin-bottom: 20px;
+    font-size: 28px;
 }
 
 .game-area {
@@ -79,14 +79,14 @@ h1 {
     font-size: 24px;
 }
 
-.heads {
-    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-    color: #333;
+.xp {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
 }
 
-.tails {
-    background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
-    color: #333;
+.money {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
     transform: rotateY(180deg);
 }
 
@@ -95,7 +95,7 @@ h1 {
 }
 
 /* Flip animations */
-@keyframes flipHeads {
+@keyframes flipXP {
     0% {
         transform: rotateY(0deg) rotateX(0deg);
     }
@@ -104,7 +104,7 @@ h1 {
     }
 }
 
-@keyframes flipTails {
+@keyframes flipMoney {
     0% {
         transform: rotateY(0deg) rotateX(0deg);
     }
@@ -113,12 +113,12 @@ h1 {
     }
 }
 
-.coin.flipping-heads {
-    animation: flipHeads 2s ease-in-out forwards;
+.coin.flipping-xp {
+    animation: flipXP 2s ease-in-out forwards;
 }
 
-.coin.flipping-tails {
-    animation: flipTails 2s ease-in-out forwards;
+.coin.flipping-money {
+    animation: flipMoney 2s ease-in-out forwards;
 }
 
 .result {
@@ -171,26 +171,162 @@ h1 {
     cursor: not-allowed;
 }
 
-.stats {
+.top-stats {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.money-counter {
+    font-size: 24px;
+    font-weight: bold;
+    color: #22c55e;
+}
+
+.xp-section {
     margin-top: 40px;
     padding-top: 30px;
     border-top: 2px solid #eee;
 }
 
-.stat-item {
-    text-align: center;
+.xp-bar-container {
+    width: 100%;
+    height: 40px;
+    background: #e0e0e0;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.stat-label {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 5px;
+.xp-bar {
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    width: 0%;
+    transition: width 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    position: relative;
 }
 
-.stat-value {
-    color: #333;
-    font-size: 24px;
+.xp-text {
+    color: white;
     font-weight: bold;
+    font-size: 18px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    z-index: 1000;
+}
+
+.popup h2 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 32px;
+}
+
+.popup-button {
+    padding: 15px 40px;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.popup-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.hidden {
+    display: none;
+}
+
+/* Debug button */
+#debug-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #ccc;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s;
+    z-index: 100;
+}
+
+#debug-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+#debug-overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    min-width: 300px;
+}
+
+#debug-overlay h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+}
+
+#debug-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#debug-close-btn:hover {
+    color: #333;
+}
+
+.debug-section {
+    margin-bottom: 15px;
+}
+
+.debug-section p {
+    margin: 5px 0;
+    color: #333;
 }
