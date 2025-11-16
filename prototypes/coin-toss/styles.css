@@ -171,9 +171,10 @@ h1 {
     cursor: not-allowed;
 }
 
-.top-stats {
+.stats-section {
     display: flex;
     justify-content: center;
+    margin-top: 30px;
     margin-bottom: 20px;
 }
 
@@ -184,9 +185,17 @@ h1 {
 }
 
 .xp-section {
-    margin-top: 40px;
-    padding-top: 30px;
+    margin-top: 20px;
+    padding-top: 20px;
     border-top: 2px solid #eee;
+}
+
+.level-text {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 10px;
 }
 
 .xp-bar-container {

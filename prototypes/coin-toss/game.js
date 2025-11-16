@@ -1,5 +1,5 @@
 // Coin Toss Game - XP and Money
-// VERSION: 0.1
+// VERSION: 0.2
 
 class CoinTossGame {
     constructor() {
@@ -9,6 +9,7 @@ class CoinTossGame {
         this.resultElement = document.getElementById('result');
         this.xpBar = document.getElementById('xpBar');
         this.xpText = document.getElementById('xpText');
+        this.levelText = document.getElementById('levelText');
         this.moneyCounter = document.getElementById('moneyCounter');
         this.flipsLeftCounter = document.getElementById('flipsLeftCounter');
         this.gameOverPopup = document.getElementById('gameOver');
@@ -20,10 +21,11 @@ class CoinTossGame {
 
         // Game state
         this.xp = 0;
+        this.level = 1;
         this.money = 0;
         this.flipsLeft = 100;
         this.isFlipping = false;
-        this.version = '0.1';
+        this.version = '0.2';
 
         this.initialize();
     }
@@ -89,7 +91,13 @@ class CoinTossGame {
     processFlipResult(isXP) {
         if (isXP) {
             this.xp++;
-            this.resultElement.textContent = 'You got XP!';
+            // Check if level up (every 5 XP)
+            if (this.xp % 5 === 0) {
+                this.level++;
+                this.resultElement.textContent = `You got XP! LEVEL UP! Now Level ${this.level}!`;
+            } else {
+                this.resultElement.textContent = 'You got XP!';
+            }
         } else {
             this.money += 10;
             this.resultElement.textContent = 'You got Money!';
@@ -98,10 +106,16 @@ class CoinTossGame {
     }
 
     updateUI() {
-        // Update XP bar (cap at 100%)
-        const xpPercentage = Math.min(this.xp, 100);
+        // Calculate XP within current level (0-5 range)
+        const xpInCurrentLevel = this.xp % 5;
+        const xpPercentage = (xpInCurrentLevel / 5) * 100;
         this.xpBar.style.width = `${xpPercentage}%`;
-        this.xpText.textContent = this.xp;
+        this.xpText.textContent = `${xpInCurrentLevel}/5`;
+
+        // Update level text
+        if (this.levelText) {
+            this.levelText.textContent = `Level ${this.level}`;
+        }
 
         // Update money counter
         this.moneyCounter.textContent = `💰${this.money}`;
@@ -117,6 +131,7 @@ class CoinTossGame {
     resetGame() {
         // Reset game state
         this.xp = 0;
+        this.level = 1;
         this.money = 0;
         this.flipsLeft = 100;
         this.isFlipping = false;
