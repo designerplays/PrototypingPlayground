@@ -1,6 +1,6 @@
 // Hex Map Explorer Game - Mobile-First Rebuild
 // Complete rewrite for pixel-perfect visual and tap alignment
-// VERSION: 1.0 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 1.1 (increment by 0.1 for each change unless specified otherwise)
 
 class HexMapGame {
     constructor() {
@@ -41,7 +41,7 @@ class HexMapGame {
         this.resourcesFoundList = document.getElementById('resources-found-list');
 
         // Version info
-        this.version = '1.0';
+        this.version = '1.1';
 
         // Game config (messages, etc.)
         this.gameConfig = {};
@@ -910,6 +910,11 @@ class HexMapGame {
     }
 
     showResourcesFoundPopup(foodAmount, materialsAmount) {
+        // Don't show popup if no resources were found
+        if (foodAmount === 0 && materialsAmount === 0) {
+            return;
+        }
+
         // Clear previous content
         this.resourcesFoundList.innerHTML = '';
 
