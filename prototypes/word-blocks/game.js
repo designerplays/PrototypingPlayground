@@ -1,5 +1,5 @@
 // Word Blocks Game - Mobile-First Word Puzzle
-// VERSION: 1.0 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 1.1 (increment by 0.1 for each change unless specified otherwise)
 
 class WordBlocksGame {
     constructor() {
@@ -10,6 +10,8 @@ class WordBlocksGame {
         this.debugCloseBtn = document.getElementById('debug-close-btn');
         this.forceRestartBtn = document.getElementById('force-restart-btn');
         this.versionDisplay = document.getElementById('version-display');
+        this.progressFill = document.getElementById('progress-fill');
+        this.progressText = document.getElementById('progress-text');
 
         // Config sliders
         this.disappearTimeSlider = document.getElementById('disappear-time-slider');
@@ -20,7 +22,7 @@ class WordBlocksGame {
         this.blockSizeValue = document.getElementById('block-size-value');
 
         // Version info
-        this.version = '1.0';
+        this.version = '1.1';
 
         // Config values
         this.disappearTime = 300; // ms
@@ -32,6 +34,8 @@ class WordBlocksGame {
         this.gridSize = 5;
         this.grid = []; // 2D array of letters
         this.cellElements = []; // 2D array of DOM elements
+        this.totalBlocks = this.gridSize * this.gridSize; // Total blocks in grid (25)
+        this.clearedBlocks = 0; // Number of blocks cleared
 
         // Letter distribution
         this.letterDistribution = {};
@@ -58,6 +62,13 @@ class WordBlocksGame {
         const left = col * (this.blockSize + this.blockGap) + padding;
 
         return { top, left };
+    }
+
+    // Update progress bar based on cleared blocks
+    updateProgressBar() {
+        const percentage = (this.clearedBlocks / this.totalBlocks) * 100;
+        this.progressFill.style.width = `${percentage}%`;
+        this.progressText.textContent = `${this.clearedBlocks} / ${this.totalBlocks} blocks cleared`;
     }
 
     async init() {
@@ -386,12 +397,18 @@ class WordBlocksGame {
         // Wait for animation to complete
         await new Promise(resolve => setTimeout(resolve, this.disappearTime));
 
+        // Update cleared blocks count
+        this.clearedBlocks += this.selectedCells.length;
+
         // Clear the cells
         this.selectedCells.forEach(cell => {
             this.grid[cell.row][cell.col] = null;
             this.cellElements[cell.row][cell.col].textContent = '';
             this.cellElements[cell.row][cell.col].classList.remove('selected', 'removing');
         });
+
+        // Update progress bar
+        this.updateProgressBar();
 
         this.selectedCells = [];
         this.currentWord = '';
@@ -508,9 +525,11 @@ class WordBlocksGame {
     }
 
     restart() {
+        this.clearedBlocks = 0;
         this.initializeGrid();
         this.renderGrid();
         this.clearSelection();
+        this.updateProgressBar();
     }
 }
 
