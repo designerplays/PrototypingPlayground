@@ -1,6 +1,6 @@
 // Hex Map Explorer Game - Mobile-First Rebuild
 // Complete rewrite for pixel-perfect visual and tap alignment
-// VERSION: 0.9 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 1.0 (increment by 0.1 for each change unless specified otherwise)
 
 class HexMapGame {
     constructor() {
@@ -20,11 +20,15 @@ class HexMapGame {
         this.forceRestartBtn = document.getElementById('force-restart-btn');
         this.hexRadiusSlider = document.getElementById('hex-radius-slider');
         this.hexRadiusValue = document.getElementById('hex-radius-value');
+        this.resourcesPopupDurationSlider = document.getElementById('resources-popup-duration');
+        this.resourcesPopupDurationValue = document.getElementById('resources-popup-duration-value');
         this.versionDisplay = document.getElementById('version-display');
         this.securePopup = document.getElementById('secure-popup');
         this.secureBtn = document.getElementById('secure-btn');
         this.secureCancelBtn = document.getElementById('secure-cancel-btn');
         this.secureMessage = document.getElementById('secure-message');
+        this.secureMaterialsCost = document.getElementById('secure-materials-cost');
+        this.secureFoodCost = document.getElementById('secure-food-cost');
         this.starvationPopup = document.getElementById('starvation-popup');
         this.starvationRestartBtn = document.getElementById('starvation-restart-btn');
         this.welcomePopup = document.getElementById('welcome-popup');
@@ -37,7 +41,7 @@ class HexMapGame {
         this.resourcesFoundList = document.getElementById('resources-found-list');
 
         // Version info
-        this.version = '0.9';
+        this.version = '1.0';
 
         // Game config (messages, etc.)
         this.gameConfig = {};
@@ -75,6 +79,7 @@ class HexMapGame {
         // Debug
         this.showDebugOverlay = false;
         this.debugTapRadius = 60; // For visualization only
+        this.resourcesFoundPopupDuration = 2000; // milliseconds
 
         this.init();
     }
@@ -251,6 +256,10 @@ class HexMapGame {
             this.debugTapRadius = parseInt(e.target.value);
             this.hexRadiusValue.textContent = this.debugTapRadius;
             this.render();
+        });
+        this.resourcesPopupDurationSlider.addEventListener('input', (e) => {
+            this.resourcesFoundPopupDuration = parseInt(e.target.value);
+            this.resourcesPopupDurationValue.textContent = this.resourcesFoundPopupDuration;
         });
 
         // Secure popup buttons
@@ -772,7 +781,7 @@ class HexMapGame {
 
                     const foodItem = document.createElement('div');
                     foodItem.className = 'tile-option-resource-item';
-                    foodItem.innerHTML = `🍕 Food: <span class="${foodClass}">${foodThreshold}</span>`;
+                    foodItem.innerHTML = `🍕<span class="${foodClass}">${foodThreshold}</span>`;
                     resourcesDiv.appendChild(foodItem);
                 }
 
@@ -799,7 +808,7 @@ class HexMapGame {
 
                     const materialsItem = document.createElement('div');
                     materialsItem.className = 'tile-option-resource-item';
-                    materialsItem.innerHTML = `🛠️ Materials: <span class="${materialsClass}">${materialsThreshold}</span>`;
+                    materialsItem.innerHTML = `🛠️<span class="${materialsClass}">${materialsThreshold}</span>`;
                     resourcesDiv.appendChild(materialsItem);
                 }
             }
@@ -838,8 +847,22 @@ class HexMapGame {
         const canSecure = this.canSecureTile(hex.q, hex.r);
 
         // Check if player has enough resources
-        const hasEnoughResources = this.materials >= this.secureCost.materials &&
-                                    this.food >= this.secureCost.food;
+        const hasEnoughMaterials = this.materials >= this.secureCost.materials;
+        const hasEnoughFood = this.food >= this.secureCost.food;
+        const hasEnoughResources = hasEnoughMaterials && hasEnoughFood;
+
+        // Color-code the resource amounts
+        if (hasEnoughMaterials) {
+            this.secureMaterialsCost.style.color = '#4169E1'; // Royal blue
+        } else {
+            this.secureMaterialsCost.style.color = '#DC143C'; // Crimson red
+        }
+
+        if (hasEnoughFood) {
+            this.secureFoodCost.style.color = '#4169E1'; // Royal blue
+        } else {
+            this.secureFoodCost.style.color = '#DC143C'; // Crimson red
+        }
 
         // Update button state and message
         if (!canSecure) {
@@ -893,23 +916,23 @@ class HexMapGame {
         // Only show resources that were actually found (non-zero amounts)
         if (foodAmount > 0) {
             const foodDiv = document.createElement('div');
-            foodDiv.textContent = `🍕 Food: ${foodAmount}`;
+            foodDiv.textContent = `🍕${foodAmount}`;
             this.resourcesFoundList.appendChild(foodDiv);
         }
 
         if (materialsAmount > 0) {
             const materialsDiv = document.createElement('div');
-            materialsDiv.textContent = `🛠️ Materials: ${materialsAmount}`;
+            materialsDiv.textContent = `🛠️${materialsAmount}`;
             this.resourcesFoundList.appendChild(materialsDiv);
         }
 
         // Show the popup
         this.resourcesFoundPopup.classList.remove('hidden');
 
-        // Hide after 1 second
+        // Hide after configured duration
         setTimeout(() => {
             this.resourcesFoundPopup.classList.add('hidden');
-        }, 1000);
+        }, this.resourcesFoundPopupDuration);
     }
 
     // Check if there's a secured path from home base to Ark using BFS
