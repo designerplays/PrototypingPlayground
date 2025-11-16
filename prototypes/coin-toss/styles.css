@@ -114,11 +114,11 @@ h1 {
 }
 
 .coin.flipping-xp {
-    animation: flipXP 2s ease-in-out forwards;
+    animation: flipXP 0.5s ease-in-out forwards;
 }
 
 .coin.flipping-money {
-    animation: flipMoney 2s ease-in-out forwards;
+    animation: flipMoney 0.5s ease-in-out forwards;
 }
 
 .result {
