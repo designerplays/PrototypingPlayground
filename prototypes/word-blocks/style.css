@@ -26,8 +26,33 @@ body {
     width: 100vw;
     height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 20px;
+    padding: 20px 10px;
+}
+
+#longest-word-container {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: calc(100% - 40px);
+    flex-shrink: 0;
+}
+
+#longest-word-label {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+#longest-word-text {
+    color: #667eea;
+    text-transform: uppercase;
 }
 
 #grid-container {
@@ -39,8 +64,9 @@ body {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 15px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    max-width: 90vmin;
-    max-height: 90vmin;
+    max-width: min(90vw, 400px);
+    max-height: min(60vh, 400px);
+    flex-shrink: 0;
 }
 
 .letter-cell {
@@ -95,10 +121,7 @@ body {
 }
 
 #progress-container {
-    position: absolute;
-    bottom: 80px;
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative;
     width: calc(100% - 40px);
     max-width: 400px;
     background: rgba(255, 255, 255, 0.95);
@@ -106,6 +129,7 @@ body {
     border-radius: 12px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
     z-index: 40;
+    flex-shrink: 0;
 }
 
 #progress-label {
@@ -281,12 +305,58 @@ body {
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
+    #game-container {
+        padding: 10px 5px;
+        gap: 15px;
+    }
+
+    #longest-word-container {
+        padding: 8px 15px;
+    }
+
+    #longest-word-label {
+        font-size: 16px;
+    }
+
     #grid-container {
         padding: 15px;
+    }
+
+    #progress-container {
+        padding: 12px 15px;
+    }
+
+    #progress-label {
+        font-size: 14px;
     }
 }
 
 @media (max-height: 600px) {
+    #game-container {
+        padding: 10px 5px;
+        gap: 10px;
+    }
+
+    #grid-container {
+        padding: 10px;
+        max-height: min(50vh, 400px);
+    }
+
+    #progress-container {
+        padding: 10px 15px;
+    }
+
+    #progress-label {
+        font-size: 14px;
+    }
+}
+
+@media (max-height: 700px) and (max-width: 600px) {
+    #game-container {
+        gap: 10px;
+        padding: 5px;
+    }
+
     #grid-container {
         padding: 10px;
     }
