@@ -99,7 +99,7 @@ body {
     bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
-    width: 90%;
+    width: calc(100% - 40px);
     max-width: 400px;
     background: rgba(255, 255, 255, 0.95);
     padding: 15px 20px;
@@ -133,9 +133,7 @@ body {
     height: 100%;
     width: 0%;
     background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-    border-radius: 10px;
     transition: width 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 #debug-btn {
