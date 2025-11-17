@@ -1,5 +1,5 @@
 // Word Blocks Game - Mobile-First Word Puzzle
-// VERSION: 1.1 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 1.2 (increment by 0.1 for each change unless specified otherwise)
 
 class WordBlocksGame {
     constructor() {
@@ -24,7 +24,10 @@ class WordBlocksGame {
         this.progressBarFill = document.getElementById('progress-bar-fill');
 
         // Version info
-        this.version = '1.1';
+        this.version = '1.2';
+
+        // Seeded random number generator for daily puzzles
+        this.seedRng();
 
         // Config values
         this.disappearTime = 300; // ms
@@ -65,6 +68,26 @@ class WordBlocksGame {
         return { top, left };
     }
 
+    // Initialize seeded random number generator using current date
+    seedRng() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth() + 1; // Months are 0-indexed
+        const day = today.getDate();
+
+        // Create a seed from YYYYMMDD (e.g., 20251117)
+        this.seed = year * 10000 + month * 100 + day;
+    }
+
+    // Seeded random number generator using mulberry32 algorithm
+    // Returns a pseudo-random number between 0 and 1
+    seededRandom() {
+        let t = this.seed += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    }
+
     async init() {
         await this.loadLetterDistribution();
         this.setupEventListeners();
@@ -94,7 +117,7 @@ class WordBlocksGame {
     }
 
     getRandomLetter() {
-        const randomIndex = Math.floor(Math.random() * this.letterPool.length);
+        const randomIndex = Math.floor(this.seededRandom() * this.letterPool.length);
         return this.letterPool[randomIndex];
     }
 
@@ -539,6 +562,7 @@ class WordBlocksGame {
     }
 
     restart() {
+        this.seedRng(); // Reset seed to today's date for consistent daily puzzle
         this.initializeGrid();
         this.renderGrid();
         this.clearSelection();
