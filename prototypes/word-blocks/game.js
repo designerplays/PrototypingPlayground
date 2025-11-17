@@ -1,5 +1,5 @@
 // Word Blocks Game - Mobile-First Word Puzzle
-// VERSION: 1.3 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 1.4 (increment by 0.1 for each change unless specified otherwise)
 
 class WordBlocksGame {
     constructor() {
@@ -23,8 +23,12 @@ class WordBlocksGame {
         this.progressText = document.getElementById('progress-text');
         this.progressBarFill = document.getElementById('progress-bar-fill');
 
+        // Longest word elements
+        this.longestWordContainer = document.getElementById('longest-word-container');
+        this.longestWordText = document.getElementById('longest-word-text');
+
         // Version info
-        this.version = '1.3';
+        this.version = '1.4';
 
         // Seeded random number generator for daily puzzles
         this.seedRng();
@@ -49,6 +53,9 @@ class WordBlocksGame {
         this.isSelecting = false;
         this.selectedCells = []; // Array of {row, col} objects
         this.currentWord = '';
+
+        // Longest word tracking
+        this.longestWord = '';
 
         // Touch tracking
         this.lastTouchedCell = null;
@@ -385,6 +392,13 @@ class WordBlocksGame {
 
         if (isValid) {
             console.log('Valid word:', word);
+
+            // Update longest word if this word is longer
+            if (word.length > this.longestWord.length) {
+                this.longestWord = word;
+                this.updateLongestWord();
+            }
+
             await this.removeSelectedCells();
             await this.applyGravity();
             this.updateProgress();
@@ -553,6 +567,18 @@ class WordBlocksGame {
         }
     }
 
+    updateLongestWord() {
+        // Update the longest word display
+        if (this.longestWordText) {
+            this.longestWordText.textContent = this.longestWord;
+        }
+
+        // Show the container if we have a longest word
+        if (this.longestWord && this.longestWordContainer) {
+            this.longestWordContainer.classList.remove('hidden');
+        }
+    }
+
     openDebugPanel() {
         this.debugOverlay.classList.remove('hidden');
     }
@@ -563,6 +589,13 @@ class WordBlocksGame {
 
     restart() {
         this.seedRng(); // Reset seed to today's date for consistent daily puzzle
+        this.longestWord = ''; // Reset longest word
+
+        // Hide the longest word container
+        if (this.longestWordContainer) {
+            this.longestWordContainer.classList.add('hidden');
+        }
+
         this.initializeGrid();
         this.renderGrid();
         this.clearSelection();
