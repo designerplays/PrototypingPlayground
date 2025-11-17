@@ -1,23 +1,23 @@
 {
   "prototypes": [
     {
-      "name": "Coin Toss",
-      "description": "Flip a coin and see if it lands on heads or tails",
+      "name": "Life is a Coin-Toss",
+      "description": "Flip a coin every year of your life to see if you get money or experience. Make choices based on the outcomes. Can you live your best life?",
       "path": "prototypes/coin-toss/index.html"
     },
     {
       "name": "Hex Map Explorer",
-      "description": "Explore and build a hexagonal tile map inspired by Dorf Romantik",
+      "description": "You have little food left, explore for resources, and try to rebuild society",
       "path": "prototypes/hex-map/index.html"
     },
     {
-      "name": "Word Blocks",
-      "description": "Mobile-first word game - tap and drag to form words on a 5x5 letter grid",
+      "name": "Daily Word Blocks",
+      "description": "A simple word-search daily puzzle, can you clear the whole grid? share to challenge your friends!",
       "path": "prototypes/word-blocks/index.html"
     },
     {
       "name": "Poker PVP",
-      "description": "Mobile poker game - play 5-card poker against the computer in a best-of-5 match",
+      "description": "Play poker against a computer, best of 3 wins!",
       "path": "prototypes/poker-pvp/index.html"
     }
   ]
