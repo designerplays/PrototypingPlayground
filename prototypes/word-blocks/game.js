@@ -1,5 +1,5 @@
 // Word Blocks Game - Mobile-First Word Puzzle
-// VERSION: 1.4 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 1.5 (increment by 0.1 for each change unless specified otherwise)
 
 class WordBlocksGame {
     constructor() {
@@ -27,8 +27,15 @@ class WordBlocksGame {
         this.longestWordContainer = document.getElementById('longest-word-container');
         this.longestWordText = document.getElementById('longest-word-text');
 
+        // Challenge friend elements
+        this.challengeFriendBtn = document.getElementById('challenge-friend-btn');
+        this.challengePopup = document.getElementById('challenge-popup');
+        this.popupCloseBtn = document.getElementById('popup-close-btn');
+        this.challengeText = document.getElementById('challenge-text');
+        this.copyBtn = document.getElementById('copy-btn');
+
         // Version info
-        this.version = '1.4';
+        this.version = '1.5';
 
         // Seeded random number generator for daily puzzles
         this.seedRng();
@@ -238,6 +245,34 @@ class WordBlocksGame {
             e.preventDefault();
             this.closeDebugPanel();
             this.restart();
+        });
+
+        // Challenge friend button
+        this.challengeFriendBtn.addEventListener('click', () => this.openChallengePopup());
+        this.challengeFriendBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.openChallengePopup();
+        });
+
+        // Popup close button
+        this.popupCloseBtn.addEventListener('click', () => this.closeChallengePopup());
+        this.popupCloseBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.closeChallengePopup();
+        });
+
+        // Copy button
+        this.copyBtn.addEventListener('click', () => this.copyToClipboard());
+        this.copyBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.copyToClipboard();
+        });
+
+        // Close popup when clicking outside
+        this.challengePopup.addEventListener('click', (e) => {
+            if (e.target === this.challengePopup) {
+                this.closeChallengePopup();
+            }
         });
     }
 
@@ -585,6 +620,59 @@ class WordBlocksGame {
 
     closeDebugPanel() {
         this.debugOverlay.classList.add('hidden');
+    }
+
+    openChallengePopup() {
+        const challengeText = this.generateChallengeText();
+        this.challengeText.value = challengeText;
+        this.challengePopup.classList.remove('hidden');
+    }
+
+    closeChallengePopup() {
+        this.challengePopup.classList.add('hidden');
+    }
+
+    generateChallengeText() {
+        const gameUrl = 'https://designerplays.github.io/PrototypingPlayground/prototypes/word-blocks/index.html';
+
+        // Generate the grid visualization
+        let gridText = '';
+        for (let row = 0; row < this.gridSize; row++) {
+            for (let col = 0; col < this.gridSize; col++) {
+                // ⬜️ for cleared blocks (null), 🟨 for remaining blocks
+                gridText += this.grid[row][col] === null ? '⬜️' : '🟨';
+            }
+            gridText += '\n';
+        }
+
+        // Create the challenge message
+        const message = `I challenge you to daily word-blocks! Click here to play ${gameUrl}
+My longest Word: ${this.longestWord}
+${gridText}`;
+
+        return message;
+    }
+
+    async copyToClipboard() {
+        try {
+            await navigator.clipboard.writeText(this.challengeText.value);
+            // Provide visual feedback
+            const originalText = this.copyBtn.textContent;
+            this.copyBtn.textContent = 'Copied!';
+            setTimeout(() => {
+                this.copyBtn.textContent = originalText;
+            }, 2000);
+        } catch (error) {
+            console.error('Failed to copy to clipboard:', error);
+            // Fallback for older browsers
+            this.challengeText.select();
+            document.execCommand('copy');
+            const originalText = this.copyBtn.textContent;
+            this.copyBtn.textContent = 'Copied!';
+            setTimeout(() => {
+                this.copyBtn.textContent = originalText;
+            }, 2000);
+        }
     }
 
     restart() {
