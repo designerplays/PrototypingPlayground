@@ -1,5 +1,5 @@
 // Word Blocks Game - Mobile-First Word Puzzle
-// VERSION: 1.2 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 1.3 (increment by 0.1 for each change unless specified otherwise)
 
 class WordBlocksGame {
     constructor() {
@@ -24,7 +24,7 @@ class WordBlocksGame {
         this.progressBarFill = document.getElementById('progress-bar-fill');
 
         // Version info
-        this.version = '1.2';
+        this.version = '1.3';
 
         // Seeded random number generator for daily puzzles
         this.seedRng();
@@ -542,11 +542,11 @@ class WordBlocksGame {
 
         // Calculate blocks cleared
         const clearedBlocks = this.totalBlocks - remainingBlocks;
-        const progressPercentage = (clearedBlocks / this.totalBlocks) * 100;
+        const progressPercentage = Math.round((clearedBlocks / this.totalBlocks) * 100);
 
         // Update the progress text and bar
         if (this.progressText) {
-            this.progressText.textContent = `${clearedBlocks} / ${this.totalBlocks}`;
+            this.progressText.textContent = `Cleared: ${progressPercentage}% (${clearedBlocks} / ${this.totalBlocks})`;
         }
         if (this.progressBarFill) {
             this.progressBarFill.style.width = `${progressPercentage}%`;
