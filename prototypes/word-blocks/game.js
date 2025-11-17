@@ -1,5 +1,5 @@
 // Word Blocks Game - Mobile-First Word Puzzle
-// VERSION: 1.0 (increment by 0.1 for each change unless specified otherwise)
+// VERSION: 1.1 (increment by 0.1 for each change unless specified otherwise)
 
 class WordBlocksGame {
     constructor() {
@@ -19,8 +19,12 @@ class WordBlocksGame {
         this.blockSizeSlider = document.getElementById('block-size-slider');
         this.blockSizeValue = document.getElementById('block-size-value');
 
+        // Progress bar elements
+        this.progressText = document.getElementById('progress-text');
+        this.progressBarFill = document.getElementById('progress-bar-fill');
+
         // Version info
-        this.version = '1.0';
+        this.version = '1.1';
 
         // Config values
         this.disappearTime = 300; // ms
@@ -32,6 +36,7 @@ class WordBlocksGame {
         this.gridSize = 5;
         this.grid = []; // 2D array of letters
         this.cellElements = []; // 2D array of DOM elements
+        this.totalBlocks = this.gridSize * this.gridSize; // Total number of blocks in the grid
 
         // Letter distribution
         this.letterDistribution = {};
@@ -67,6 +72,7 @@ class WordBlocksGame {
         this.updateCSSVariables();
         this.initializeGrid();
         this.renderGrid();
+        this.updateProgress();
 
         // Update version display
         if (this.versionDisplay) {
@@ -358,6 +364,7 @@ class WordBlocksGame {
             console.log('Valid word:', word);
             await this.removeSelectedCells();
             await this.applyGravity();
+            this.updateProgress();
             this.checkGameOver();
         } else {
             console.log('Invalid word:', word);
@@ -499,6 +506,30 @@ class WordBlocksGame {
         }
     }
 
+    updateProgress() {
+        // Count remaining blocks
+        let remainingBlocks = 0;
+        for (let row = 0; row < this.gridSize; row++) {
+            for (let col = 0; col < this.gridSize; col++) {
+                if (this.grid[row][col] !== null) {
+                    remainingBlocks++;
+                }
+            }
+        }
+
+        // Calculate blocks cleared
+        const clearedBlocks = this.totalBlocks - remainingBlocks;
+        const progressPercentage = (clearedBlocks / this.totalBlocks) * 100;
+
+        // Update the progress text and bar
+        if (this.progressText) {
+            this.progressText.textContent = `${clearedBlocks} / ${this.totalBlocks}`;
+        }
+        if (this.progressBarFill) {
+            this.progressBarFill.style.width = `${progressPercentage}%`;
+        }
+    }
+
     openDebugPanel() {
         this.debugOverlay.classList.remove('hidden');
     }
@@ -511,6 +542,7 @@ class WordBlocksGame {
         this.initializeGrid();
         this.renderGrid();
         this.clearSelection();
+        this.updateProgress();
     }
 }
 
