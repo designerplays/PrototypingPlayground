@@ -646,9 +646,11 @@ class WordBlocksGame {
         }
 
         // Create the challenge message
-        const message = `I challenge you to daily word-blocks! Click here to play ${gameUrl}
+        const message = `I challenge you to daily word-blocks!
 My longest Word: ${this.longestWord}
-${gridText}`;
+${gridText}
+
+${gameUrl}`;
 
         return message;
     }
