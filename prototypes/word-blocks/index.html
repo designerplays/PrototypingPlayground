@@ -11,6 +11,7 @@
 <body>
     <div id="game-container">
         <div id="longest-word-container" class="hidden">
+            <button id="challenge-friend-btn" class="challenge-btn">Challenge Friend</button>
             <div id="longest-word-label">Longest word: <span id="longest-word-text"></span></div>
         </div>
 
@@ -31,7 +32,7 @@
             <h3>Config Settings</h3>
             <button id="debug-close-btn">✕</button>
             <div class="debug-section">
-                <p><strong>Version:</strong> <span id="version-display">1.4</span></p>
+                <p><strong>Version:</strong> <span id="version-display">1.5</span></p>
                 <p style="font-size: 0.9em; color: #666; margin-top: 5px;">Note: Increment by 0.1 for each change unless specified otherwise</p>
             </div>
             <div class="debug-section">
@@ -54,6 +55,15 @@
             </div>
             <div class="debug-section">
                 <button id="force-restart-btn">Force Restart</button>
+            </div>
+        </div>
+
+        <div id="challenge-popup" class="hidden">
+            <div class="popup-content">
+                <button id="popup-close-btn" class="popup-close">✕</button>
+                <h3>Challenge Friend</h3>
+                <textarea id="challenge-text" readonly></textarea>
+                <button id="copy-btn" class="copy-btn">Copy to Clipboard</button>
             </div>
         </div>
     </div>
