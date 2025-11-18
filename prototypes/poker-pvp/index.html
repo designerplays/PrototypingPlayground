@@ -423,7 +423,13 @@
             <h3>Debug Settings</h3>
             <button id="debug-close-btn">✕</button>
             <div class="debug-section">
-                <p><strong>Version:</strong> <span id="version-display">0.5</span></p>
+                <p><strong>Version:</strong> <span id="version-display">0.6</span></p>
+            </div>
+            <div class="debug-section">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;">
+                    <input type="checkbox" id="discards-allowed-toggle" checked style="width: 20px; height: 20px; cursor: pointer;">
+                    <span><strong>Discards Allowed</strong></span>
+                </label>
             </div>
             <div class="debug-section">
                 <button id="force-reset-btn">Reset Game</button>
@@ -445,7 +451,8 @@
             playerScore: 0,
             computerScore: 0,
             handProbabilities: null,
-            hasDiscardedThisRound: false // Track if player has discarded this round
+            hasDiscardedThisRound: false, // Track if player has discarded this round
+            discardsAllowed: true // Toggle for allowing discards
         };
 
         // Card Suits and Values
@@ -553,9 +560,12 @@
                 case 'playing':
                     phaseIndicator.textContent = 'Playing Phase - Select cards to play or discard';
                     readyBtn.classList.remove('hidden');
-                    discardBtn.classList.remove('hidden');
-                    // Disable discard button if already discarded this round
-                    discardBtn.disabled = gameState.hasDiscardedThisRound;
+                    // Only show discard button if discards are allowed
+                    if (gameState.discardsAllowed) {
+                        discardBtn.classList.remove('hidden');
+                        // Disable discard button if already discarded this round
+                        discardBtn.disabled = gameState.hasDiscardedThisRound;
+                    }
                     break;
                 case 'resolution':
                     phaseIndicator.textContent = 'Resolution Phase';
@@ -1258,6 +1268,13 @@
             document.getElementById('force-reset-btn').addEventListener('click', () => {
                 document.getElementById('debug-overlay').classList.add('hidden');
                 resetGame();
+            });
+
+            // Discards allowed toggle
+            document.getElementById('discards-allowed-toggle').addEventListener('change', (e) => {
+                gameState.discardsAllowed = e.target.checked;
+                // Update UI to show/hide discard button
+                setPhase(gameState.phase);
             });
         }
 
