@@ -566,6 +566,175 @@
                 font-size: 12px;
             }
         }
+
+        /* Deck Popup */
+        #deck-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 2000;
+            display: none;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+
+        #deck-popup.show {
+            display: block;
+        }
+
+        #deck-popup-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        #deck-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .deck-card {
+            background: #fff;
+            color: #000;
+            width: 50px;
+            height: 70px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .deck-card.red {
+            color: #d00;
+        }
+
+        .deck-card.played {
+            opacity: 0.4;
+            background: transparent;
+            border: 2px dotted #fff;
+        }
+
+        #deck-close {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            width: 100%;
+        }
+
+        /* Reward Popup */
+        #reward-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 10px;
+            padding: 30px;
+            z-index: 2100;
+            display: none;
+            max-width: 90%;
+        }
+
+        #reward-popup.show {
+            display: block;
+        }
+
+        #reward-popup-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #ffd700;
+        }
+
+        #reward-cards {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .reward-card-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .reward-card {
+            background: #fff;
+            color: #000;
+            width: 60px;
+            height: 84px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+            border: 2px solid #ffd700;
+        }
+
+        .reward-card.red {
+            color: #d00;
+        }
+
+        .pick-button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #000;
+            transition: all 0.2s;
+        }
+
+        .pick-button:hover {
+            transform: scale(1.05);
+        }
+
+        .pick-button:active {
+            transform: scale(0.95);
+        }
+
+        #your-deck-button {
+            width: 100%;
+            padding: 10px 8px;
+            font-size: 14px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #888, #aaa);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            color: #fff;
+            margin-top: 8px;
+            transition: all 0.2s;
+        }
+
+        #your-deck-button:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
@@ -574,7 +743,7 @@
     <div id="debug-popup">
         <div id="debug-popup-content">
             <strong>Jack Adventure</strong><br>
-            Version: 0.5<br>
+            Version: 0.6<br>
             A blackjack dungeon crawler
         </div>
         <button id="debug-close">Close</button>
@@ -633,6 +802,9 @@
                 <small style="font-size: 10px;">Use hand value</small>
             </button>
         </div>
+
+        <!-- Your Deck Button -->
+        <button id="your-deck-button">YOUR DECK</button>
     </div>
 
     <!-- Feedback Message -->
@@ -645,18 +817,34 @@
         <button id="restart-button">RESTART</button>
     </div>
 
+    <!-- Deck Popup -->
+    <div id="deck-popup">
+        <div id="deck-popup-title">Your Deck</div>
+        <div id="deck-grid"></div>
+        <button id="deck-close">Close</button>
+    </div>
+
+    <!-- Reward Popup -->
+    <div id="reward-popup">
+        <div id="reward-popup-title">Choose Your Reward!</div>
+        <div id="reward-cards"></div>
+    </div>
+
     <script>
         // Game State
         const GameState = {
             config: null,
             encounters: null,
+            startingDeck: null,
             player: {
                 currentHealth: 0,
                 maxHealth: 0,
                 currentXP: 0,
                 currentLevel: 1,
                 deck: [],
-                hand: []
+                hand: [],
+                playedCards: [],
+                fullDeck: []
             },
             currentEncounterIndex: 0,
             enemies: [],
@@ -678,6 +866,9 @@
 
                 const encountersResponse = await fetch('Encounters.json');
                 GameState.encounters = await encountersResponse.json();
+
+                const startingDeckResponse = await fetch('StartingDeck.json');
+                GameState.startingDeck = await startingDeckResponse.json();
 
                 // Initialize player
                 GameState.player.maxHealth = GameState.config.playerStartingHealth;
@@ -705,12 +896,49 @@
             return shuffleDeck(deck);
         }
 
+        // Create deck from StartingDeck.json
+        function createDeckFromConfig(additionalCards = []) {
+            const deck = [];
+
+            // Add cards from starting deck
+            for (let card of GameState.startingDeck.cards) {
+                deck.push({ rank: card.value, suit: card.suit });
+            }
+
+            // Add any additional cards (from rewards)
+            for (let card of additionalCards) {
+                deck.push({ rank: card.value, suit: card.suit });
+            }
+
+            return shuffleDeck(deck);
+        }
+
         function shuffleDeck(deck) {
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [deck[i], deck[j]] = [deck[j], deck[i]];
             }
             return deck;
+        }
+
+        // Sort cards by suit then value
+        function sortCards(cards) {
+            const suitOrder = { '♠': 0, '♣': 1, '♥': 2, '♦': 3 };
+            const valueOrder = { 'A': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13 };
+
+            return cards.sort((a, b) => {
+                const suitA = suitOrder[a.suit];
+                const suitB = suitOrder[b.suit];
+
+                if (suitA !== suitB) {
+                    return suitA - suitB;
+                }
+
+                const valueA = valueOrder[a.rank];
+                const valueB = valueOrder[b.rank];
+
+                return valueA - valueB;
+            });
         }
 
         // Calculate hand value (blackjack rules)
@@ -748,10 +976,25 @@
 
             const encounter = GameState.encounters.encounters[GameState.currentEncounterIndex];
 
+            // Get additional cards from fullDeck (excludes starting deck cards)
+            const additionalCards = GameState.player.fullDeck.filter(card => {
+                // Check if this card is NOT in the starting deck
+                const inStartingDeck = GameState.startingDeck.cards.some(startCard =>
+                    startCard.suit === card.suit && startCard.value === card.rank
+                );
+                return !inStartingDeck;
+            }).map(card => ({ suit: card.suit, value: card.rank }));
+
             // Reset deck and hand
-            GameState.player.deck = createDeck();
+            GameState.player.deck = createDeckFromConfig(additionalCards);
             GameState.player.hand = [];
+            GameState.player.playedCards = [];
             GameState.hasChargedThisTurn = false;
+
+            // Initialize fullDeck if this is first encounter
+            if (GameState.currentEncounterIndex === 0 && GameState.player.fullDeck.length === 0) {
+                GameState.player.fullDeck = [...GameState.player.deck];
+            }
 
             // Initialize enemies
             GameState.enemies = encounter.enemies.map(enemyTemplate => ({
@@ -779,6 +1022,9 @@
             // Draw a card
             const card = GameState.player.deck.pop();
             GameState.player.hand.push(card);
+
+            // Track as played card
+            GameState.player.playedCards.push(card);
 
             // Mark that player has charged this turn
             GameState.hasChargedThisTurn = true;
@@ -849,8 +1095,7 @@
                 setTimeout(() => {
                     showFeedback('Encounter Cleared!', 1500);
                     setTimeout(() => {
-                        GameState.currentEncounterIndex++;
-                        startEncounter();
+                        showRewardPopup();
                     }, 1500);
                 }, 500);
                 return;
@@ -1131,6 +1376,97 @@
             gameOverScreen.style.display = 'flex';
         }
 
+        // Show Deck Popup
+        function showDeckPopup() {
+            const deckGrid = document.getElementById('deck-grid');
+            deckGrid.innerHTML = '';
+
+            // Get all cards in the full deck and sort them
+            const sortedDeck = sortCards([...GameState.player.fullDeck]);
+
+            sortedDeck.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'deck-card';
+
+                // Check if card is played
+                const isPlayed = GameState.player.playedCards.some(
+                    playedCard => playedCard.rank === card.rank && playedCard.suit === card.suit
+                );
+
+                if (isPlayed) {
+                    cardElement.classList.add('played');
+                }
+
+                if (card.suit === '♥' || card.suit === '♦') {
+                    cardElement.classList.add('red');
+                }
+
+                cardElement.textContent = `${card.rank}${card.suit}`;
+                deckGrid.appendChild(cardElement);
+            });
+
+            document.getElementById('deck-popup').classList.add('show');
+        }
+
+        function hideDeckPopup() {
+            document.getElementById('deck-popup').classList.remove('show');
+        }
+
+        // Show Reward Popup
+        function showRewardPopup() {
+            const encounter = GameState.encounters.encounters[GameState.currentEncounterIndex];
+            const rewardCards = document.getElementById('reward-cards');
+            rewardCards.innerHTML = '';
+
+            encounter.rewards.forEach((rewardCard, index) => {
+                const container = document.createElement('div');
+                container.className = 'reward-card-container';
+
+                const cardElement = document.createElement('div');
+                cardElement.className = 'reward-card';
+
+                if (rewardCard.suit === '♥' || rewardCard.suit === '♦') {
+                    cardElement.classList.add('red');
+                }
+
+                cardElement.textContent = `${rewardCard.value}${rewardCard.suit}`;
+
+                const pickButton = document.createElement('button');
+                pickButton.className = 'pick-button';
+                pickButton.textContent = 'Pick';
+                pickButton.addEventListener('click', () => selectReward(index));
+
+                container.appendChild(cardElement);
+                container.appendChild(pickButton);
+                rewardCards.appendChild(container);
+            });
+
+            document.getElementById('reward-popup').classList.add('show');
+        }
+
+        function hideRewardPopup() {
+            document.getElementById('reward-popup').classList.remove('show');
+        }
+
+        // Select reward card
+        function selectReward(index) {
+            const encounter = GameState.encounters.encounters[GameState.currentEncounterIndex];
+            const selectedCard = encounter.rewards[index];
+
+            // Add card to full deck
+            GameState.player.fullDeck.push({
+                rank: selectedCard.value,
+                suit: selectedCard.suit
+            });
+
+            // Hide popup
+            hideRewardPopup();
+
+            // Move to next encounter
+            GameState.currentEncounterIndex++;
+            startEncounter();
+        }
+
         // Restart game
         function restartGame() {
             GameState.gameOver = false;
@@ -1138,6 +1474,7 @@
             GameState.player.currentHealth = GameState.config.playerStartingHealth;
             GameState.player.currentXP = 0;
             GameState.player.currentLevel = 1;
+            GameState.player.fullDeck = [];
 
             document.getElementById('game-over-screen').style.display = 'none';
 
@@ -1148,6 +1485,8 @@
         document.getElementById('charge-button').addEventListener('click', charge);
         document.getElementById('attack-button').addEventListener('click', attack);
         document.getElementById('restart-button').addEventListener('click', restartGame);
+        document.getElementById('your-deck-button').addEventListener('click', showDeckPopup);
+        document.getElementById('deck-close').addEventListener('click', hideDeckPopup);
 
         // Debug popup
         document.getElementById('debug-button').addEventListener('click', () => {
