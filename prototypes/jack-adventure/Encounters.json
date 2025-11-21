@@ -126,7 +126,7 @@
         { "name": "Dragon", "maxHealth": 60, "attackPower": 12, "attackCooldown": 2 }
       ],
       "rewards": [
-        { "suit": "♦", "value": "A" },
+        { "suit": "♠", "value": "A" },
         { "suit": "♥", "value": "A" },
         { "suit": "♠", "value": "K" }
       ]
