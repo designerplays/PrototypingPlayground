@@ -5,6 +5,11 @@
       "name": "Dungeon Entrance",
       "enemies": [
         { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2, "xpReward": 3 }
+      ],
+      "rewards": [
+        { "suit": "♠", "value": "5" },
+        { "suit": "♥", "value": "3" },
+        { "suit": "♦", "value": "7" }
       ]
     },
     {
@@ -13,6 +18,11 @@
       "enemies": [
         { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2, "xpReward": 3 },
         { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2, "xpReward": 3 }
+      ],
+      "rewards": [
+        { "suit": "♣", "value": "6" },
+        { "suit": "♥", "value": "8" },
+        { "suit": "♠", "value": "4" }
       ]
     },
     {
@@ -21,6 +31,11 @@
       "enemies": [
         { "name": "Slime", "maxHealth": 15, "attackPower": 3, "attackCooldown": 2, "xpReward": 5 },
         { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1, "xpReward": 4 }
+      ],
+      "rewards": [
+        { "suit": "♦", "value": "9" },
+        { "suit": "♠", "value": "J" },
+        { "suit": "♣", "value": "5" }
       ]
     },
     {
@@ -30,6 +45,11 @@
         { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2, "xpReward": 3 },
         { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1, "xpReward": 4 },
         { "name": "Slime", "maxHealth": 15, "attackPower": 3, "attackCooldown": 2, "xpReward": 5 }
+      ],
+      "rewards": [
+        { "suit": "♥", "value": "10" },
+        { "suit": "♦", "value": "Q" },
+        { "suit": "♠", "value": "6" }
       ]
     },
     {
@@ -38,6 +58,11 @@
       "enemies": [
         { "name": "Goblin", "maxHealth": 18, "attackPower": 4, "attackCooldown": 2, "xpReward": 6 },
         { "name": "Goblin", "maxHealth": 18, "attackPower": 4, "attackCooldown": 2, "xpReward": 6 }
+      ],
+      "rewards": [
+        { "suit": "♣", "value": "K" },
+        { "suit": "♥", "value": "7" },
+        { "suit": "♦", "value": "A" }
       ]
     },
     {
@@ -47,6 +72,11 @@
         { "name": "Orc", "maxHealth": 25, "attackPower": 6, "attackCooldown": 2, "xpReward": 10 },
         { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1, "xpReward": 4 },
         { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1, "xpReward": 4 }
+      ],
+      "rewards": [
+        { "suit": "♠", "value": "9" },
+        { "suit": "♣", "value": "10" },
+        { "suit": "♥", "value": "J" }
       ]
     },
     {
@@ -54,6 +84,11 @@
       "name": "Stone Guardian",
       "enemies": [
         { "name": "Golem", "maxHealth": 35, "attackPower": 8, "attackCooldown": 3, "xpReward": 15 }
+      ],
+      "rewards": [
+        { "suit": "♦", "value": "K" },
+        { "suit": "♠", "value": "8" },
+        { "suit": "♥", "value": "Q" }
       ]
     },
     {
@@ -63,6 +98,11 @@
         { "name": "Cultist", "maxHealth": 20, "attackPower": 5, "attackCooldown": 1, "xpReward": 9 },
         { "name": "Cultist", "maxHealth": 20, "attackPower": 5, "attackCooldown": 1, "xpReward": 9 },
         { "name": "Slime", "maxHealth": 15, "attackPower": 3, "attackCooldown": 2, "xpReward": 5 }
+      ],
+      "rewards": [
+        { "suit": "♣", "value": "A" },
+        { "suit": "♦", "value": "10" },
+        { "suit": "♠", "value": "Q" }
       ]
     },
     {
@@ -71,6 +111,11 @@
       "enemies": [
         { "name": "Golem", "maxHealth": 35, "attackPower": 8, "attackCooldown": 3, "xpReward": 15 },
         { "name": "Lich", "maxHealth": 40, "attackPower": 9, "attackCooldown": 2, "xpReward": 20 }
+      ],
+      "rewards": [
+        { "suit": "♥", "value": "K" },
+        { "suit": "♠", "value": "A" },
+        { "suit": "♣", "value": "J" }
       ]
     },
     {
@@ -79,6 +124,11 @@
       "enemies": [
         { "name": "Demon Hound", "maxHealth": 30, "attackPower": 7, "attackCooldown": 1, "xpReward": 14 },
         { "name": "Dragon", "maxHealth": 60, "attackPower": 12, "attackCooldown": 2, "xpReward": 30 }
+      ],
+      "rewards": [
+        { "suit": "♦", "value": "A" },
+        { "suit": "♥", "value": "A" },
+        { "suit": "♠", "value": "K" }
       ]
     }
   ]
