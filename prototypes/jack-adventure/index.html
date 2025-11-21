@@ -723,7 +723,7 @@
     <div id="debug-popup">
         <div id="debug-popup-content">
             <strong>Jack Adventure</strong><br>
-            Version: 1.0<br>
+            Version: 1.1<br>
             A blackjack dungeon crawler
         </div>
         <button id="debug-close">Close</button>
@@ -742,7 +742,7 @@
         <!-- Player Cards Area -->
         <div id="player-cards-area">
             <div id="cards-display"></div>
-            <div id="hand-total">Hand: 0</div>
+            <div id="hand-total">Limit: 0</div>
             <div id="deck-info">Deck: 0 cards</div>
         </div>
 
@@ -1012,22 +1012,49 @@
             const isBust = handValue > 21;
 
             if (isBust) {
-                // Bust - no damage
+                // Bust - no damage or healing
                 showFeedback('BUST!', 800);
             } else {
-                // Deal damage to target enemy
-                const targetEnemy = GameState.enemies[GameState.targetEnemyIndex];
-                targetEnemy.currentHealth = Math.max(0, targetEnemy.currentHealth - handValue);
+                // Separate cards by suit
+                const spadeCards = GameState.player.hand.filter(card => card.suit === '♠');
+                const heartCards = GameState.player.hand.filter(card => card.suit === '♥');
 
-                // Show damage popup
-                showDamagePopup(GameState.targetEnemyIndex, handValue);
+                // Calculate damage from spade cards
+                const damageAmount = calculateHandValue(spadeCards);
 
-                // Check if enemy died
-                if (targetEnemy.currentHealth <= 0) {
-                    // Move target to next live enemy
-                    const nextLiveEnemy = findNextLiveEnemy();
-                    if (nextLiveEnemy !== -1) {
-                        GameState.targetEnemyIndex = nextLiveEnemy;
+                // Calculate healing from heart cards
+                const healAmount = calculateHandValue(heartCards);
+
+                // Deal damage to target enemy if there are spade cards
+                if (damageAmount > 0) {
+                    const targetEnemy = GameState.enemies[GameState.targetEnemyIndex];
+                    targetEnemy.currentHealth = Math.max(0, targetEnemy.currentHealth - damageAmount);
+
+                    // Show damage popup
+                    showDamagePopup(GameState.targetEnemyIndex, damageAmount);
+
+                    // Check if enemy died
+                    if (targetEnemy.currentHealth <= 0) {
+                        // Move target to next live enemy
+                        const nextLiveEnemy = findNextLiveEnemy();
+                        if (nextLiveEnemy !== -1) {
+                            GameState.targetEnemyIndex = nextLiveEnemy;
+                        }
+                    }
+                }
+
+                // Heal player if there are heart cards
+                if (healAmount > 0) {
+                    const oldHealth = GameState.player.currentHealth;
+                    GameState.player.currentHealth = Math.min(
+                        GameState.player.maxHealth,
+                        GameState.player.currentHealth + healAmount
+                    );
+                    const actualHeal = GameState.player.currentHealth - oldHealth;
+
+                    // Show heal feedback
+                    if (actualHeal > 0) {
+                        showFeedback(`+${actualHeal} HP`, 800);
                     }
                 }
             }
@@ -1181,7 +1208,7 @@
             const handValue = calculateHandValue(GameState.player.hand);
             const handTotal = document.getElementById('hand-total');
             const bustLimit = GameState.config.bustLimit;
-            handTotal.textContent = `Hand: ${handValue}/${bustLimit}`;
+            handTotal.textContent = `Limit: ${handValue}/${bustLimit}`;
             handTotal.className = handValue > bustLimit ? 'bust' : '';
 
             // Deck info
