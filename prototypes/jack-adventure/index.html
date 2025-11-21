@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Jack Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #fff;
+            overflow: hidden;
+            touch-action: manipulation;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #debug-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            padding: 5px 10px;
+            font-size: 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            z-index: 1000;
+            font-family: 'Courier New', monospace;
+        }
+
+        #game-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+            max-width: 500px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Encounter Info */
+        #encounter-info {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        #encounter-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        #encounter-count {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        /* Enemies Row */
+        #enemies-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .enemy-card {
+            background: rgba(200, 50, 50, 0.3);
+            border: 2px solid rgba(255, 100, 100, 0.5);
+            border-radius: 8px;
+            padding: 10px;
+            min-width: 100px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .enemy-card.targeted {
+            border-color: #ffff00;
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+        }
+
+        .enemy-card.dead {
+            opacity: 0.3;
+            pointer-events: none;
+            background: rgba(100, 100, 100, 0.2);
+        }
+
+        .enemy-name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .enemy-health-bar {
+            background: rgba(0, 0, 0, 0.5);
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .enemy-health-fill {
+            background: linear-gradient(90deg, #ff4444, #ff6666);
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .enemy-health-text {
+            font-size: 11px;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .enemy-stats {
+            font-size: 10px;
+            color: #ccc;
+            text-align: center;
+        }
+
+        /* Player Cards Area */
+        #player-cards-area {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #cards-display {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .card {
+            background: #fff;
+            color: #000;
+            width: 50px;
+            height: 70px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .card.red {
+            color: #d00;
+        }
+
+        #hand-total {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #hand-total.bust {
+            color: #ff4444;
+        }
+
+        #deck-info {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        /* Player Stats */
+        #player-stats {
+            margin-bottom: 20px;
+        }
+
+        #player-level {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .stat-bar-container {
+            margin-bottom: 15px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .stat-bar {
+            background: rgba(0, 0, 0, 0.5);
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .health-bar-fill {
+            background: linear-gradient(90deg, #44ff44, #66ff66);
+        }
+
+        .xp-bar-fill {
+            background: linear-gradient(90deg, #4444ff, #6666ff);
+        }
+
+        .stat-bar-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Action Buttons */
+        #action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .action-button {
+            flex: 1;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+
+        #charge-button {
+            background: linear-gradient(135deg, #4444ff, #6666ff);
+            color: #fff;
+        }
+
+        #charge-button:active {
+            transform: scale(0.95);
+        }
+
+        #attack-button {
+            background: linear-gradient(135deg, #ff4444, #ff6666);
+            color: #fff;
+        }
+
+        #attack-button:active {
+            transform: scale(0.95);
+        }
+
+        .action-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Feedback Messages */
+        #feedback-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px 50px;
+            border-radius: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 100;
+            display: none;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            max-width: 80%;
+        }
+
+        .damage-popup {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff4444;
+            animation: popup 1s ease-out forwards;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        @keyframes popup {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+        }
+
+        /* Game Over Screen */
+        #game-over-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        #game-over-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        #game-over-message {
+            font-size: 18px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        #restart-button {
+            padding: 15px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #44ff44, #66ff66);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            color: #000;
+        }
+
+        #restart-button:active {
+            transform: scale(0.95);
+        }
+
+        .level-up-flash {
+            animation: levelUp 0.5s ease-out;
+        }
+
+        @keyframes levelUp {
+            0%, 100% {
+                color: #fff;
+            }
+            50% {
+                color: #ffff00;
+                text-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
+            }
+        }
+
+        .hit-flash {
+            animation: hitFlash 0.3s ease-out;
+        }
+
+        @keyframes hitFlash {
+            0%, 100% {
+                background: rgba(0, 0, 0, 0.5);
+            }
+            50% {
+                background: rgba(255, 0, 0, 0.5);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="debug-button">v0.1</div>
+
+    <div id="game-container">
+        <!-- Encounter Info -->
+        <div id="encounter-info">
+            <div id="encounter-name">Loading...</div>
+            <div id="encounter-count"></div>
+        </div>
+
+        <!-- Enemies Row -->
+        <div id="enemies-row"></div>
+
+        <!-- Player Cards Area -->
+        <div id="player-cards-area">
+            <div id="cards-display"></div>
+            <div id="hand-total">Hand: 0</div>
+            <div id="deck-info">Deck: 52 cards</div>
+        </div>
+
+        <!-- Player Stats -->
+        <div id="player-stats">
+            <div id="player-level">Level: 1</div>
+
+            <div class="stat-bar-container">
+                <div class="stat-label">
+                    <span>Health</span>
+                    <span id="health-text">50 / 50</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="health-bar-fill stat-bar-fill" id="health-bar" style="width: 100%"></div>
+                </div>
+            </div>
+
+            <div class="stat-bar-container">
+                <div class="stat-label">
+                    <span>XP</span>
+                    <span id="xp-text">0 / 5</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="xp-bar-fill stat-bar-fill" id="xp-bar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div id="action-buttons">
+            <button id="charge-button" class="action-button">
+                CHARGE<br>
+                <small style="font-size: 12px;">Draw 1 card</small>
+            </button>
+            <button id="attack-button" class="action-button">
+                ATTACK<br>
+                <small style="font-size: 12px;">Use hand value</small>
+            </button>
+        </div>
+    </div>
+
+    <!-- Feedback Message -->
+    <div id="feedback-message"></div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over-screen">
+        <div id="game-over-title">GAME OVER</div>
+        <div id="game-over-message"></div>
+        <button id="restart-button">RESTART</button>
+    </div>
+
+    <script>
+        // Game State
+        const GameState = {
+            config: null,
+            encounters: null,
+            player: {
+                currentHealth: 0,
+                maxHealth: 0,
+                currentXP: 0,
+                currentLevel: 1,
+                deck: [],
+                hand: []
+            },
+            currentEncounterIndex: 0,
+            enemies: [],
+            targetEnemyIndex: 0,
+            gameOver: false
+        };
+
+        // Card Suits and Ranks
+        const SUITS = ['♠', '♥', '♦', '♣'];
+        const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+        // Initialize Game
+        async function initGame() {
+            try {
+                // Load config files
+                const configResponse = await fetch('GameConfig.json');
+                GameState.config = await configResponse.json();
+
+                const encountersResponse = await fetch('Encounters.json');
+                GameState.encounters = await encountersResponse.json();
+
+                // Initialize player
+                GameState.player.maxHealth = GameState.config.playerStartingHealth;
+                GameState.player.currentHealth = GameState.config.playerStartingHealth;
+                GameState.player.currentXP = 0;
+                GameState.player.currentLevel = 1;
+
+                // Start first encounter
+                GameState.currentEncounterIndex = 0;
+                startEncounter();
+            } catch (error) {
+                console.error('Error loading game data:', error);
+                showFeedback('Error loading game data');
+            }
+        }
+
+        // Create and shuffle deck
+        function createDeck() {
+            const deck = [];
+            for (let suit of SUITS) {
+                for (let rank of RANKS) {
+                    deck.push({ rank, suit });
+                }
+            }
+            return shuffleDeck(deck);
+        }
+
+        function shuffleDeck(deck) {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+            return deck;
+        }
+
+        // Calculate hand value (blackjack rules)
+        function calculateHandValue(hand) {
+            let total = 0;
+            let aces = 0;
+
+            for (let card of hand) {
+                if (card.rank === 'A') {
+                    aces++;
+                    total += 11;
+                } else if (['J', 'Q', 'K'].includes(card.rank)) {
+                    total += 10;
+                } else {
+                    total += parseInt(card.rank);
+                }
+            }
+
+            // Adjust for aces
+            while (total > 21 && aces > 0) {
+                total -= 10;
+                aces--;
+            }
+
+            return total;
+        }
+
+        // Start new encounter
+        function startEncounter() {
+            if (GameState.currentEncounterIndex >= GameState.encounters.encounters.length) {
+                // Victory!
+                endGame(true, 'You cleared the dungeon!');
+                return;
+            }
+
+            const encounter = GameState.encounters.encounters[GameState.currentEncounterIndex];
+
+            // Reset deck and hand
+            GameState.player.deck = createDeck();
+            GameState.player.hand = [];
+
+            // Initialize enemies
+            GameState.enemies = encounter.enemies.map(enemyTemplate => ({
+                ...enemyTemplate,
+                currentHealth: enemyTemplate.maxHealth,
+                cooldownCounter: enemyTemplate.attackCooldown
+            }));
+
+            // Set target to first enemy
+            GameState.targetEnemyIndex = 0;
+
+            updateUI();
+        }
+
+        // Player action: Charge
+        function charge() {
+            if (GameState.gameOver) return;
+
+            if (GameState.player.deck.length === 0) {
+                // Deck exhausted
+                endGame(false, 'You ran out of cards!');
+                return;
+            }
+
+            // Draw a card
+            const card = GameState.player.deck.pop();
+            GameState.player.hand.push(card);
+
+            updateUI();
+        }
+
+        // Player action: Attack
+        function attack() {
+            if (GameState.gameOver) return;
+
+            const handValue = calculateHandValue(GameState.player.hand);
+            const isBust = handValue > 21;
+
+            if (isBust) {
+                // Bust - no damage
+                showFeedback('BUST!', 800);
+            } else {
+                // Deal damage to target enemy
+                const targetEnemy = GameState.enemies[GameState.targetEnemyIndex];
+                targetEnemy.currentHealth = Math.max(0, targetEnemy.currentHealth - handValue);
+
+                // Show damage popup
+                showDamagePopup(GameState.targetEnemyIndex, handValue);
+
+                // Check if enemy died
+                if (targetEnemy.currentHealth <= 0) {
+                    // Award XP
+                    gainXP(targetEnemy.xpReward);
+                }
+            }
+
+            updateUI();
+
+            // Check if all enemies are dead
+            if (GameState.enemies.every(e => e.currentHealth <= 0)) {
+                // Encounter cleared!
+                setTimeout(() => {
+                    showFeedback('Encounter Cleared!', 1500);
+                    setTimeout(() => {
+                        GameState.currentEncounterIndex++;
+                        startEncounter();
+                    }, 1500);
+                }, 500);
+                return;
+            }
+
+            // Enemies attack
+            setTimeout(() => {
+                enemiesAttack();
+
+                // Clear hand for next turn
+                GameState.player.hand = [];
+                updateUI();
+
+                // Check if player died
+                if (GameState.player.currentHealth <= 0) {
+                    endGame(false, 'You died!');
+                }
+            }, 800);
+        }
+
+        // Enemies attack
+        function enemiesAttack() {
+            for (let i = 0; i < GameState.enemies.length; i++) {
+                const enemy = GameState.enemies[i];
+
+                if (enemy.currentHealth <= 0) continue;
+
+                enemy.cooldownCounter--;
+
+                if (enemy.cooldownCounter <= 0) {
+                    // Enemy attacks!
+                    GameState.player.currentHealth = Math.max(0, GameState.player.currentHealth - enemy.attackPower);
+
+                    // Show damage to player
+                    showPlayerDamage(enemy.attackPower);
+
+                    // Reset cooldown
+                    enemy.cooldownCounter = enemy.attackCooldown;
+                }
+            }
+
+            updateUI();
+        }
+
+        // Gain XP
+        function gainXP(amount) {
+            const oldLevel = GameState.player.currentLevel;
+            GameState.player.currentXP += amount;
+
+            // Check for level up
+            while (GameState.player.currentLevel < 100) {
+                const nextLevel = GameState.player.currentLevel + 1;
+                const nextThreshold = GameState.config.xpLevels.find(l => l.level === nextLevel);
+
+                if (nextThreshold && GameState.player.currentXP >= nextThreshold.threshold) {
+                    GameState.player.currentLevel = nextLevel;
+                } else {
+                    break;
+                }
+            }
+
+            // Show level up animation
+            if (GameState.player.currentLevel > oldLevel) {
+                const levelElement = document.getElementById('player-level');
+                levelElement.classList.add('level-up-flash');
+                setTimeout(() => levelElement.classList.remove('level-up-flash'), 500);
+            }
+        }
+
+        // Update UI
+        function updateUI() {
+            // Encounter info
+            const encounter = GameState.encounters.encounters[GameState.currentEncounterIndex];
+            document.getElementById('encounter-name').textContent = encounter.name;
+            document.getElementById('encounter-count').textContent =
+                `(${GameState.currentEncounterIndex + 1}/${GameState.encounters.encounters.length})`;
+
+            // Enemies
+            const enemiesRow = document.getElementById('enemies-row');
+            enemiesRow.innerHTML = '';
+
+            GameState.enemies.forEach((enemy, index) => {
+                const enemyCard = document.createElement('div');
+                enemyCard.className = 'enemy-card';
+                if (index === GameState.targetEnemyIndex && enemy.currentHealth > 0) {
+                    enemyCard.classList.add('targeted');
+                }
+                if (enemy.currentHealth <= 0) {
+                    enemyCard.classList.add('dead');
+                }
+
+                const healthPercent = (enemy.currentHealth / enemy.maxHealth) * 100;
+
+                enemyCard.innerHTML = `
+                    <div class="enemy-name">${enemy.name}</div>
+                    <div class="enemy-health-bar">
+                        <div class="enemy-health-fill" style="width: ${healthPercent}%"></div>
+                    </div>
+                    <div class="enemy-health-text">${enemy.currentHealth} / ${enemy.maxHealth}</div>
+                    <div class="enemy-stats">ATK: ${enemy.attackPower} | CD: ${enemy.cooldownCounter}</div>
+                `;
+
+                enemyCard.addEventListener('click', () => selectTarget(index));
+                enemiesRow.appendChild(enemyCard);
+            });
+
+            // Player cards
+            const cardsDisplay = document.getElementById('cards-display');
+            cardsDisplay.innerHTML = '';
+
+            GameState.player.hand.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                if (card.suit === '♥' || card.suit === '♦') {
+                    cardElement.classList.add('red');
+                }
+                cardElement.textContent = `${card.rank}${card.suit}`;
+                cardsDisplay.appendChild(cardElement);
+            });
+
+            // Hand total
+            const handValue = calculateHandValue(GameState.player.hand);
+            const handTotal = document.getElementById('hand-total');
+            handTotal.textContent = `Hand: ${handValue}`;
+            handTotal.className = handValue > 21 ? 'bust' : '';
+
+            // Deck info
+            document.getElementById('deck-info').textContent =
+                `Deck: ${GameState.player.deck.length} cards`;
+
+            // Player level
+            document.getElementById('player-level').textContent =
+                `Level: ${GameState.player.currentLevel}`;
+
+            // Health bar
+            const healthPercent = (GameState.player.currentHealth / GameState.player.maxHealth) * 100;
+            document.getElementById('health-bar').style.width = `${healthPercent}%`;
+            document.getElementById('health-text').textContent =
+                `${GameState.player.currentHealth} / ${GameState.player.maxHealth}`;
+
+            // XP bar
+            const currentLevelData = GameState.config.xpLevels.find(l => l.level === GameState.player.currentLevel);
+            const nextLevelData = GameState.config.xpLevels.find(l => l.level === GameState.player.currentLevel + 1);
+
+            if (nextLevelData) {
+                const xpInCurrentLevel = GameState.player.currentXP - currentLevelData.threshold;
+                const xpNeededForLevel = nextLevelData.threshold - currentLevelData.threshold;
+                const xpPercent = (xpInCurrentLevel / xpNeededForLevel) * 100;
+
+                document.getElementById('xp-bar').style.width = `${xpPercent}%`;
+                document.getElementById('xp-text').textContent =
+                    `${GameState.player.currentXP} / ${nextLevelData.threshold}`;
+            } else {
+                // Max level
+                document.getElementById('xp-bar').style.width = '100%';
+                document.getElementById('xp-text').textContent = 'MAX';
+            }
+        }
+
+        // Select target enemy
+        function selectTarget(index) {
+            if (GameState.enemies[index].currentHealth > 0) {
+                GameState.targetEnemyIndex = index;
+                updateUI();
+            }
+        }
+
+        // Show feedback message
+        function showFeedback(message, duration = 1000) {
+            const feedbackElement = document.getElementById('feedback-message');
+            feedbackElement.textContent = message;
+            feedbackElement.style.display = 'block';
+
+            setTimeout(() => {
+                feedbackElement.style.display = 'none';
+            }, duration);
+        }
+
+        // Show damage popup
+        function showDamagePopup(enemyIndex, damage) {
+            const enemiesRow = document.getElementById('enemies-row');
+            const enemyCard = enemiesRow.children[enemyIndex];
+
+            if (enemyCard) {
+                const popup = document.createElement('div');
+                popup.className = 'damage-popup';
+                popup.textContent = `-${damage}`;
+                popup.style.position = 'absolute';
+                popup.style.left = '50%';
+                popup.style.top = '50%';
+
+                enemyCard.style.position = 'relative';
+                enemyCard.appendChild(popup);
+
+                setTimeout(() => popup.remove(), 1000);
+            }
+        }
+
+        // Show player damage
+        function showPlayerDamage(damage) {
+            const healthBar = document.querySelector('.stat-bar');
+            healthBar.classList.add('hit-flash');
+            setTimeout(() => healthBar.classList.remove('hit-flash'), 300);
+        }
+
+        // End game
+        function endGame(victory, message) {
+            GameState.gameOver = true;
+
+            const gameOverScreen = document.getElementById('game-over-screen');
+            const gameOverTitle = document.getElementById('game-over-title');
+            const gameOverMessage = document.getElementById('game-over-message');
+
+            if (victory) {
+                gameOverTitle.textContent = 'VICTORY!';
+                gameOverTitle.style.color = '#44ff44';
+            } else {
+                gameOverTitle.textContent = 'GAME OVER';
+                gameOverTitle.style.color = '#ff4444';
+            }
+
+            gameOverMessage.textContent = message;
+            gameOverScreen.style.display = 'flex';
+        }
+
+        // Restart game
+        function restartGame() {
+            GameState.gameOver = false;
+            GameState.currentEncounterIndex = 0;
+            GameState.player.currentHealth = GameState.config.playerStartingHealth;
+            GameState.player.currentXP = 0;
+            GameState.player.currentLevel = 1;
+
+            document.getElementById('game-over-screen').style.display = 'none';
+
+            startEncounter();
+        }
+
+        // Event Listeners
+        document.getElementById('charge-button').addEventListener('click', charge);
+        document.getElementById('attack-button').addEventListener('click', attack);
+        document.getElementById('restart-button').addEventListener('click', restartGame);
+
+        // Initialize game on load
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html>
