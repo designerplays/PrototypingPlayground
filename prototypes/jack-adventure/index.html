@@ -16,9 +16,9 @@
             font-family: 'Courier New', monospace;
             background: #1a1a1a;
             color: #fff;
-            overflow: hidden;
+            overflow: auto;
             touch-action: manipulation;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
@@ -79,32 +79,31 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 10px;
-            overflow-y: hidden;
+            padding: 8px;
+            overflow-y: auto;
             max-width: 500px;
             margin: 0 auto;
             width: 100%;
-            justify-content: space-between;
+            gap: 8px;
         }
 
         /* Encounter Info */
         #encounter-info {
             text-align: center;
-            padding: 10px;
+            padding: 6px 8px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 5px;
-            margin-bottom: 10px;
         }
 
         #encounter-name {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         #encounter-count {
-            font-size: 14px;
+            font-size: 12px;
             color: #aaa;
         }
 
@@ -112,17 +111,16 @@
         #enemies-row {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
         .enemy-card {
             background: rgba(200, 50, 50, 0.3);
             border: 2px solid rgba(255, 100, 100, 0.5);
-            border-radius: 8px;
-            padding: 10px;
-            min-width: 100px;
+            border-radius: 6px;
+            padding: 6px 8px;
+            min-width: 90px;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -140,17 +138,17 @@
 
         .enemy-name {
             font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 8px;
+            font-size: 13px;
+            margin-bottom: 4px;
             text-align: center;
         }
 
         .enemy-health-bar {
             background: rgba(0, 0, 0, 0.5);
-            height: 12px;
-            border-radius: 6px;
+            height: 10px;
+            border-radius: 5px;
             overflow: hidden;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .enemy-health-fill {
@@ -160,13 +158,13 @@
         }
 
         .enemy-health-text {
-            font-size: 11px;
+            font-size: 10px;
             text-align: center;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .enemy-stats {
-            font-size: 10px;
+            font-size: 9px;
             color: #ccc;
             text-align: center;
         }
@@ -175,10 +173,9 @@
         #player-cards-area {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            min-height: 120px;
+            border-radius: 6px;
+            padding: 8px;
+            min-height: 90px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -187,8 +184,8 @@
 
         #cards-display {
             display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
+            gap: 6px;
+            margin-bottom: 8px;
             flex-wrap: wrap;
             justify-content: center;
         }
@@ -196,13 +193,13 @@
         .card {
             background: #fff;
             color: #000;
-            width: 50px;
-            height: 70px;
-            border-radius: 5px;
+            width: 45px;
+            height: 62px;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
@@ -212,9 +209,9 @@
         }
 
         #hand-total {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
 
         #hand-total.bust {
@@ -222,37 +219,36 @@
         }
 
         #deck-info {
-            font-size: 14px;
+            font-size: 12px;
             color: #aaa;
         }
 
         /* Player Stats */
         #player-stats {
-            margin-bottom: 10px;
         }
 
         #player-level {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             text-align: center;
         }
 
         .stat-bar-container {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .stat-label {
-            font-size: 12px;
-            margin-bottom: 5px;
+            font-size: 11px;
+            margin-bottom: 3px;
             display: flex;
             justify-content: space-between;
         }
 
         .stat-bar {
             background: rgba(0, 0, 0, 0.5);
-            height: 20px;
-            border-radius: 10px;
+            height: 16px;
+            border-radius: 8px;
             overflow: hidden;
             position: relative;
         }
@@ -275,7 +271,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             color: #fff;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
@@ -284,16 +280,16 @@
         /* Action Buttons */
         #action-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .action-button {
             flex: 1;
-            padding: 15px;
-            font-size: 16px;
+            padding: 12px 8px;
+            font-size: 14px;
             font-weight: bold;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             font-family: 'Courier New', monospace;
             transition: all 0.2s;
@@ -432,6 +428,114 @@
                 background: rgba(255, 0, 0, 0.5);
             }
         }
+
+        /* Mobile optimizations for very small screens */
+        @media (max-height: 600px) {
+            #game-container {
+                padding: 6px;
+                gap: 6px;
+            }
+
+            #encounter-info {
+                padding: 4px 6px;
+            }
+
+            #encounter-name {
+                font-size: 14px;
+                margin-bottom: 2px;
+            }
+
+            #encounter-count {
+                font-size: 11px;
+            }
+
+            .enemy-card {
+                padding: 4px 6px;
+                min-width: 80px;
+            }
+
+            .enemy-name {
+                font-size: 12px;
+                margin-bottom: 3px;
+            }
+
+            .enemy-health-bar {
+                height: 8px;
+                margin-bottom: 2px;
+            }
+
+            .enemy-health-text {
+                font-size: 9px;
+                margin-bottom: 2px;
+            }
+
+            .enemy-stats {
+                font-size: 8px;
+            }
+
+            #player-cards-area {
+                padding: 6px;
+                min-height: 75px;
+            }
+
+            .card {
+                width: 40px;
+                height: 55px;
+                font-size: 14px;
+            }
+
+            #hand-total {
+                font-size: 14px;
+                margin-bottom: 4px;
+            }
+
+            #deck-info {
+                font-size: 11px;
+            }
+
+            #player-level {
+                font-size: 13px;
+                margin-bottom: 4px;
+            }
+
+            .stat-bar-container {
+                margin-bottom: 4px;
+            }
+
+            .stat-label {
+                font-size: 10px;
+                margin-bottom: 2px;
+            }
+
+            .stat-bar {
+                height: 14px;
+            }
+
+            .stat-bar-text {
+                font-size: 10px;
+            }
+
+            .action-button {
+                padding: 10px 6px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-height: 500px) {
+            #game-container {
+                padding: 4px;
+                gap: 4px;
+            }
+
+            #player-cards-area {
+                min-height: 60px;
+            }
+
+            .action-button {
+                padding: 8px 6px;
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -492,11 +596,11 @@
         <div id="action-buttons">
             <button id="charge-button" class="action-button">
                 CHARGE<br>
-                <small style="font-size: 12px;">Draw 1 card</small>
+                <small style="font-size: 10px;">Draw 1 card</small>
             </button>
             <button id="attack-button" class="action-button">
                 ATTACK<br>
-                <small style="font-size: 12px;">Use hand value</small>
+                <small style="font-size: 10px;">Use hand value</small>
             </button>
         </div>
     </div>
