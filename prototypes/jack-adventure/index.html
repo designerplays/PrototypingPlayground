@@ -429,6 +429,36 @@
             }
         }
 
+        .enemy-attack-flash {
+            animation: enemyAttackFlash 0.5s ease-out;
+        }
+
+        @keyframes enemyAttackFlash {
+            0%, 100% {
+                background: rgba(200, 50, 50, 0.3);
+                border-color: rgba(255, 100, 100, 0.5);
+            }
+            50% {
+                background: rgba(255, 0, 0, 0.8);
+                border-color: rgba(255, 50, 50, 1);
+            }
+        }
+
+        .enemy-cooldown-flash {
+            animation: enemyCooldownFlash 0.5s ease-out;
+        }
+
+        @keyframes enemyCooldownFlash {
+            0%, 100% {
+                background: rgba(200, 50, 50, 0.3);
+                border-color: rgba(255, 100, 100, 0.5);
+            }
+            50% {
+                background: rgba(0, 100, 255, 0.6);
+                border-color: rgba(0, 150, 255, 1);
+            }
+        }
+
         /* Mobile optimizations for very small screens */
         @media (max-height: 600px) {
             #game-container {
@@ -544,7 +574,7 @@
     <div id="debug-popup">
         <div id="debug-popup-content">
             <strong>Jack Adventure</strong><br>
-            Version: 0.4<br>
+            Version: 0.5<br>
             A blackjack dungeon crawler
         </div>
         <button id="debug-close">Close</button>
@@ -573,7 +603,7 @@
 
             <div class="stat-bar-container">
                 <div class="stat-label">
-                    <span>Health</span>
+                    <span>♥️</span>
                     <span id="health-text">50 / 50</span>
                 </div>
                 <div class="stat-bar">
@@ -842,8 +872,8 @@
             }, 800);
         }
 
-        // Enemies attack
-        function enemiesAttack() {
+        // Enemies attack (sequentially from left to right)
+        async function enemiesAttack() {
             for (let i = 0; i < GameState.enemies.length; i++) {
                 const enemy = GameState.enemies[i];
 
@@ -853,17 +883,56 @@
 
                 if (enemy.cooldownCounter <= 0) {
                     // Enemy attacks!
+                    // Flash the enemy red
+                    await flashEnemy(i, 'attack');
+
+                    // Deal damage to player
                     GameState.player.currentHealth = Math.max(0, GameState.player.currentHealth - enemy.attackPower);
 
                     // Show damage to player
                     showPlayerDamage(enemy.attackPower);
 
+                    // Update UI to show HP decrease
+                    updateUI();
+
                     // Reset cooldown
                     enemy.cooldownCounter = enemy.attackCooldown;
+
+                    // Wait a bit before next enemy
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                } else {
+                    // Enemy is on cooldown, flash blue
+                    await flashEnemy(i, 'cooldown');
+
+                    // Update UI to show cooldown decrease
+                    updateUI();
+
+                    // Wait a bit before next enemy
+                    await new Promise(resolve => setTimeout(resolve, 300));
                 }
             }
 
             updateUI();
+        }
+
+        // Flash enemy card with animation
+        function flashEnemy(enemyIndex, type) {
+            return new Promise((resolve) => {
+                const enemiesRow = document.getElementById('enemies-row');
+                const enemyCard = enemiesRow.children[enemyIndex];
+
+                if (enemyCard) {
+                    const className = type === 'attack' ? 'enemy-attack-flash' : 'enemy-cooldown-flash';
+                    enemyCard.classList.add(className);
+
+                    setTimeout(() => {
+                        enemyCard.classList.remove(className);
+                        resolve();
+                    }, 500);
+                } else {
+                    resolve();
+                }
+            });
         }
 
         // Gain XP
@@ -921,7 +990,7 @@
                         <div class="enemy-health-fill" style="width: ${healthPercent}%"></div>
                     </div>
                     <div class="enemy-health-text">${enemy.currentHealth} / ${enemy.maxHealth}</div>
-                    <div class="enemy-stats">ATK: ${enemy.attackPower} | CD: ${enemy.cooldownCounter}</div>
+                    <div class="enemy-stats">⚔️ ${enemy.attackPower} | 🔁 ${enemy.cooldownCounter}</div>
                 `;
 
                 enemyCard.addEventListener('click', () => selectTarget(index));
