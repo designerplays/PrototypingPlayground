@@ -597,7 +597,7 @@
 
         #deck-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 8px;
             margin-bottom: 15px;
         }
@@ -735,6 +735,11 @@
         #your-deck-button:active {
             transform: scale(0.95);
         }
+
+        #your-deck-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -850,7 +855,8 @@
             enemies: [],
             targetEnemyIndex: 0,
             gameOver: false,
-            hasChargedThisTurn: false
+            hasChargedThisTurn: false,
+            showingRewards: false
         };
 
         // Card Suits and Ranks
@@ -990,6 +996,7 @@
             GameState.player.hand = [];
             GameState.player.playedCards = [];
             GameState.hasChargedThisTurn = false;
+            GameState.showingRewards = false;
 
             // Initialize fullDeck if this is first encounter
             if (GameState.currentEncounterIndex === 0 && GameState.player.fullDeck.length === 0) {
@@ -1294,9 +1301,22 @@
                 document.getElementById('xp-text').textContent = 'MAX';
             }
 
-            // Enable/disable attack button based on whether player has charged
+            // Enable/disable buttons
             const attackButton = document.getElementById('attack-button');
-            attackButton.disabled = !GameState.hasChargedThisTurn;
+            const chargeButton = document.getElementById('charge-button');
+            const yourDeckButton = document.getElementById('your-deck-button');
+
+            // Disable all action buttons when showing rewards
+            if (GameState.showingRewards) {
+                attackButton.disabled = true;
+                chargeButton.disabled = true;
+                yourDeckButton.disabled = true;
+            } else {
+                // Normal button state: attack button based on whether player has charged
+                attackButton.disabled = !GameState.hasChargedThisTurn;
+                chargeButton.disabled = false;
+                yourDeckButton.disabled = false;
+            }
         }
 
         // Select target enemy
@@ -1441,11 +1461,19 @@
                 rewardCards.appendChild(container);
             });
 
+            // Set flag and disable buttons
+            GameState.showingRewards = true;
+            updateUI();
+
             document.getElementById('reward-popup').classList.add('show');
         }
 
         function hideRewardPopup() {
             document.getElementById('reward-popup').classList.remove('show');
+
+            // Clear flag and re-enable buttons
+            GameState.showingRewards = false;
+            updateUI();
         }
 
         // Select reward card
