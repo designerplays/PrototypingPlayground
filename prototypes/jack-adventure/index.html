@@ -748,7 +748,7 @@
     <div id="debug-popup">
         <div id="debug-popup-content">
             <strong>Jack Adventure</strong><br>
-            Version: 0.6<br>
+            Version: 0.7<br>
             A blackjack dungeon crawler
         </div>
         <button id="debug-close">Close</button>
@@ -768,7 +768,7 @@
         <div id="player-cards-area">
             <div id="cards-display"></div>
             <div id="hand-total">Hand: 0</div>
-            <div id="deck-info">Deck: 52 cards</div>
+            <div id="deck-info">Deck: 0 cards</div>
         </div>
 
         <!-- Player Stats -->
@@ -891,29 +891,13 @@
             }
         }
 
-        // Create and shuffle deck
-        function createDeck() {
-            const deck = [];
-            for (let suit of SUITS) {
-                for (let rank of RANKS) {
-                    deck.push({ rank, suit });
-                }
-            }
-            return shuffleDeck(deck);
-        }
-
-        // Create deck from StartingDeck.json
-        function createDeckFromConfig(additionalCards = []) {
+        // Create deck from fullDeck (includes starting deck + reward cards)
+        function createDeckFromFullDeck() {
             const deck = [];
 
-            // Add cards from starting deck
-            for (let card of GameState.startingDeck.cards) {
-                deck.push({ rank: card.value, suit: card.suit });
-            }
-
-            // Add any additional cards (from rewards)
-            for (let card of additionalCards) {
-                deck.push({ rank: card.value, suit: card.suit });
+            // Copy all cards from fullDeck
+            for (let card of GameState.player.fullDeck) {
+                deck.push({ rank: card.rank, suit: card.suit });
             }
 
             return shuffleDeck(deck);
@@ -982,26 +966,21 @@
 
             const encounter = GameState.encounters.encounters[GameState.currentEncounterIndex];
 
-            // Get additional cards from fullDeck (excludes starting deck cards)
-            const additionalCards = GameState.player.fullDeck.filter(card => {
-                // Check if this card is NOT in the starting deck
-                const inStartingDeck = GameState.startingDeck.cards.some(startCard =>
-                    startCard.suit === card.suit && startCard.value === card.rank
-                );
-                return !inStartingDeck;
-            }).map(card => ({ suit: card.suit, value: card.rank }));
+            // Initialize fullDeck if this is first encounter
+            if (GameState.currentEncounterIndex === 0 && GameState.player.fullDeck.length === 0) {
+                // Load starting deck from StartingDeck.json
+                for (let card of GameState.startingDeck.cards) {
+                    GameState.player.fullDeck.push({ rank: card.value, suit: card.suit });
+                }
+            }
 
-            // Reset deck and hand
-            GameState.player.deck = createDeckFromConfig(additionalCards);
+            // Create deck from fullDeck (includes starting deck + reward cards)
+            // This shuffles all cards (starting deck + rewards) back into the deck
+            GameState.player.deck = createDeckFromFullDeck();
             GameState.player.hand = [];
             GameState.player.playedCards = [];
             GameState.hasChargedThisTurn = false;
             GameState.showingRewards = false;
-
-            // Initialize fullDeck if this is first encounter
-            if (GameState.currentEncounterIndex === 0 && GameState.player.fullDeck.length === 0) {
-                GameState.player.fullDeck = [...GameState.player.deck];
-            }
 
             // Initialize enemies
             GameState.enemies = encounter.enemies.map(enemyTemplate => ({
