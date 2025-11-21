@@ -35,7 +35,7 @@
       "rewards": [
         { "suit": "♠", "value": "9" },
         { "suit": "♠", "value": "J" },
-        { "suit": "♣", "value": "5" }
+        { "suit": "♠", "value": "5" }
       ]
     },
     {
@@ -115,7 +115,7 @@
       "rewards": [
         { "suit": "♥", "value": "K" },
         { "suit": "♠", "value": "A" },
-        { "suit": "♣", "value": "J" }
+        { "suit": "♠", "value": "J" }
       ]
     },
     {
