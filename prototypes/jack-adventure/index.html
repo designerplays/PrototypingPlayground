@@ -221,6 +221,7 @@
         #deck-info {
             font-size: 12px;
             color: #aaa;
+            display: none;
         }
 
         /* Player Stats */
@@ -748,7 +749,7 @@
     <div id="debug-popup">
         <div id="debug-popup-content">
             <strong>Jack Adventure</strong><br>
-            Version: 0.7<br>
+            Version: 0.8<br>
             A blackjack dungeon crawler
         </div>
         <button id="debug-close">Close</button>
@@ -1284,6 +1285,9 @@
             const attackButton = document.getElementById('attack-button');
             const chargeButton = document.getElementById('charge-button');
             const yourDeckButton = document.getElementById('your-deck-button');
+
+            // Update YOUR DECK button text with card count
+            yourDeckButton.textContent = `YOUR DECK (${GameState.player.deck.length}/${GameState.player.fullDeck.length} Cards)`;
 
             // Disable all action buttons when showing rewards
             if (GameState.showingRewards) {
