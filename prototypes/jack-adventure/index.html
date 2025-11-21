@@ -544,7 +544,7 @@
     <div id="debug-popup">
         <div id="debug-popup-content">
             <strong>Jack Adventure</strong><br>
-            Version: 0.3<br>
+            Version: 0.4<br>
             A blackjack dungeon crawler
         </div>
         <button id="debug-close">Close</button>
@@ -631,7 +631,8 @@
             currentEncounterIndex: 0,
             enemies: [],
             targetEnemyIndex: 0,
-            gameOver: false
+            gameOver: false,
+            hasChargedThisTurn: false
         };
 
         // Card Suits and Ranks
@@ -720,6 +721,7 @@
             // Reset deck and hand
             GameState.player.deck = createDeck();
             GameState.player.hand = [];
+            GameState.hasChargedThisTurn = false;
 
             // Initialize enemies
             GameState.enemies = encounter.enemies.map(enemyTemplate => ({
@@ -748,7 +750,34 @@
             const card = GameState.player.deck.pop();
             GameState.player.hand.push(card);
 
+            // Mark that player has charged this turn
+            GameState.hasChargedThisTurn = true;
+
             updateUI();
+
+            // Check for auto-bust
+            const handValue = calculateHandValue(GameState.player.hand);
+            if (handValue > 21) {
+                // Auto-bust - show message and proceed to enemy turn
+                setTimeout(() => {
+                    showFeedback('BUST!', 800);
+
+                    // After bust message, enemies attack and clear hand
+                    setTimeout(() => {
+                        enemiesAttack();
+
+                        // Clear hand for next turn
+                        GameState.player.hand = [];
+                        GameState.hasChargedThisTurn = false;
+                        updateUI();
+
+                        // Check if player died
+                        if (GameState.player.currentHealth <= 0) {
+                            endGame(false, 'You died!');
+                        }
+                    }, 800);
+                }, 100);
+            }
         }
 
         // Player action: Attack
@@ -803,6 +832,7 @@
 
                 // Clear hand for next turn
                 GameState.player.hand = [];
+                GameState.hasChargedThisTurn = false;
                 updateUI();
 
                 // Check if player died
@@ -949,6 +979,10 @@
                 document.getElementById('xp-bar').style.width = '100%';
                 document.getElementById('xp-text').textContent = 'MAX';
             }
+
+            // Enable/disable attack button based on whether player has charged
+            const attackButton = document.getElementById('attack-button');
+            attackButton.disabled = !GameState.hasChargedThisTurn;
         }
 
         // Select target enemy
