@@ -723,7 +723,7 @@
     <div id="debug-popup">
         <div id="debug-popup-content">
             <strong>Jack Adventure</strong><br>
-            Version: 0.9<br>
+            Version: 1.0<br>
             A blackjack dungeon crawler
         </div>
         <button id="debug-close">Close</button>
@@ -1180,8 +1180,9 @@
             // Hand total
             const handValue = calculateHandValue(GameState.player.hand);
             const handTotal = document.getElementById('hand-total');
-            handTotal.textContent = `Hand: ${handValue}`;
-            handTotal.className = handValue > 21 ? 'bust' : '';
+            const bustLimit = GameState.config.bustLimit;
+            handTotal.textContent = `Hand: ${handValue}/${bustLimit}`;
+            handTotal.className = handValue > bustLimit ? 'bust' : '';
 
             // Deck info
             document.getElementById('deck-info').textContent =
