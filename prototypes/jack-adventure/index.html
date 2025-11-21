@@ -544,7 +544,7 @@
     <div id="debug-popup">
         <div id="debug-popup-content">
             <strong>Jack Adventure</strong><br>
-            Version: 0.2<br>
+            Version: 0.3<br>
             A blackjack dungeon crawler
         </div>
         <button id="debug-close">Close</button>
@@ -773,6 +773,12 @@
                 if (targetEnemy.currentHealth <= 0) {
                     // Award XP
                     gainXP(targetEnemy.xpReward);
+
+                    // Move target to next live enemy
+                    const nextLiveEnemy = findNextLiveEnemy();
+                    if (nextLiveEnemy !== -1) {
+                        GameState.targetEnemyIndex = nextLiveEnemy;
+                    }
                 }
             }
 
@@ -951,6 +957,17 @@
                 GameState.targetEnemyIndex = index;
                 updateUI();
             }
+        }
+
+        // Find next live enemy (left to right)
+        function findNextLiveEnemy() {
+            // Start from the beginning and find the first live enemy
+            for (let i = 0; i < GameState.enemies.length; i++) {
+                if (GameState.enemies[i].currentHealth > 0) {
+                    return i;
+                }
+            }
+            return -1; // No live enemies
         }
 
         // Show feedback message
