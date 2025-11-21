@@ -228,12 +228,6 @@
         #player-stats {
         }
 
-        #player-level {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 6px;
-            text-align: center;
-        }
 
         .stat-bar-container {
             margin-bottom: 6px;
@@ -263,9 +257,6 @@
             background: linear-gradient(90deg, #44ff44, #66ff66);
         }
 
-        .xp-bar-fill {
-            background: linear-gradient(90deg, #4444ff, #6666ff);
-        }
 
         .stat-bar-text {
             position: absolute;
@@ -403,19 +394,6 @@
             transform: scale(0.95);
         }
 
-        .level-up-flash {
-            animation: levelUp 0.5s ease-out;
-        }
-
-        @keyframes levelUp {
-            0%, 100% {
-                color: #fff;
-            }
-            50% {
-                color: #ffff00;
-                text-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
-            }
-        }
 
         .hit-flash {
             animation: hitFlash 0.3s ease-out;
@@ -524,10 +502,6 @@
                 font-size: 11px;
             }
 
-            #player-level {
-                font-size: 13px;
-                margin-bottom: 4px;
-            }
 
             .stat-bar-container {
                 margin-bottom: 4px;
@@ -749,7 +723,7 @@
     <div id="debug-popup">
         <div id="debug-popup-content">
             <strong>Jack Adventure</strong><br>
-            Version: 0.8<br>
+            Version: 0.9<br>
             A blackjack dungeon crawler
         </div>
         <button id="debug-close">Close</button>
@@ -774,8 +748,6 @@
 
         <!-- Player Stats -->
         <div id="player-stats">
-            <div id="player-level">Level: 1</div>
-
             <div class="stat-bar-container">
                 <div class="stat-label">
                     <span>♥️</span>
@@ -783,16 +755,6 @@
                 </div>
                 <div class="stat-bar">
                     <div class="health-bar-fill stat-bar-fill" id="health-bar" style="width: 100%"></div>
-                </div>
-            </div>
-
-            <div class="stat-bar-container">
-                <div class="stat-label">
-                    <span>XP</span>
-                    <span id="xp-text">0 / 5</span>
-                </div>
-                <div class="stat-bar">
-                    <div class="xp-bar-fill stat-bar-fill" id="xp-bar" style="width: 0%"></div>
                 </div>
             </div>
         </div>
@@ -848,8 +810,6 @@
             player: {
                 currentHealth: 0,
                 maxHealth: 0,
-                currentXP: 0,
-                currentLevel: 1,
                 deck: [],
                 hand: [],
                 playedCards: [],
@@ -883,8 +843,6 @@
                 // Initialize player
                 GameState.player.maxHealth = GameState.config.playerStartingHealth;
                 GameState.player.currentHealth = GameState.config.playerStartingHealth;
-                GameState.player.currentXP = 0;
-                GameState.player.currentLevel = 1;
 
                 // Start first encounter
                 GameState.currentEncounterIndex = 0;
@@ -1066,9 +1024,6 @@
 
                 // Check if enemy died
                 if (targetEnemy.currentHealth <= 0) {
-                    // Award XP
-                    gainXP(targetEnemy.xpReward);
-
                     // Move target to next live enemy
                     const nextLiveEnemy = findNextLiveEnemy();
                     if (nextLiveEnemy !== -1) {
@@ -1170,30 +1125,6 @@
             });
         }
 
-        // Gain XP
-        function gainXP(amount) {
-            const oldLevel = GameState.player.currentLevel;
-            GameState.player.currentXP += amount;
-
-            // Check for level up
-            while (GameState.player.currentLevel < 100) {
-                const nextLevel = GameState.player.currentLevel + 1;
-                const nextThreshold = GameState.config.xpLevels.find(l => l.level === nextLevel);
-
-                if (nextThreshold && GameState.player.currentXP >= nextThreshold.threshold) {
-                    GameState.player.currentLevel = nextLevel;
-                } else {
-                    break;
-                }
-            }
-
-            // Show level up animation
-            if (GameState.player.currentLevel > oldLevel) {
-                const levelElement = document.getElementById('player-level');
-                levelElement.classList.add('level-up-flash');
-                setTimeout(() => levelElement.classList.remove('level-up-flash'), 500);
-            }
-        }
 
         // Update UI
         function updateUI() {
@@ -1256,33 +1187,11 @@
             document.getElementById('deck-info').textContent =
                 `Deck: ${GameState.player.deck.length} cards`;
 
-            // Player level
-            document.getElementById('player-level').textContent =
-                `Level: ${GameState.player.currentLevel}`;
-
             // Health bar
             const healthPercent = (GameState.player.currentHealth / GameState.player.maxHealth) * 100;
             document.getElementById('health-bar').style.width = `${healthPercent}%`;
             document.getElementById('health-text').textContent =
                 `${GameState.player.currentHealth} / ${GameState.player.maxHealth}`;
-
-            // XP bar
-            const currentLevelData = GameState.config.xpLevels.find(l => l.level === GameState.player.currentLevel);
-            const nextLevelData = GameState.config.xpLevels.find(l => l.level === GameState.player.currentLevel + 1);
-
-            if (nextLevelData) {
-                const xpInCurrentLevel = GameState.player.currentXP - currentLevelData.threshold;
-                const xpNeededForLevel = nextLevelData.threshold - currentLevelData.threshold;
-                const xpPercent = (xpInCurrentLevel / xpNeededForLevel) * 100;
-
-                document.getElementById('xp-bar').style.width = `${xpPercent}%`;
-                document.getElementById('xp-text').textContent =
-                    `${xpInCurrentLevel} / ${xpNeededForLevel}`;
-            } else {
-                // Max level
-                document.getElementById('xp-bar').style.width = '100%';
-                document.getElementById('xp-text').textContent = 'MAX';
-            }
 
             // Enable/disable buttons
             const attackButton = document.getElementById('attack-button');
@@ -1486,8 +1395,6 @@
             GameState.gameOver = false;
             GameState.currentEncounterIndex = 0;
             GameState.player.currentHealth = GameState.config.playerStartingHealth;
-            GameState.player.currentXP = 0;
-            GameState.player.currentLevel = 1;
             GameState.player.fullDeck = [];
 
             document.getElementById('game-over-screen').style.display = 'none';
