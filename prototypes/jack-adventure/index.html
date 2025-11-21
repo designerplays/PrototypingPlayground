@@ -810,7 +810,10 @@
         </div>
 
         <!-- Your Deck Button -->
-        <button id="your-deck-button">YOUR DECK</button>
+        <button id="your-deck-button">
+            YOUR DECK<br>
+            <small style="font-size: 10px;">11/11 Cards</small>
+        </button>
     </div>
 
     <!-- Feedback Message -->
@@ -1287,7 +1290,7 @@
             const yourDeckButton = document.getElementById('your-deck-button');
 
             // Update YOUR DECK button text with card count
-            yourDeckButton.textContent = `YOUR DECK (${GameState.player.deck.length}/${GameState.player.fullDeck.length} Cards)`;
+            yourDeckButton.innerHTML = `YOUR DECK<br><small style="font-size: 10px;">${GameState.player.deck.length}/${GameState.player.fullDeck.length} Cards</small>`;
 
             // Disable all action buttons when showing rewards
             if (GameState.showingRewards) {
