@@ -1273,7 +1273,7 @@
 
                 document.getElementById('xp-bar').style.width = `${xpPercent}%`;
                 document.getElementById('xp-text').textContent =
-                    `${GameState.player.currentXP} / ${nextLevelData.threshold}`;
+                    `${xpInCurrentLevel} / ${xpNeededForLevel}`;
             } else {
                 // Max level
                 document.getElementById('xp-bar').style.width = '100%';
