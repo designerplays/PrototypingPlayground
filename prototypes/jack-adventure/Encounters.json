@@ -1,0 +1,85 @@
+{
+  "encounters": [
+    {
+      "id": 1,
+      "name": "Dungeon Entrance",
+      "enemies": [
+        { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2, "xpReward": 3 }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Rat Nest",
+      "enemies": [
+        { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2, "xpReward": 3 },
+        { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2, "xpReward": 3 }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Dripping Cavern",
+      "enemies": [
+        { "name": "Slime", "maxHealth": 15, "attackPower": 3, "attackCooldown": 2, "xpReward": 5 },
+        { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1, "xpReward": 4 }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Pest Swarm",
+      "enemies": [
+        { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2, "xpReward": 3 },
+        { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1, "xpReward": 4 },
+        { "name": "Slime", "maxHealth": 15, "attackPower": 3, "attackCooldown": 2, "xpReward": 5 }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Goblin Scouts",
+      "enemies": [
+        { "name": "Goblin", "maxHealth": 18, "attackPower": 4, "attackCooldown": 2, "xpReward": 6 },
+        { "name": "Goblin", "maxHealth": 18, "attackPower": 4, "attackCooldown": 2, "xpReward": 6 }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Ambush in the Dark",
+      "enemies": [
+        { "name": "Orc", "maxHealth": 25, "attackPower": 6, "attackCooldown": 2, "xpReward": 10 },
+        { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1, "xpReward": 4 },
+        { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1, "xpReward": 4 }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Stone Guardian",
+      "enemies": [
+        { "name": "Golem", "maxHealth": 35, "attackPower": 8, "attackCooldown": 3, "xpReward": 15 }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Cult Ritual",
+      "enemies": [
+        { "name": "Cultist", "maxHealth": 20, "attackPower": 5, "attackCooldown": 1, "xpReward": 9 },
+        { "name": "Cultist", "maxHealth": 20, "attackPower": 5, "attackCooldown": 1, "xpReward": 9 },
+        { "name": "Slime", "maxHealth": 15, "attackPower": 3, "attackCooldown": 2, "xpReward": 5 }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Lich's Antechamber",
+      "enemies": [
+        { "name": "Golem", "maxHealth": 35, "attackPower": 8, "attackCooldown": 3, "xpReward": 15 },
+        { "name": "Lich", "maxHealth": 40, "attackPower": 9, "attackCooldown": 2, "xpReward": 20 }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Dragon's Lair",
+      "enemies": [
+        { "name": "Demon Hound", "maxHealth": 30, "attackPower": 7, "attackCooldown": 1, "xpReward": 14 },
+        { "name": "Dragon", "maxHealth": 60, "attackPower": 12, "attackCooldown": 2, "xpReward": 30 }
+      ]
+    }
+  ]
+}

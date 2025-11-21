@@ -19,6 +19,11 @@
       "name": "Poker PVP",
       "description": "Play poker against a computer, best of 3 wins!",
       "path": "prototypes/poker-pvp/index.html"
+    },
+    {
+      "name": "Jack Adventure",
+      "description": "A dungeon crawler with blackjack-based combat. Charge to draw cards, attack to deal damage. Clear 10 encounters to win!",
+      "path": "prototypes/jack-adventure/index.html"
     }
   ]
 }
