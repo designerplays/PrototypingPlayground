@@ -1,4 +1,5 @@
 {
   "playerStartingHealth": 50,
-  "bustLimit": 21
+  "bustLimit": 21,
+  "playerStartingGems": 25
 }

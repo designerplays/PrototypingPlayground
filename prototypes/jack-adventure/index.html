@@ -210,19 +210,38 @@
             display: flex;
             flex-direction: column;
             align-items: stretch;
-            gap: 8px;
+            gap: 10px;
             box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.08), 0 12px 18px rgba(0, 0, 0, 0.35);
             border: 1px solid rgba(0, 0, 0, 0.35);
         }
 
-        #cards-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        #card-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
             color: #f8e5d0;
             font-weight: 800;
             letter-spacing: 0.5px;
             text-transform: uppercase;
+        }
+
+        .summary-item {
+            background: rgba(0, 0, 0, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .summary-label {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .summary-value {
+            font-size: 16px;
         }
 
         #cards-display {
@@ -248,17 +267,6 @@
 
         .card.red {
             color: #d62839;
-        }
-
-        #hand-total {
-            font-size: 16px;
-            font-weight: 800;
-            color: #f5d7c4;
-            text-align: right;
-        }
-
-        #hand-total.bust {
-            color: #ff7b7b;
         }
 
         /* Player Stats */
@@ -392,8 +400,8 @@
         #gem-card {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 8px;
+            justify-content: center;
+            gap: 10px;
         }
 
         #gem-count {
@@ -403,6 +411,10 @@
 
         .gem-icon {
             font-size: 26px;
+        }
+
+        .summary-value.bust {
+            color: #ff7b7b;
         }
 
         /* Action Buttons */
@@ -879,9 +891,19 @@
 
         <!-- Player Cards Area -->
         <div id="player-cards-area">
-            <div id="cards-header">
-                <span>Cards in Play</span>
-                <span id="hand-total">Limit: 0</span>
+            <div id="card-summary">
+                <div class="summary-item">
+                    <div class="summary-label">Damage</div>
+                    <div class="summary-value" id="summary-damage">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Healing</div>
+                    <div class="summary-value" id="summary-heal">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Gems</div>
+                    <div class="summary-value" id="summary-gems">0</div>
+                </div>
             </div>
             <div id="cards-display"></div>
         </div>
@@ -895,16 +917,14 @@
             </button>
 
             <div id="thermometer-card" class="tracker-card">
-                <div class="tracker-title">Thermometer</div>
+                <div class="tracker-title">Limit</div>
                 <div id="thermometer-bar">
                     <div id="thermometer-fill"></div>
                 </div>
                 <div id="thermometer-value">0 / 21</div>
-                <div class="tracker-sub">Limit 21</div>
             </div>
 
             <div id="gem-card" class="tracker-card">
-                <div class="tracker-title">Gems</div>
                 <div class="gem-icon">💎</div>
                 <div id="gem-count">0</div>
             </div>
@@ -964,7 +984,7 @@
             gameOver: false,
             hasChargedThisTurn: false,
             showingRewards: false,
-            gems: 25
+            gems: 0
         };
 
         // Card Suits and Ranks
@@ -987,6 +1007,7 @@
                 // Initialize player
                 GameState.player.maxHealth = GameState.config.playerStartingHealth;
                 GameState.player.currentHealth = GameState.config.playerStartingHealth;
+                GameState.gems = GameState.config.playerStartingGems;
 
                 // Start first encounter
                 GameState.currentEncounterIndex = 0;
@@ -1060,6 +1081,11 @@
             }
 
             return total;
+        }
+
+        function calculateSuitValue(hand, suit) {
+            const suitCards = hand.filter(card => card.suit === suit);
+            return calculateHandValue(suitCards);
         }
 
         // Start new encounter
@@ -1162,12 +1188,16 @@
                 // Separate cards by suit
                 const spadeCards = GameState.player.hand.filter(card => card.suit === '♠');
                 const heartCards = GameState.player.hand.filter(card => card.suit === '♥');
+                const diamondCards = GameState.player.hand.filter(card => card.suit === '♦');
 
                 // Calculate damage from spade cards
                 const damageAmount = calculateHandValue(spadeCards);
 
                 // Calculate healing from heart cards
                 const healAmount = calculateHandValue(heartCards);
+
+                // Calculate gems from diamond cards
+                const gemGain = calculateHandValue(diamondCards);
 
                 // Deal damage to target enemy if there are spade cards
                 if (damageAmount > 0) {
@@ -1200,6 +1230,10 @@
                     if (actualHeal > 0) {
                         showFeedback(`+${actualHeal} HP`, 800);
                     }
+                }
+
+                if (gemGain > 0) {
+                    GameState.gems += gemGain;
                 }
             }
 
@@ -1340,6 +1374,14 @@
             const cardsDisplay = document.getElementById('cards-display');
             cardsDisplay.innerHTML = '';
 
+            const spadeValue = calculateSuitValue(GameState.player.hand, '♠');
+            const heartValue = calculateSuitValue(GameState.player.hand, '♥');
+            const diamondValue = calculateSuitValue(GameState.player.hand, '♦');
+
+            document.getElementById('summary-damage').textContent = spadeValue;
+            document.getElementById('summary-heal').textContent = heartValue;
+            document.getElementById('summary-gems').textContent = diamondValue;
+
             GameState.player.hand.forEach(card => {
                 const cardElement = document.createElement('div');
                 cardElement.className = 'card';
@@ -1352,10 +1394,15 @@
 
             // Hand total
             const handValue = calculateHandValue(GameState.player.hand);
-            const handTotal = document.getElementById('hand-total');
             const bustLimit = GameState.config.bustLimit;
-            handTotal.textContent = `Limit: ${handValue}/${bustLimit}`;
-            handTotal.className = handValue > bustLimit ? 'bust' : '';
+            const summaryValues = document.querySelectorAll('.summary-value');
+            summaryValues.forEach(element => {
+                if (handValue > bustLimit) {
+                    element.classList.add('bust');
+                } else {
+                    element.classList.remove('bust');
+                }
+            });
 
             // Thermometer
             const thermometerFill = document.getElementById('thermometer-fill');
@@ -1579,7 +1626,7 @@
             GameState.currentEncounterIndex = 0;
             GameState.player.currentHealth = GameState.config.playerStartingHealth;
             GameState.player.fullDeck = [];
-            GameState.gems = 25;
+            GameState.gems = GameState.config.playerStartingGems;
 
             document.getElementById('game-over-screen').style.display = 'none';
 
