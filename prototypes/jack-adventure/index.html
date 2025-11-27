@@ -13,14 +13,15 @@
         }
 
         body {
-            font-family: 'Courier New', monospace;
-            background: #1a1a1a;
-            color: #fff;
+            font-family: 'Nunito', 'Arial', sans-serif;
+            background: linear-gradient(180deg, #2d3f1f 0%, #1a1f13 40%, #0e0f0b 100%);
+            color: #f7f5f2;
             overflow: auto;
             touch-action: manipulation;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            padding: 0 10px 16px;
         }
 
         #debug-button {
@@ -79,113 +80,154 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 8px;
+            padding: 10px 8px 16px;
             overflow-y: auto;
-            max-width: 500px;
+            max-width: 520px;
             margin: 0 auto;
             width: 100%;
-            gap: 8px;
+            gap: 10px;
+        }
+
+        .panel {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.25));
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 12px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(3px);
         }
 
         /* Encounter Info */
         #encounter-info {
             text-align: center;
-            padding: 6px 8px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
+            padding: 12px 8px 10px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(77, 110, 59, 0.9), rgba(53, 76, 41, 0.9));
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f3f8ec;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+            letter-spacing: 0.5px;
         }
 
         #encounter-name {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 3px;
+            font-size: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+            margin-bottom: 4px;
         }
 
         #encounter-count {
             font-size: 12px;
-            color: #aaa;
+            color: #d5e3c6;
+            opacity: 0.9;
         }
 
         /* Enemies Row */
         #enemies-row {
             display: flex;
-            justify-content: center;
-            gap: 6px;
             flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
         }
 
         .enemy-card {
-            background: rgba(200, 50, 50, 0.3);
-            border: 2px solid rgba(255, 100, 100, 0.5);
-            border-radius: 6px;
-            padding: 6px 8px;
-            min-width: 90px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.35));
+            border: 2px solid rgba(255, 148, 120, 0.65);
+            border-radius: 14px;
+            padding: 10px 12px;
+            min-width: 130px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 14px 24px rgba(0, 0, 0, 0.35);
+            position: relative;
+        }
+
+        .enemy-card::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            pointer-events: none;
         }
 
         .enemy-card.targeted {
-            border-color: #ffff00;
-            box-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+            border-color: #ffe76a;
+            box-shadow: 0 0 12px rgba(255, 231, 106, 0.8);
         }
 
         .enemy-card.dead {
             opacity: 0.3;
             pointer-events: none;
-            background: rgba(100, 100, 100, 0.2);
+            background: rgba(80, 80, 80, 0.2);
+            border-color: rgba(120, 120, 120, 0.4);
         }
 
         .enemy-name {
-            font-weight: bold;
-            font-size: 13px;
-            margin-bottom: 4px;
+            font-weight: 800;
+            font-size: 15px;
+            margin-bottom: 6px;
             text-align: center;
+            color: #ffe0c2;
         }
 
         .enemy-health-bar {
-            background: rgba(0, 0, 0, 0.5);
-            height: 10px;
-            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.6);
+            height: 14px;
+            border-radius: 9px;
             overflow: hidden;
-            margin-bottom: 3px;
+            margin-bottom: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .enemy-health-fill {
-            background: linear-gradient(90deg, #ff4444, #ff6666);
+            background: linear-gradient(90deg, #ff5f6d, #ffc371);
             height: 100%;
             transition: width 0.3s;
         }
 
         .enemy-health-text {
-            font-size: 10px;
+            font-size: 12px;
             text-align: center;
-            margin-bottom: 3px;
+            margin-bottom: 6px;
+            color: #f7e9dc;
         }
 
         .enemy-stats {
-            font-size: 9px;
-            color: #ccc;
+            font-size: 11px;
+            color: #e8dcd0;
             text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
         }
 
         /* Player Cards Area */
         #player-cards-area {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            padding: 8px;
-            min-height: 90px;
+            background: linear-gradient(180deg, #402a1a 0%, #2f1d12 100%);
+            border-radius: 14px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+            box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.08), 0 12px 18px rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(0, 0, 0, 0.35);
+        }
+
+        #cards-header {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
+            color: #f8e5d0;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         #cards-display {
             display: flex;
-            gap: 6px;
-            margin-bottom: 8px;
+            gap: 8px;
             flex-wrap: wrap;
             justify-content: center;
         }
@@ -193,59 +235,57 @@
         .card {
             background: #fff;
             color: #000;
-            width: 45px;
-            height: 62px;
-            border-radius: 4px;
+            width: 64px;
+            height: 86px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            font-size: 20px;
+            font-weight: 800;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.35);
         }
 
         .card.red {
-            color: #d00;
+            color: #d62839;
         }
 
         #hand-total {
             font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 6px;
+            font-weight: 800;
+            color: #f5d7c4;
+            text-align: right;
         }
 
         #hand-total.bust {
-            color: #ff4444;
-        }
-
-        #deck-info {
-            font-size: 12px;
-            color: #aaa;
-            display: none;
+            color: #ff7b7b;
         }
 
         /* Player Stats */
         #player-stats {
-        }
-
-
-        .stat-bar-container {
-            margin-bottom: 6px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.35));
+            border-radius: 14px;
+            padding: 12px 14px 10px;
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .stat-label {
-            font-size: 11px;
-            margin-bottom: 3px;
+            font-size: 13px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
+            font-weight: 800;
+            letter-spacing: 0.5px;
         }
 
         .stat-bar {
-            background: rgba(0, 0, 0, 0.5);
-            height: 16px;
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            height: 18px;
+            border-radius: 12px;
             overflow: hidden;
             position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .stat-bar-fill {
@@ -254,60 +294,162 @@
         }
 
         .health-bar-fill {
-            background: linear-gradient(90deg, #44ff44, #66ff66);
+            background: linear-gradient(90deg, #2af598, #08aeea);
+            box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.3);
         }
-
 
         .stat-bar-text {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 11px;
-            font-weight: bold;
-            color: #fff;
+            font-size: 12px;
+            font-weight: 800;
+            color: #fefefe;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .stat-bar-container {
+            margin-bottom: 2px;
+        }
+
+        /* Tracker row */
+        #tracker-row {
+            display: grid;
+            grid-template-columns: 1.2fr 1.4fr 0.8fr;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .tracker-card {
+            background: linear-gradient(180deg, #f5f1ec, #d9c8b6);
+            border-radius: 12px;
+            padding: 10px 12px;
+            color: #2c1b16;
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.35);
+            border: 2px solid #b48a63;
+        }
+
+        #deck-widget {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-weight: 800;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        #deck-widget:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #deck-count {
+            font-size: 22px;
+        }
+
+        .tracker-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #5a3a2a;
+        }
+
+        .tracker-sub {
+            font-size: 11px;
+            color: #6c4d3a;
+        }
+
+        #thermometer-card {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        #thermometer-bar {
+            background: #fff7e8;
+            border-radius: 999px;
+            height: 18px;
+            overflow: hidden;
+            border: 1px solid #cfa074;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #thermometer-fill {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #6dd5ed 0%, #f09819 60%, #ed213a 100%);
+            transition: width 0.3s ease;
+        }
+
+        #thermometer-value {
+            font-size: 18px;
+            font-weight: 800;
+            color: #3a2419;
+            text-align: right;
+        }
+
+        #gem-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        #gem-count {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .gem-icon {
+            font-size: 26px;
         }
 
         /* Action Buttons */
         #action-buttons {
             display: flex;
-            gap: 8px;
+            gap: 12px;
         }
 
         .action-button {
             flex: 1;
-            padding: 12px 8px;
-            font-size: 14px;
-            font-weight: bold;
+            padding: 14px 8px 12px;
+            font-size: 16px;
+            font-weight: 800;
             border: none;
-            border-radius: 6px;
+            border-radius: 14px;
             cursor: pointer;
-            font-family: 'Courier New', monospace;
+            font-family: 'Nunito', 'Arial', sans-serif;
             transition: all 0.2s;
             touch-action: manipulation;
+            color: #2c1b16;
+            box-shadow: 0 12px 18px rgba(0, 0, 0, 0.35);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
         }
 
         #charge-button {
-            background: linear-gradient(135deg, #4444ff, #6666ff);
-            color: #fff;
+            background: linear-gradient(180deg, #f9db6d 0%, #f5b13d 100%);
+            border: 2px solid #f5c15c;
         }
 
         #charge-button:active {
-            transform: scale(0.95);
+            transform: scale(0.97);
         }
 
         #attack-button {
-            background: linear-gradient(135deg, #ff4444, #ff6666);
-            color: #fff;
+            background: linear-gradient(180deg, #ff7b7b 0%, #e5483b 100%);
+            border: 2px solid #ff9b8f;
+            color: #fff6f0;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
         }
 
         #attack-button:active {
-            transform: scale(0.95);
+            transform: scale(0.97);
         }
 
         .action-button:disabled {
-            opacity: 0.5;
+            opacity: 0.55;
             cursor: not-allowed;
         }
 
@@ -498,10 +640,6 @@
                 margin-bottom: 4px;
             }
 
-            #deck-info {
-                font-size: 11px;
-            }
-
 
             .stat-bar-container {
                 margin-bottom: 4px;
@@ -524,6 +662,11 @@
                 padding: 10px 6px;
                 font-size: 13px;
             }
+
+            #tracker-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
         }
 
         @media (max-height: 500px) {
@@ -539,6 +682,10 @@
             .action-button {
                 padding: 8px 6px;
                 font-size: 12px;
+            }
+
+            #tracker-row {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -692,29 +839,6 @@
             transform: scale(0.95);
         }
 
-        #your-deck-button {
-            width: 100%;
-            padding: 10px 8px;
-            font-size: 14px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #888, #aaa);
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: 'Courier New', monospace;
-            color: #fff;
-            margin-top: 8px;
-            transition: all 0.2s;
-        }
-
-        #your-deck-button:active {
-            transform: scale(0.95);
-        }
-
-        #your-deck-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
     </style>
 </head>
 <body>
@@ -731,7 +855,7 @@
 
     <div id="game-container">
         <!-- Encounter Info -->
-        <div id="encounter-info">
+        <div id="encounter-info" class="panel">
             <div id="encounter-name">Loading...</div>
             <div id="encounter-count"></div>
         </div>
@@ -739,43 +863,62 @@
         <!-- Enemies Row -->
         <div id="enemies-row"></div>
 
-        <!-- Player Cards Area -->
-        <div id="player-cards-area">
-            <div id="cards-display"></div>
-            <div id="hand-total">Limit: 0</div>
-            <div id="deck-info">Deck: 0 cards</div>
-        </div>
-
-        <!-- Player Stats -->
+        <!-- Player Health -->
         <div id="player-stats">
             <div class="stat-bar-container">
                 <div class="stat-label">
-                    <span>♥️</span>
+                    <span>Health</span>
                     <span id="health-text">50 / 50</span>
                 </div>
                 <div class="stat-bar">
                     <div class="health-bar-fill stat-bar-fill" id="health-bar" style="width: 100%"></div>
+                    <div class="stat-bar-text" id="health-text-overlay">50 / 50</div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Player Cards Area -->
+        <div id="player-cards-area">
+            <div id="cards-header">
+                <span>Cards in Play</span>
+                <span id="hand-total">Limit: 0</span>
+            </div>
+            <div id="cards-display"></div>
+        </div>
+
+        <!-- Tracker row -->
+        <div id="tracker-row">
+            <button id="deck-widget" class="tracker-card" type="button">
+                <div class="tracker-title">Deck</div>
+                <div id="deck-count">0/0 Cards</div>
+                <div class="tracker-sub">Tap to view</div>
+            </button>
+
+            <div id="thermometer-card" class="tracker-card">
+                <div class="tracker-title">Thermometer</div>
+                <div id="thermometer-bar">
+                    <div id="thermometer-fill"></div>
+                </div>
+                <div id="thermometer-value">0 / 21</div>
+                <div class="tracker-sub">Limit 21</div>
+            </div>
+
+            <div id="gem-card" class="tracker-card">
+                <div class="tracker-title">Gems</div>
+                <div class="gem-icon">💎</div>
+                <div id="gem-count">0</div>
             </div>
         </div>
 
         <!-- Action Buttons -->
         <div id="action-buttons">
             <button id="charge-button" class="action-button">
-                CHARGE<br>
-                <small style="font-size: 10px;">Draw 1 card</small>
+                Deal
             </button>
             <button id="attack-button" class="action-button">
-                ATTACK<br>
-                <small style="font-size: 10px;">Use hand value</small>
+                Attack
             </button>
         </div>
-
-        <!-- Your Deck Button -->
-        <button id="your-deck-button">
-            YOUR DECK<br>
-            <small style="font-size: 10px;">11/11 Cards</small>
-        </button>
     </div>
 
     <!-- Feedback Message -->
@@ -820,7 +963,8 @@
             targetEnemyIndex: 0,
             gameOver: false,
             hasChargedThisTurn: false,
-            showingRewards: false
+            showingRewards: false,
+            gems: 25
         };
 
         // Card Suits and Ranks
@@ -1064,6 +1208,8 @@
             // Check if all enemies are dead
             if (GameState.enemies.every(e => e.currentHealth <= 0)) {
                 // Encounter cleared!
+                GameState.gems += 5;
+                updateUI();
                 setTimeout(() => {
                     showFeedback('Encounter Cleared!', 1500);
                     setTimeout(() => {
@@ -1211,34 +1357,43 @@
             handTotal.textContent = `Limit: ${handValue}/${bustLimit}`;
             handTotal.className = handValue > bustLimit ? 'bust' : '';
 
+            // Thermometer
+            const thermometerFill = document.getElementById('thermometer-fill');
+            const thermometerValue = document.getElementById('thermometer-value');
+            const thermometerPercent = Math.min(100, (handValue / bustLimit) * 100);
+            thermometerFill.style.width = `${thermometerPercent}%`;
+            thermometerValue.textContent = `${handValue} / ${bustLimit}`;
+
             // Deck info
-            document.getElementById('deck-info').textContent =
-                `Deck: ${GameState.player.deck.length} cards`;
+            document.getElementById('deck-count').textContent =
+                `${GameState.player.deck.length}/${GameState.player.fullDeck.length} Cards`;
+
+            // Gems
+            document.getElementById('gem-count').textContent = GameState.gems;
 
             // Health bar
             const healthPercent = (GameState.player.currentHealth / GameState.player.maxHealth) * 100;
             document.getElementById('health-bar').style.width = `${healthPercent}%`;
             document.getElementById('health-text').textContent =
                 `${GameState.player.currentHealth} / ${GameState.player.maxHealth}`;
+            document.getElementById('health-text-overlay').textContent =
+                `${GameState.player.currentHealth} / ${GameState.player.maxHealth}`;
 
             // Enable/disable buttons
             const attackButton = document.getElementById('attack-button');
             const chargeButton = document.getElementById('charge-button');
-            const yourDeckButton = document.getElementById('your-deck-button');
-
-            // Update YOUR DECK button text with card count
-            yourDeckButton.innerHTML = `YOUR DECK<br><small style="font-size: 10px;">${GameState.player.deck.length}/${GameState.player.fullDeck.length} Cards</small>`;
+            const deckWidget = document.getElementById('deck-widget');
 
             // Disable all action buttons when showing rewards
             if (GameState.showingRewards) {
                 attackButton.disabled = true;
                 chargeButton.disabled = true;
-                yourDeckButton.disabled = true;
+                deckWidget.disabled = true;
             } else {
                 // Normal button state: attack button based on whether player has charged
                 attackButton.disabled = !GameState.hasChargedThisTurn;
                 chargeButton.disabled = false;
-                yourDeckButton.disabled = false;
+                deckWidget.disabled = false;
             }
         }
 
@@ -1424,6 +1579,7 @@
             GameState.currentEncounterIndex = 0;
             GameState.player.currentHealth = GameState.config.playerStartingHealth;
             GameState.player.fullDeck = [];
+            GameState.gems = 25;
 
             document.getElementById('game-over-screen').style.display = 'none';
 
@@ -1434,7 +1590,7 @@
         document.getElementById('charge-button').addEventListener('click', charge);
         document.getElementById('attack-button').addEventListener('click', attack);
         document.getElementById('restart-button').addEventListener('click', restartGame);
-        document.getElementById('your-deck-button').addEventListener('click', showDeckPopup);
+        document.getElementById('deck-widget').addEventListener('click', showDeckPopup);
         document.getElementById('deck-close').addEventListener('click', hideDeckPopup);
 
         // Debug popup
