@@ -307,6 +307,10 @@
             color: #d62839;
         }
 
+        .card.gold {
+            color: #ffd700;
+        }
+
         .card.placeholder {
             background: transparent;
             border: 2px dotted rgba(255, 255, 255, 0.3);
@@ -799,6 +803,10 @@
             color: #d00;
         }
 
+        .deck-card.gold {
+            color: #ffd700;
+        }
+
         .deck-card.played {
             opacity: 0.4;
             background: transparent;
@@ -828,7 +836,8 @@
             padding: 30px;
             z-index: 2100;
             display: none;
-            max-width: 90%;
+            max-width: 95%;
+            min-width: 400px;
         }
 
         #reward-popup.show {
@@ -874,6 +883,10 @@
 
         .reward-card.red {
             color: #d00;
+        }
+
+        .reward-card.gold {
+            color: #ffd700;
         }
 
         .pick-button {
@@ -1462,8 +1475,10 @@
                 GameState.player.hand.forEach(card => {
                     const cardElement = document.createElement('div');
                     cardElement.className = 'card';
-                    if (card.suit === '♥' || card.suit === '♦') {
+                    if (card.suit === '♥') {
                         cardElement.classList.add('red');
+                    } else if (card.suit === '♦') {
+                        cardElement.classList.add('gold');
                     }
                     cardElement.textContent = `${card.rank}${card.suit}`;
                     cardsDisplay.appendChild(cardElement);
@@ -1620,8 +1635,10 @@
                     cardElement.classList.add('played');
                 }
 
-                if (card.suit === '♥' || card.suit === '♦') {
+                if (card.suit === '♥') {
                     cardElement.classList.add('red');
+                } else if (card.suit === '♦') {
+                    cardElement.classList.add('gold');
                 }
 
                 cardElement.textContent = `${card.rank}${card.suit}`;
@@ -1648,8 +1665,10 @@
                 const cardElement = document.createElement('div');
                 cardElement.className = 'reward-card';
 
-                if (rewardCard.suit === '♥' || rewardCard.suit === '♦') {
+                if (rewardCard.suit === '♥') {
                     cardElement.classList.add('red');
+                } else if (rewardCard.suit === '♦') {
+                    cardElement.classList.add('gold');
                 }
 
                 cardElement.textContent = `${rewardCard.value}${rewardCard.suit}`;
