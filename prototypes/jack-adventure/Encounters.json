@@ -461,7 +461,7 @@
             },
             {
               "name": "Wise Bear",
-              "maxHealth": 30,
+              "maxHealth": 20,
               "attackPower": 6,
               "attackCooldown": 3
             },
