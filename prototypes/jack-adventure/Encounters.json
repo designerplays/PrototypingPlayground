@@ -4,33 +4,30 @@
       "id": 1,
       "encounters": [
         {
-          "type": "combat",
-          "name": "Dungeon Entrance",
-          "enemies": [
-            { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2 }
-          ],
-          "rewards": [
-            { "suit": "♦", "value": "5" },
-            { "suit": "♥", "value": "5" },
-            { "suit": "♠", "value": "2" }
-          ]
-        },
-        {
           "type": "story",
-          "name": "Mysterious Shrine",
-          "story": "You find a glowing shrine with ancient symbols. A voice whispers in your mind: 'Offer your vitality, or take my blessing?'",
+          "name": "Your Home",
+          "story": "You pack your bags and prepare to leave on your adventure. Your family is there to see you go. Maybe you can ask one last favour?",
           "choices": [
             {
-              "name": "Take the blessing",
-              "resolution": "You took the blessing and a powerful weapon appeared before you",
+              "name": "Ask for a weapon",
+              "resolution": "Your mother hands you her favourite kitchen knife.",
               "actionType": "card",
-              "actionValue": { "suit": "♠", "value": "K" }
+              "actionValue": {
+                "suit": "♠",
+                "value": 2
+              }
             },
             {
-              "name": "Offer vitality",
-              "resolution": "You offered your vitality and the shrine's glow faded peacefully",
-              "actionType": "hp",
-              "actionValue": -10
+              "name": "Ask for allowance",
+              "resolution": "Your dad pats his pockets and hands you a fistful of gems",
+              "actionType": "gems",
+              "actionValue": 5
+            },
+            {
+              "name": "Ask for advice",
+              "resolution": "Your sister whispers in your ear 'never give up'",
+              "actionType": "maxHp",
+              "actionValue": 5
             }
           ]
         }
@@ -41,15 +38,28 @@
       "encounters": [
         {
           "type": "combat",
-          "name": "Rat Nest",
+          "name": "Forest Entrance",
           "enemies": [
-            { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2 },
-            { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2 }
+            {
+              "name": "Wild Bunny",
+              "maxHealth": 10,
+              "attackPower": 2,
+              "attackCooldown": 1
+            }
           ],
           "rewards": [
-            { "suit": "♠", "value": "6" },
-            { "suit": "♥", "value": "8" },
-            { "suit": "♠", "value": "4" }
+            {
+              "suit": "♦",
+              "value": "2"
+            },
+            {
+              "suit": "♥",
+              "value": "2"
+            },
+            {
+              "suit": "♠",
+              "value": "2"
+            }
           ]
         }
       ]
@@ -63,17 +73,23 @@
           "offers": [
             {
               "type": "card",
-              "gemCost": 15,
-              "value": { "suit": "♠", "value": "Q" }
+              "gemCost": 20,
+              "value": {
+                "suit": "♠",
+                "value": "Q"
+              }
             },
             {
               "type": "card",
-              "gemCost": 12,
-              "value": { "suit": "♥", "value": "9" }
+              "gemCost": 10,
+              "value": {
+                "suit": "♦",
+                "value": "5"
+              }
             },
             {
               "type": "bustLimit",
-              "gemCost": 25,
+              "gemCost": 10,
               "value": 2
             },
             {
@@ -85,15 +101,34 @@
         },
         {
           "type": "combat",
-          "name": "Dripping Cavern",
+          "name": "Tree Clearing",
           "enemies": [
-            { "name": "Slime", "maxHealth": 15, "attackPower": 3, "attackCooldown": 2 },
-            { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1 }
+            {
+              "name": "Wild Bunny",
+              "maxHealth": 10,
+              "attackPower": 2,
+              "attackCooldown": 1
+            },
+            {
+              "name": "Boar",
+              "maxHealth": 12,
+              "attackPower": 3,
+              "attackCooldown": 2
+            }
           ],
           "rewards": [
-            { "suit": "♠", "value": "9" },
-            { "suit": "♠", "value": "J" },
-            { "suit": "♠", "value": "5" }
+            {
+              "suit": "♦",
+              "value": "3"
+            },
+            {
+              "suit": "♥",
+              "value": "3"
+            },
+            {
+              "suit": "♠",
+              "value": "3"
+            }
           ]
         }
       ]
@@ -103,41 +138,68 @@
       "encounters": [
         {
           "type": "story",
-          "name": "Ghost Dilemma",
-          "story": "You come upon a ghost weeping over a tomb. The tomb is unmarked. What do you do?",
+          "name": "Forest Graveyard",
+          "story": "You come upon the ghost of a racoon, weeping over a tomb. The tomb is unmarked. What do you do?",
           "choices": [
             {
-              "name": "Run away",
-              "resolution": "You fled quickly, finding a small pouch of gems dropped in your haste",
+              "name": "Unearth the tomb",
+              "resolution": "The ghost looks at you in disbelief as you loot the tomb of his beloved.",
               "actionType": "gems",
-              "actionValue": 5
+              "actionValue": 10
             },
             {
               "name": "Ask their name",
-              "resolution": "The ghost smiled gratefully and gifted you their treasured possession",
+              "resolution": "The ghost seems annoyed at you 'Wouldn't you like to know, adventure-boy. Get lost!' It throws something at you.",
               "actionType": "card",
-              "actionValue": { "suit": "♥", "value": "A" }
+              "actionValue": {
+                "suit": "♠",
+                "value": "3"
+              }
             },
             {
-              "name": "Help mark the tomb",
+              "name": "Pray to the forest gods",
               "resolution": "The ghost blessed you with renewed strength as their spirit found peace",
               "actionType": "hp",
-              "actionValue": 10
+              "actionValue": 5
             }
           ]
         },
         {
           "type": "combat",
-          "name": "Pest Swarm",
+          "name": "Cutest Ambush",
           "enemies": [
-            { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2 },
-            { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1 },
-            { "name": "Slime", "maxHealth": 15, "attackPower": 3, "attackCooldown": 2 }
+            {
+              "name": "Wild Bunny",
+              "maxHealth": 10,
+              "attackPower": 2,
+              "attackCooldown": 1
+            },
+            {
+              "name": "Wild Bunny",
+              "maxHealth": 10,
+              "attackPower": 2,
+              "attackCooldown": 1
+            },
+            {
+              "name": "Wild Bunny",
+              "maxHealth": 10,
+              "attackPower": 2,
+              "attackCooldown": 1
+            }
           ],
           "rewards": [
-            { "suit": "♥", "value": "10" },
-            { "suit": "♠", "value": "Q" },
-            { "suit": "♠", "value": "6" }
+            {
+              "suit": "♦",
+              "value": "4"
+            },
+            {
+              "suit": "♥",
+              "value": "4"
+            },
+            {
+              "suit": "♠",
+              "value": "4"
+            }
           ]
         }
       ]
@@ -147,35 +209,60 @@
       "encounters": [
         {
           "type": "combat",
-          "name": "Goblin Scouts",
+          "name": "Cave in the Forest",
           "enemies": [
-            { "name": "Goblin", "maxHealth": 18, "attackPower": 4, "attackCooldown": 2 },
-            { "name": "Goblin", "maxHealth": 18, "attackPower": 4, "attackCooldown": 2 }
+            {
+              "name": "Bat",
+              "maxHealth": 18,
+              "attackPower": 4,
+              "attackCooldown": 2
+            },
+            {
+              "name": "Bat",
+              "maxHealth": 18,
+              "attackPower": 4,
+              "attackCooldown": 2
+            }
           ],
           "rewards": [
-            { "suit": "♠", "value": "K" },
-            { "suit": "♥", "value": "7" },
-            { "suit": "♠", "value": "A" }
+            {
+              "suit": "♦",
+              "value": "4"
+            },
+            {
+              "suit": "♥",
+              "value": "4"
+            },
+            {
+              "suit": "♠",
+              "value": "4"
+            }
           ]
         },
         {
           "type": "shop",
-          "name": "Goblin Merchant",
+          "name": "Sleepy Merchant",
           "offers": [
             {
               "type": "card",
-              "gemCost": 18,
-              "value": { "suit": "♠", "value": "A" }
+              "gemCost": 20,
+              "value": {
+                "suit": "♦",
+                "value": "A"
+              }
             },
             {
               "type": "maxHealth",
               "gemCost": 20,
-              "value": 15
+              "value": 10
             },
             {
               "type": "card",
               "gemCost": 10,
-              "value": { "suit": "♦", "value": "8" }
+              "value": {
+                "suit": "♠",
+                "value": "5"
+              }
             }
           ]
         }
@@ -188,16 +275,39 @@
           "type": "combat",
           "name": "Ambush in the Dark",
           "enemies": [
-            { "name": "Orc", "maxHealth": 25, "attackPower": 6, "attackCooldown": 2 },
-            { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1 },
-            { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1 }
+            {
+              "name": "Racoon Assassin",
+              "maxHealth": 25,
+              "attackPower": 6,
+              "attackCooldown": 2
+            },
+            {
+              "name": "Racoon Assassin",
+              "maxHealth": 25,
+              "attackPower": 6,
+              "attackCooldown": 2
+            }
           ],
           "rewards": [
-            { "suit": "♠", "value": "9" },
-            { "suit": "♠", "value": "10" },
-            { "suit": "♥", "value": "J" }
+            {
+              "suit": "♦",
+              "value": "5"
+            },
+            {
+              "suit": "♠",
+              "value": "5"
+            },
+            {
+              "suit": "♥",
+              "value": 5
+            }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "encounters": [
         {
           "type": "story",
           "name": "Ancient Fountain",
@@ -213,7 +323,10 @@
               "name": "Bottle some water",
               "resolution": "You bottled the magical water, creating a powerful healing potion",
               "actionType": "card",
-              "actionValue": { "suit": "♥", "value": "Q" }
+              "actionValue": {
+                "suit": "♥",
+                "value": "Q"
+              }
             },
             {
               "name": "Leave it alone",
@@ -221,23 +334,6 @@
               "actionType": "gems",
               "actionValue": 10
             }
-          ]
-        }
-      ]
-    },
-    {
-      "id": 7,
-      "encounters": [
-        {
-          "type": "combat",
-          "name": "Stone Guardian",
-          "enemies": [
-            { "name": "Golem", "maxHealth": 35, "attackPower": 8, "attackCooldown": 3 }
-          ],
-          "rewards": [
-            { "suit": "♠", "value": "K" },
-            { "suit": "♠", "value": "8" },
-            { "suit": "♥", "value": "Q" }
           ]
         }
       ]
@@ -252,12 +348,18 @@
             {
               "type": "card",
               "gemCost": 25,
-              "value": { "suit": "♠", "value": "A" }
+              "value": {
+                "suit": "♠",
+                "value": "A"
+              }
             },
             {
               "type": "card",
               "gemCost": 20,
-              "value": { "suit": "♥", "value": "K" }
+              "value": {
+                "suit": "♥",
+                "value": "K"
+              }
             },
             {
               "type": "bustLimit",
@@ -275,14 +377,38 @@
           "type": "combat",
           "name": "Cult Ritual",
           "enemies": [
-            { "name": "Cultist", "maxHealth": 20, "attackPower": 5, "attackCooldown": 1 },
-            { "name": "Cultist", "maxHealth": 20, "attackPower": 5, "attackCooldown": 1 },
-            { "name": "Slime", "maxHealth": 15, "attackPower": 3, "attackCooldown": 2 }
+            {
+              "name": "Cultist",
+              "maxHealth": 20,
+              "attackPower": 5,
+              "attackCooldown": 1
+            },
+            {
+              "name": "Cultist",
+              "maxHealth": 20,
+              "attackPower": 5,
+              "attackCooldown": 1
+            },
+            {
+              "name": "Slime",
+              "maxHealth": 15,
+              "attackPower": 3,
+              "attackCooldown": 2
+            }
           ],
           "rewards": [
-            { "suit": "♠", "value": "A" },
-            { "suit": "♠", "value": "10" },
-            { "suit": "♠", "value": "Q" }
+            {
+              "suit": "♠",
+              "value": "A"
+            },
+            {
+              "suit": "♠",
+              "value": "10"
+            },
+            {
+              "suit": "♠",
+              "value": "Q"
+            }
           ]
         }
       ]
@@ -299,7 +425,10 @@
               "name": "Pray for strength",
               "resolution": "Your prayer was answered with a mighty weapon materializing before you",
               "actionType": "card",
-              "actionValue": { "suit": "♠", "value": "K" }
+              "actionValue": {
+                "suit": "♠",
+                "value": "K"
+              }
             },
             {
               "name": "Pray for endurance",
@@ -319,13 +448,32 @@
           "type": "combat",
           "name": "Lich's Antechamber",
           "enemies": [
-            { "name": "Golem", "maxHealth": 35, "attackPower": 8, "attackCooldown": 3 },
-            { "name": "Lich", "maxHealth": 40, "attackPower": 9, "attackCooldown": 2 }
+            {
+              "name": "Golem",
+              "maxHealth": 35,
+              "attackPower": 8,
+              "attackCooldown": 3
+            },
+            {
+              "name": "Lich",
+              "maxHealth": 40,
+              "attackPower": 9,
+              "attackCooldown": 2
+            }
           ],
           "rewards": [
-            { "suit": "♥", "value": "K" },
-            { "suit": "♠", "value": "A" },
-            { "suit": "♠", "value": "J" }
+            {
+              "suit": "♥",
+              "value": "K"
+            },
+            {
+              "suit": "♠",
+              "value": "A"
+            },
+            {
+              "suit": "♠",
+              "value": "J"
+            }
           ]
         }
       ]
@@ -337,13 +485,32 @@
           "type": "combat",
           "name": "Dragon's Lair",
           "enemies": [
-            { "name": "Demon Hound", "maxHealth": 30, "attackPower": 7, "attackCooldown": 1 },
-            { "name": "Dragon", "maxHealth": 60, "attackPower": 12, "attackCooldown": 2 }
+            {
+              "name": "Demon Hound",
+              "maxHealth": 30,
+              "attackPower": 7,
+              "attackCooldown": 1
+            },
+            {
+              "name": "Dragon",
+              "maxHealth": 60,
+              "attackPower": 12,
+              "attackCooldown": 2
+            }
           ],
           "rewards": [
-            { "suit": "♠", "value": "A" },
-            { "suit": "♥", "value": "A" },
-            { "suit": "♠", "value": "K" }
+            {
+              "suit": "♠",
+              "value": "A"
+            },
+            {
+              "suit": "♥",
+              "value": "A"
+            },
+            {
+              "suit": "♠",
+              "value": "K"
+            }
           ]
         }
       ]
@@ -380,13 +547,32 @@
           "type": "combat",
           "name": "Corrupted Knights",
           "enemies": [
-            { "name": "Dark Knight", "maxHealth": 35, "attackPower": 7, "attackCooldown": 2 },
-            { "name": "Dark Knight", "maxHealth": 35, "attackPower": 7, "attackCooldown": 2 }
+            {
+              "name": "Dark Knight",
+              "maxHealth": 35,
+              "attackPower": 7,
+              "attackCooldown": 2
+            },
+            {
+              "name": "Dark Knight",
+              "maxHealth": 35,
+              "attackPower": 7,
+              "attackCooldown": 2
+            }
           ],
           "rewards": [
-            { "suit": "♠", "value": "Q" },
-            { "suit": "♠", "value": "10" },
-            { "suit": "♥", "value": "K" }
+            {
+              "suit": "♠",
+              "value": "Q"
+            },
+            {
+              "suit": "♠",
+              "value": "10"
+            },
+            {
+              "suit": "♥",
+              "value": "K"
+            }
           ]
         }
       ]
@@ -423,14 +609,38 @@
           "type": "combat",
           "name": "Shadow Assassins",
           "enemies": [
-            { "name": "Assassin", "maxHealth": 22, "attackPower": 8, "attackCooldown": 1 },
-            { "name": "Assassin", "maxHealth": 22, "attackPower": 8, "attackCooldown": 1 },
-            { "name": "Shadow", "maxHealth": 18, "attackPower": 6, "attackCooldown": 1 }
+            {
+              "name": "Assassin",
+              "maxHealth": 22,
+              "attackPower": 8,
+              "attackCooldown": 1
+            },
+            {
+              "name": "Assassin",
+              "maxHealth": 22,
+              "attackPower": 8,
+              "attackCooldown": 1
+            },
+            {
+              "name": "Shadow",
+              "maxHealth": 18,
+              "attackPower": 6,
+              "attackCooldown": 1
+            }
           ],
           "rewards": [
-            { "suit": "♠", "value": "J" },
-            { "suit": "♦", "value": "10" },
-            { "suit": "♠", "value": "9" }
+            {
+              "suit": "♠",
+              "value": "J"
+            },
+            {
+              "suit": "♦",
+              "value": "10"
+            },
+            {
+              "suit": "♠",
+              "value": "9"
+            }
           ]
         }
       ]
@@ -470,12 +680,18 @@
             {
               "type": "card",
               "gemCost": 30,
-              "value": { "suit": "♠", "value": "A" }
+              "value": {
+                "suit": "♠",
+                "value": "A"
+              }
             },
             {
               "type": "card",
               "gemCost": 28,
-              "value": { "suit": "♥", "value": "A" }
+              "value": {
+                "suit": "♥",
+                "value": "A"
+              }
             },
             {
               "type": "multiplier",
@@ -523,14 +739,38 @@
           "type": "combat",
           "name": "Demonic Guard",
           "enemies": [
-            { "name": "Demon", "maxHealth": 45, "attackPower": 10, "attackCooldown": 2 },
-            { "name": "Imp", "maxHealth": 20, "attackPower": 5, "attackCooldown": 1 },
-            { "name": "Imp", "maxHealth": 20, "attackPower": 5, "attackCooldown": 1 }
+            {
+              "name": "Demon",
+              "maxHealth": 45,
+              "attackPower": 10,
+              "attackCooldown": 2
+            },
+            {
+              "name": "Imp",
+              "maxHealth": 20,
+              "attackPower": 5,
+              "attackCooldown": 1
+            },
+            {
+              "name": "Imp",
+              "maxHealth": 20,
+              "attackPower": 5,
+              "attackCooldown": 1
+            }
           ],
           "rewards": [
-            { "suit": "♠", "value": "K" },
-            { "suit": "♠", "value": "A" },
-            { "suit": "♥", "value": "Q" }
+            {
+              "suit": "♠",
+              "value": "K"
+            },
+            {
+              "suit": "♠",
+              "value": "A"
+            },
+            {
+              "suit": "♥",
+              "value": "Q"
+            }
           ]
         }
       ]
@@ -567,13 +807,32 @@
           "type": "combat",
           "name": "The Final Boss",
           "enemies": [
-            { "name": "Ancient Evil", "maxHealth": 80, "attackPower": 15, "attackCooldown": 2 },
-            { "name": "Demon Lord", "maxHealth": 50, "attackPower": 10, "attackCooldown": 2 }
+            {
+              "name": "Ancient Evil",
+              "maxHealth": 80,
+              "attackPower": 15,
+              "attackCooldown": 2
+            },
+            {
+              "name": "Demon Lord",
+              "maxHealth": 50,
+              "attackPower": 10,
+              "attackCooldown": 2
+            }
           ],
           "rewards": [
-            { "suit": "♠", "value": "A" },
-            { "suit": "♥", "value": "A" },
-            { "suit": "♦", "value": "A" }
+            {
+              "suit": "♠",
+              "value": "A"
+            },
+            {
+              "suit": "♥",
+              "value": "A"
+            },
+            {
+              "suit": "♦",
+              "value": "A"
+            }
           ]
         }
       ]
