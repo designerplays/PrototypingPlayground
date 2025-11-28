@@ -22,11 +22,13 @@
           "choices": [
             {
               "name": "Take the blessing",
+              "resolution": "You took the blessing and a powerful weapon appeared before you",
               "actionType": "card",
               "actionValue": { "suit": "♠", "value": "K" }
             },
             {
               "name": "Offer vitality",
+              "resolution": "You offered your vitality and the shrine's glow faded peacefully",
               "actionType": "hp",
               "actionValue": -10
             }
@@ -106,16 +108,19 @@
           "choices": [
             {
               "name": "Run away",
+              "resolution": "You fled quickly, finding a small pouch of gems dropped in your haste",
               "actionType": "gems",
               "actionValue": 5
             },
             {
               "name": "Ask their name",
+              "resolution": "The ghost smiled gratefully and gifted you their treasured possession",
               "actionType": "card",
               "actionValue": { "suit": "♥", "value": "A" }
             },
             {
               "name": "Help mark the tomb",
+              "resolution": "The ghost blessed you with renewed strength as their spirit found peace",
               "actionType": "hp",
               "actionValue": 10
             }
@@ -200,16 +205,19 @@
           "choices": [
             {
               "name": "Drink deeply",
+              "resolution": "The crystal-clear water coursed through you, healing your wounds",
               "actionType": "hp",
               "actionValue": 20
             },
             {
               "name": "Bottle some water",
+              "resolution": "You bottled the magical water, creating a powerful healing potion",
               "actionType": "card",
               "actionValue": { "suit": "♥", "value": "Q" }
             },
             {
               "name": "Leave it alone",
+              "resolution": "As you turned away respectfully, you noticed gems sparkling in the fountain's basin",
               "actionType": "gems",
               "actionValue": 10
             }
@@ -289,16 +297,19 @@
           "choices": [
             {
               "name": "Pray for strength",
+              "resolution": "Your prayer was answered with a mighty weapon materializing before you",
               "actionType": "card",
               "actionValue": { "suit": "♠", "value": "K" }
             },
             {
               "name": "Pray for endurance",
+              "resolution": "Divine energy washed over you, healing your wounds and fortifying your body",
               "actionType": "hp",
               "actionValue": 25
             },
             {
               "name": "Pray for fortune",
+              "resolution": "A shower of gems rained down as the gods blessed your quest",
               "actionType": "gems",
               "actionValue": 30
             }

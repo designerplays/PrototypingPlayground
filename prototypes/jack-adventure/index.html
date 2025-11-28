@@ -1430,7 +1430,7 @@
     <div id="debug-popup">
         <div id="debug-popup-content">
             <strong>Jack Adventure</strong><br>
-            Version: 1.5<br>
+            Version: 1.6<br>
             A blackjack dungeon crawler
         </div>
         <button id="force-reload-button">Force Reload</button>
@@ -1878,7 +1878,7 @@
             // Hide choices
             document.getElementById('story-choices').style.display = 'none';
 
-            let resultText = '';
+            let statText = '';
 
             // Apply action
             if (choice.actionType === 'hp') {
@@ -1890,11 +1890,11 @@
                 const actualChange = GameState.player.currentHealth - oldHealth;
 
                 if (actualChange > 0) {
-                    resultText = `You gained ${actualChange} HP!`;
+                    statText = `You gained ${actualChange} HP!`;
                 } else if (actualChange < 0) {
-                    resultText = `You lost ${-actualChange} HP!`;
+                    statText = `You lost ${-actualChange} HP!`;
                 } else {
-                    resultText = 'Your HP is already at maximum!';
+                    statText = 'Your HP is already at maximum!';
                 }
 
                 if (GameState.player.currentHealth <= 0) {
@@ -1903,16 +1903,17 @@
                 }
             } else if (choice.actionType === 'gems') {
                 GameState.gems += choice.actionValue;
-                resultText = `You gained ${choice.actionValue} gems! Total: ${GameState.gems}`;
+                statText = `You gained ${choice.actionValue} gems! Total: ${GameState.gems}`;
             } else if (choice.actionType === 'card') {
                 const card = choice.actionValue;
                 GameState.player.fullDeck.push({ rank: card.value, suit: card.suit });
-                resultText = `You received ${card.value}${card.suit}!`;
+                statText = `You received ${card.value}${card.suit}!`;
             }
 
-            // Show result
+            // Show result with resolution text above stat information
             const resultElement = document.getElementById('story-result');
-            resultElement.textContent = resultText;
+            const resolutionText = choice.resolution || '';
+            resultElement.textContent = resolutionText + '\n\n' + statText;
             resultElement.classList.add('show');
 
             // Show continue button
