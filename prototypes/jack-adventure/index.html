@@ -975,10 +975,10 @@
         }
 
         .deck-option-cards {
-            display: flex;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            justify-items: center;
             gap: 10px;
-            flex-wrap: wrap;
         }
 
         .deck-option-card {
@@ -1392,7 +1392,7 @@
 
     <!-- Starting Setup View -->
     <div id="starting-setup-view">
-        <div id="starting-setup-title">Pick Your Character</div>
+        <div id="starting-setup-title">Pick Your Deck</div>
         <div id="deck-options"></div>
     </div>
 
