@@ -932,6 +932,448 @@
             transform: scale(0.98);
         }
 
+        /* Starting Setup View */
+        #starting-setup-view {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        #starting-setup-view.active {
+            display: flex;
+        }
+
+        #starting-setup-title {
+            font-size: 32px;
+            font-weight: 800;
+            text-align: center;
+            color: #ffd700;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .deck-option {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.35));
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .deck-option-name {
+            font-size: 24px;
+            font-weight: 800;
+            text-align: center;
+            color: #ffd700;
+            text-transform: uppercase;
+        }
+
+        .deck-option-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .deck-option-card {
+            background: #fff;
+            color: #000;
+            width: 100%;
+            aspect-ratio: 5/7;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .deck-option-card.red {
+            color: #d00;
+        }
+
+        .deck-option-card.gold {
+            color: #ffd700;
+        }
+
+        .deck-pick-button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Nunito', 'Arial', sans-serif;
+            font-weight: bold;
+            color: #000;
+            font-size: 18px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .deck-pick-button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.5);
+        }
+
+        .deck-pick-button:active {
+            transform: scale(0.98);
+        }
+
+        /* Map Exploration View */
+        #map-exploration-view {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        #map-exploration-view.active {
+            display: flex;
+        }
+
+        #map-exploration-title {
+            font-size: 28px;
+            font-weight: 800;
+            text-align: center;
+            color: #f7f5f2;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        #map-progress {
+            font-size: 14px;
+            text-align: center;
+            color: #d5e3c6;
+            margin-top: -10px;
+        }
+
+        .encounter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .encounter-option {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.35));
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+        .encounter-option.combat {
+            border-color: rgba(255, 148, 120, 0.65);
+        }
+
+        .encounter-option.story {
+            border-color: rgba(120, 200, 255, 0.65);
+        }
+
+        .encounter-option.shop {
+            border-color: rgba(255, 215, 0, 0.65);
+        }
+
+        .encounter-option-name {
+            font-size: 22px;
+            font-weight: 800;
+            text-align: center;
+            color: #f7f5f2;
+        }
+
+        .encounter-option-type {
+            font-size: 12px;
+            text-align: center;
+            color: #d5e3c6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .encounter-select-button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #4d6e3b, #6b9450);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Nunito', 'Arial', sans-serif;
+            font-weight: bold;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .encounter-select-button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(77, 110, 59, 0.5);
+        }
+
+        .encounter-select-button:active {
+            transform: scale(0.98);
+        }
+
+        /* Story Encounter View */
+        #story-encounter-view {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #story-encounter-view.active {
+            display: flex;
+        }
+
+        #story-title {
+            font-size: 28px;
+            font-weight: 800;
+            text-align: center;
+            color: #87ceeb;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        #story-text {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.35));
+            border: 2px solid rgba(120, 200, 255, 0.4);
+            border-radius: 14px;
+            padding: 25px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #f7f5f2;
+            text-align: center;
+        }
+
+        .story-choices {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .story-choice-button {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #3a5a7a, #5a7a9a);
+            border: 1px solid rgba(120, 200, 255, 0.5);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Nunito', 'Arial', sans-serif;
+            font-weight: 600;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .story-choice-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(120, 200, 255, 0.4);
+        }
+
+        .story-choice-button:active {
+            transform: translateY(0);
+        }
+
+        #story-result {
+            background: linear-gradient(180deg, rgba(255, 215, 0, 0.15), rgba(0, 0, 0, 0.35));
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 14px;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            color: #ffd700;
+            display: none;
+        }
+
+        #story-result.show {
+            display: block;
+        }
+
+        #story-continue-button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Nunito', 'Arial', sans-serif;
+            font-weight: bold;
+            color: #000;
+            font-size: 16px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            display: none;
+        }
+
+        #story-continue-button.show {
+            display: block;
+        }
+
+        #story-continue-button:hover {
+            transform: scale(1.02);
+        }
+
+        #story-continue-button:active {
+            transform: scale(0.98);
+        }
+
+        /* Shop Encounter View */
+        #shop-encounter-view {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        #shop-encounter-view.active {
+            display: flex;
+        }
+
+        #shop-title {
+            font-size: 28px;
+            font-weight: 800;
+            text-align: center;
+            color: #ffd700;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        #shop-gems-display {
+            font-size: 18px;
+            text-align: center;
+            color: #d5e3c6;
+            margin-top: -10px;
+        }
+
+        .shop-offers {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .shop-offer {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.35));
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .shop-offer.purchased {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .shop-offer-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .shop-offer-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #f7f5f2;
+        }
+
+        .shop-offer-description {
+            font-size: 14px;
+            color: #d5e3c6;
+        }
+
+        .shop-offer-card {
+            background: #fff;
+            color: #000;
+            width: 50px;
+            height: 70px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .shop-offer-card.red {
+            color: #d00;
+        }
+
+        .shop-offer-card.gold {
+            color: #ffd700;
+        }
+
+        .shop-buy-button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Nunito', 'Arial', sans-serif;
+            font-weight: bold;
+            color: #000;
+            font-size: 16px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .shop-buy-button:hover {
+            transform: scale(1.05);
+        }
+
+        .shop-buy-button:active {
+            transform: scale(0.95);
+        }
+
+        .shop-buy-button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #shop-leave-button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #666, #888);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Nunito', 'Arial', sans-serif;
+            font-weight: bold;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        #shop-leave-button:hover {
+            background: linear-gradient(135deg, #777, #999);
+        }
+
+        #shop-leave-button:active {
+            transform: scale(0.98);
+        }
+
+        /* Hide game container by default */
+        #game-container.hidden {
+            display: none;
+        }
+
     </style>
 </head>
 <body>
@@ -940,11 +1382,41 @@
     <div id="debug-popup">
         <div id="debug-popup-content">
             <strong>Jack Adventure</strong><br>
-            Version: 1.3<br>
+            Version: 1.4<br>
             A blackjack dungeon crawler
         </div>
         <button id="force-reload-button">Force Reload</button>
         <button id="debug-close">Close</button>
+    </div>
+
+    <!-- Starting Setup View -->
+    <div id="starting-setup-view">
+        <div id="starting-setup-title">Pick Your Character</div>
+        <div id="deck-options"></div>
+    </div>
+
+    <!-- Map Exploration View -->
+    <div id="map-exploration-view">
+        <div id="map-exploration-title">Choose Your Path</div>
+        <div id="map-progress"></div>
+        <div class="encounter-options" id="encounter-options"></div>
+    </div>
+
+    <!-- Story Encounter View -->
+    <div id="story-encounter-view">
+        <div id="story-title"></div>
+        <div id="story-text"></div>
+        <div class="story-choices" id="story-choices"></div>
+        <div id="story-result"></div>
+        <button id="story-continue-button">Continue</button>
+    </div>
+
+    <!-- Shop Encounter View -->
+    <div id="shop-encounter-view">
+        <div id="shop-title"></div>
+        <div id="shop-gems-display"></div>
+        <div class="shop-offers" id="shop-offers"></div>
+        <button id="shop-leave-button">Leave Shop</button>
     </div>
 
     <div id="game-container">
@@ -1061,13 +1533,16 @@
                 playedCards: [],
                 fullDeck: []
             },
-            currentEncounterIndex: 0,
+            currentView: 'starting-setup', // 'starting-setup', 'map-exploration', 'combat', 'story', 'shop'
+            currentNodeIndex: 0,
+            currentEncounter: null,
             enemies: [],
             targetEnemyIndex: 0,
             gameOver: false,
             hasChargedThisTurn: false,
             showingRewards: false,
-            gems: 0
+            gems: 0,
+            shopPurchases: [] // Track purchased items in current shop
         };
 
         // Card Suits and Ranks
@@ -1092,12 +1567,141 @@
                 GameState.player.currentHealth = GameState.config.playerStartingHealth;
                 GameState.gems = GameState.config.playerStartingGems;
 
-                // Start first encounter
-                GameState.currentEncounterIndex = 0;
-                startEncounter();
+                // Show starting setup view
+                showStartingSetupView();
             } catch (error) {
                 console.error('Error loading game data:', error);
                 showFeedback('Error loading game data');
+            }
+        }
+
+        // View Management
+        function switchView(viewName) {
+            // Hide all views
+            document.getElementById('starting-setup-view').classList.remove('active');
+            document.getElementById('map-exploration-view').classList.remove('active');
+            document.getElementById('story-encounter-view').classList.remove('active');
+            document.getElementById('shop-encounter-view').classList.remove('active');
+            document.getElementById('game-container').classList.remove('hidden');
+
+            // Hide game container for non-combat views
+            if (viewName !== 'combat') {
+                document.getElementById('game-container').classList.add('hidden');
+            }
+
+            // Show the target view
+            if (viewName === 'starting-setup') {
+                document.getElementById('starting-setup-view').classList.add('active');
+            } else if (viewName === 'map-exploration') {
+                document.getElementById('map-exploration-view').classList.add('active');
+            } else if (viewName === 'story') {
+                document.getElementById('story-encounter-view').classList.add('active');
+            } else if (viewName === 'shop') {
+                document.getElementById('shop-encounter-view').classList.add('active');
+            }
+
+            GameState.currentView = viewName;
+        }
+
+        // Starting Setup View
+        function showStartingSetupView() {
+            switchView('starting-setup');
+
+            const deckOptionsContainer = document.getElementById('deck-options');
+            deckOptionsContainer.innerHTML = '';
+
+            GameState.startingDeck.decks.forEach((deck, index) => {
+                const deckOption = document.createElement('div');
+                deckOption.className = 'deck-option';
+
+                const deckName = document.createElement('div');
+                deckName.className = 'deck-option-name';
+                deckName.textContent = deck.name;
+                deckOption.appendChild(deckName);
+
+                const cardsGrid = document.createElement('div');
+                cardsGrid.className = 'deck-option-cards';
+                deck.cards.forEach(card => {
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = 'deck-option-card';
+                    if (card.suit === '♥' || card.suit === '♦') {
+                        cardDiv.classList.add(card.suit === '♥' ? 'red' : 'gold');
+                    }
+                    cardDiv.textContent = `${card.value}${card.suit}`;
+                    cardsGrid.appendChild(cardDiv);
+                });
+                deckOption.appendChild(cardsGrid);
+
+                const pickButton = document.createElement('button');
+                pickButton.className = 'deck-pick-button';
+                pickButton.textContent = 'Pick';
+                pickButton.addEventListener('click', () => selectStartingDeck(index));
+                deckOption.appendChild(pickButton);
+
+                deckOptionsContainer.appendChild(deckOption);
+            });
+        }
+
+        function selectStartingDeck(deckIndex) {
+            const selectedDeck = GameState.startingDeck.decks[deckIndex];
+
+            // Initialize player's full deck
+            GameState.player.fullDeck = [];
+            for (let card of selectedDeck.cards) {
+                GameState.player.fullDeck.push({ rank: card.value, suit: card.suit });
+            }
+
+            // Move to map exploration
+            GameState.currentNodeIndex = 0;
+            showMapExplorationView();
+        }
+
+        // Map Exploration View
+        function showMapExplorationView() {
+            switchView('map-exploration');
+
+            const mapProgressElement = document.getElementById('map-progress');
+            mapProgressElement.textContent = `Node ${GameState.currentNodeIndex + 1} of ${GameState.encounters.mapNodes.length}`;
+
+            const encounterOptionsContainer = document.getElementById('encounter-options');
+            encounterOptionsContainer.innerHTML = '';
+
+            const currentNode = GameState.encounters.mapNodes[GameState.currentNodeIndex];
+
+            currentNode.encounters.forEach((encounter, index) => {
+                const encounterOption = document.createElement('div');
+                encounterOption.className = `encounter-option ${encounter.type}`;
+
+                const encounterName = document.createElement('div');
+                encounterName.className = 'encounter-option-name';
+                encounterName.textContent = encounter.name;
+                encounterOption.appendChild(encounterName);
+
+                const encounterType = document.createElement('div');
+                encounterType.className = 'encounter-option-type';
+                encounterType.textContent = encounter.type;
+                encounterOption.appendChild(encounterType);
+
+                const selectButton = document.createElement('button');
+                selectButton.className = 'encounter-select-button';
+                selectButton.textContent = 'Enter';
+                selectButton.addEventListener('click', () => selectEncounter(index));
+                encounterOption.appendChild(selectButton);
+
+                encounterOptionsContainer.appendChild(encounterOption);
+            });
+        }
+
+        function selectEncounter(encounterIndex) {
+            const currentNode = GameState.encounters.mapNodes[GameState.currentNodeIndex];
+            GameState.currentEncounter = currentNode.encounters[encounterIndex];
+
+            if (GameState.currentEncounter.type === 'combat') {
+                startCombatEncounter();
+            } else if (GameState.currentEncounter.type === 'story') {
+                startStoryEncounter();
+            } else if (GameState.currentEncounter.type === 'shop') {
+                startShopEncounter();
             }
         }
 
@@ -1171,26 +1775,11 @@
             return calculateHandValue(suitCards);
         }
 
-        // Start new encounter
-        function startEncounter() {
-            if (GameState.currentEncounterIndex >= GameState.encounters.encounters.length) {
-                // Victory!
-                endGame(true, 'You cleared the dungeon!');
-                return;
-            }
-
-            const encounter = GameState.encounters.encounters[GameState.currentEncounterIndex];
-
-            // Initialize fullDeck if this is first encounter
-            if (GameState.currentEncounterIndex === 0 && GameState.player.fullDeck.length === 0) {
-                // Load starting deck from StartingDeck.json
-                for (let card of GameState.startingDeck.cards) {
-                    GameState.player.fullDeck.push({ rank: card.value, suit: card.suit });
-                }
-            }
+        // Combat Encounter
+        function startCombatEncounter() {
+            switchView('combat');
 
             // Create deck from fullDeck (includes starting deck + reward cards)
-            // This shuffles all cards (starting deck + rewards) back into the deck
             GameState.player.deck = createDeckFromFullDeck();
             GameState.player.hand = [];
             GameState.player.playedCards = [];
@@ -1198,7 +1787,7 @@
             GameState.showingRewards = false;
 
             // Initialize enemies
-            GameState.enemies = encounter.enemies.map(enemyTemplate => ({
+            GameState.enemies = GameState.currentEncounter.enemies.map(enemyTemplate => ({
                 ...enemyTemplate,
                 currentHealth: enemyTemplate.maxHealth,
                 cooldownCounter: enemyTemplate.attackCooldown
@@ -1208,6 +1797,177 @@
             GameState.targetEnemyIndex = 0;
 
             updateUI();
+        }
+
+        // Story Encounter
+        function startStoryEncounter() {
+            switchView('story');
+
+            document.getElementById('story-title').textContent = GameState.currentEncounter.name;
+            document.getElementById('story-text').textContent = GameState.currentEncounter.story;
+
+            // Hide result and continue button
+            document.getElementById('story-result').classList.remove('show');
+            document.getElementById('story-continue-button').classList.remove('show');
+
+            const choicesContainer = document.getElementById('story-choices');
+            choicesContainer.innerHTML = '';
+
+            GameState.currentEncounter.choices.forEach((choice, index) => {
+                const choiceButton = document.createElement('button');
+                choiceButton.className = 'story-choice-button';
+                choiceButton.textContent = choice.name;
+                choiceButton.addEventListener('click', () => selectStoryChoice(index));
+                choicesContainer.appendChild(choiceButton);
+            });
+        }
+
+        function selectStoryChoice(choiceIndex) {
+            const choice = GameState.currentEncounter.choices[choiceIndex];
+
+            // Hide choices
+            document.getElementById('story-choices').style.display = 'none';
+
+            let resultText = '';
+
+            // Apply action
+            if (choice.actionType === 'hp') {
+                const oldHealth = GameState.player.currentHealth;
+                GameState.player.currentHealth = Math.min(
+                    GameState.player.maxHealth,
+                    Math.max(0, GameState.player.currentHealth + choice.actionValue)
+                );
+                const actualChange = GameState.player.currentHealth - oldHealth;
+
+                if (actualChange > 0) {
+                    resultText = `You gained ${actualChange} HP!`;
+                } else if (actualChange < 0) {
+                    resultText = `You lost ${-actualChange} HP!`;
+                } else {
+                    resultText = 'Your HP is already at maximum!';
+                }
+
+                if (GameState.player.currentHealth <= 0) {
+                    endGame(false, 'You died!');
+                    return;
+                }
+            } else if (choice.actionType === 'gems') {
+                GameState.gems += choice.actionValue;
+                resultText = `You gained ${choice.actionValue} gems! Total: ${GameState.gems}`;
+            } else if (choice.actionType === 'card') {
+                const card = choice.actionValue;
+                GameState.player.fullDeck.push({ rank: card.value, suit: card.suit });
+                resultText = `You received ${card.value}${card.suit}!`;
+            }
+
+            // Show result
+            const resultElement = document.getElementById('story-result');
+            resultElement.textContent = resultText;
+            resultElement.classList.add('show');
+
+            // Show continue button
+            document.getElementById('story-continue-button').classList.add('show');
+        }
+
+        // Shop Encounter
+        function startShopEncounter() {
+            switchView('shop');
+
+            document.getElementById('shop-title').textContent = GameState.currentEncounter.name;
+            document.getElementById('shop-gems-display').textContent = `Your Gems: ${GameState.gems} 💎`;
+
+            GameState.shopPurchases = [];
+
+            const offersContainer = document.getElementById('shop-offers');
+            offersContainer.innerHTML = '';
+
+            GameState.currentEncounter.offers.forEach((offer, index) => {
+                const offerDiv = document.createElement('div');
+                offerDiv.className = 'shop-offer';
+                offerDiv.id = `shop-offer-${index}`;
+
+                const offerInfo = document.createElement('div');
+                offerInfo.className = 'shop-offer-info';
+
+                let offerName = '';
+                let offerDescription = '';
+
+                if (offer.type === 'card') {
+                    offerName = `${offer.value.value}${offer.value.suit}`;
+                    offerDescription = 'Add this card to your deck';
+
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = 'shop-offer-card';
+                    if (offer.value.suit === '♥' || offer.value.suit === '♦') {
+                        cardDiv.classList.add(offer.value.suit === '♥' ? 'red' : 'gold');
+                    }
+                    cardDiv.textContent = `${offer.value.value}${offer.value.suit}`;
+                    offerDiv.appendChild(cardDiv);
+                } else if (offer.type === 'bustLimit') {
+                    offerName = `Bust Limit +${offer.value}`;
+                    offerDescription = `Increase your bust limit by ${offer.value}`;
+                } else if (offer.type === 'maxHealth') {
+                    offerName = `Max Health +${offer.value}`;
+                    offerDescription = `Increase your max health by ${offer.value}`;
+                }
+
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'shop-offer-name';
+                nameDiv.textContent = offerName;
+                offerInfo.appendChild(nameDiv);
+
+                const descDiv = document.createElement('div');
+                descDiv.className = 'shop-offer-description';
+                descDiv.textContent = offerDescription;
+                offerInfo.appendChild(descDiv);
+
+                offerDiv.appendChild(offerInfo);
+
+                const buyButton = document.createElement('button');
+                buyButton.className = 'shop-buy-button';
+                buyButton.textContent = `${offer.gemCost} 💎`;
+                buyButton.addEventListener('click', () => purchaseShopOffer(index));
+                offerDiv.appendChild(buyButton);
+
+                offersContainer.appendChild(offerDiv);
+            });
+        }
+
+        function purchaseShopOffer(offerIndex) {
+            const offer = GameState.currentEncounter.offers[offerIndex];
+
+            if (GameState.gems < offer.gemCost) {
+                showFeedback('Not enough gems!', 800);
+                return;
+            }
+
+            if (GameState.shopPurchases.includes(offerIndex)) {
+                showFeedback('Already purchased!', 800);
+                return;
+            }
+
+            // Deduct gems
+            GameState.gems -= offer.gemCost;
+
+            // Apply purchase
+            if (offer.type === 'card') {
+                GameState.player.fullDeck.push({ rank: offer.value.value, suit: offer.value.suit });
+                showFeedback(`Purchased ${offer.value.value}${offer.value.suit}!`, 1000);
+            } else if (offer.type === 'bustLimit') {
+                GameState.config.bustLimit += offer.value;
+                showFeedback(`Bust limit increased to ${GameState.config.bustLimit}!`, 1000);
+            } else if (offer.type === 'maxHealth') {
+                GameState.player.maxHealth += offer.value;
+                GameState.player.currentHealth += offer.value;
+                showFeedback(`Max health increased to ${GameState.player.maxHealth}!`, 1000);
+            }
+
+            // Mark as purchased
+            GameState.shopPurchases.push(offerIndex);
+
+            // Update display
+            document.getElementById('shop-gems-display').textContent = `Your Gems: ${GameState.gems} 💎`;
+            document.getElementById(`shop-offer-${offerIndex}`).classList.add('purchased');
         }
 
         // Player action: Charge
@@ -1418,10 +2178,11 @@
         // Update UI
         function updateUI() {
             // Encounter info
-            const encounter = GameState.encounters.encounters[GameState.currentEncounterIndex];
-            document.getElementById('encounter-name').textContent = encounter.name;
-            document.getElementById('encounter-count').textContent =
-                `(${GameState.currentEncounterIndex + 1}/${GameState.encounters.encounters.length})`;
+            if (GameState.currentEncounter) {
+                document.getElementById('encounter-name').textContent = GameState.currentEncounter.name;
+                document.getElementById('encounter-count').textContent =
+                    `Node ${GameState.currentNodeIndex + 1}/${GameState.encounters.mapNodes.length}`;
+            }
 
             // Enemies
             const enemiesRow = document.getElementById('enemies-row');
@@ -1700,8 +2461,7 @@
 
         // Select reward card
         function selectReward(index) {
-            const encounter = GameState.encounters.encounters[GameState.currentEncounterIndex];
-            const selectedCard = encounter.rewards[index];
+            const selectedCard = GameState.currentEncounter.rewards[index];
 
             // Add card to full deck
             GameState.player.fullDeck.push({
@@ -1712,9 +2472,8 @@
             // Hide popup
             hideRewardPopup();
 
-            // Move to next encounter
-            GameState.currentEncounterIndex++;
-            startEncounter();
+            // Move to next node
+            advanceToNextNode();
         }
 
         // Ignore reward (skip card selection)
@@ -1722,22 +2481,50 @@
             // Hide popup without adding a card
             hideRewardPopup();
 
-            // Move to next encounter
-            GameState.currentEncounterIndex++;
-            startEncounter();
+            // Move to next node
+            advanceToNextNode();
+        }
+
+        // Advance to next node
+        function advanceToNextNode() {
+            GameState.currentNodeIndex++;
+
+            if (GameState.currentNodeIndex >= GameState.encounters.mapNodes.length) {
+                // Victory!
+                endGame(true, 'You cleared the dungeon!');
+                return;
+            }
+
+            // Show map exploration for next node
+            showMapExplorationView();
+        }
+
+        // Continue from story encounter
+        function continueFromStory() {
+            document.getElementById('story-choices').style.display = 'flex';
+            advanceToNextNode();
+        }
+
+        // Leave shop
+        function leaveShop() {
+            advanceToNextNode();
         }
 
         // Restart game
         function restartGame() {
             GameState.gameOver = false;
-            GameState.currentEncounterIndex = 0;
+            GameState.currentNodeIndex = 0;
+            GameState.currentEncounter = null;
             GameState.player.currentHealth = GameState.config.playerStartingHealth;
             GameState.player.fullDeck = [];
+            GameState.player.maxHealth = GameState.config.playerStartingHealth;
             GameState.gems = GameState.config.playerStartingGems;
+            GameState.config.bustLimit = 21; // Reset bust limit
 
             document.getElementById('game-over-screen').style.display = 'none';
 
-            startEncounter();
+            // Reset to starting setup
+            showStartingSetupView();
         }
 
         // Event Listeners
@@ -1747,6 +2534,8 @@
         document.getElementById('deck-widget').addEventListener('click', showDeckPopup);
         document.getElementById('deck-close').addEventListener('click', hideDeckPopup);
         document.getElementById('ignore-button').addEventListener('click', ignoreReward);
+        document.getElementById('story-continue-button').addEventListener('click', continueFromStory);
+        document.getElementById('shop-leave-button').addEventListener('click', leaveShop);
 
         // Debug popup
         document.getElementById('debug-button').addEventListener('click', () => {
