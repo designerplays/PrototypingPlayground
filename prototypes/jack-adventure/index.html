@@ -1235,12 +1235,25 @@
             font-size: 18px;
             font-weight: 600;
             text-align: center;
-            color: #ffd700;
             display: none;
+            flex-direction: column;
+            gap: 15px;
         }
 
         #story-result.show {
-            display: block;
+            display: flex;
+        }
+
+        #story-resolution-text {
+            color: #87ceeb;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        #story-stats-text {
+            color: #ffd700;
+            font-size: 18px;
+            font-weight: 700;
         }
 
         #story-continue-button {
@@ -1430,7 +1443,7 @@
     <div id="debug-popup">
         <div id="debug-popup-content">
             <strong>Jack Adventure</strong><br>
-            Version: 1.6<br>
+            Version: 1.7<br>
             A blackjack dungeon crawler
         </div>
         <button id="force-reload-button">Force Reload</button>
@@ -1455,7 +1468,10 @@
         <div id="story-title"></div>
         <div id="story-text"></div>
         <div class="story-choices" id="story-choices"></div>
-        <div id="story-result"></div>
+        <div id="story-result">
+            <div id="story-resolution-text"></div>
+            <div id="story-stats-text"></div>
+        </div>
         <button id="story-continue-button">Continue</button>
     </div>
 
@@ -1901,6 +1917,28 @@
                     endGame(false, 'You died!');
                     return;
                 }
+            } else if (choice.actionType === 'maxHp') {
+                GameState.player.maxHealth += choice.actionValue;
+                GameState.player.currentHealth += choice.actionValue;
+                if (choice.actionValue > 0) {
+                    statText = `Your max HP increased by ${choice.actionValue}! New max: ${GameState.player.maxHealth}`;
+                } else {
+                    statText = `Your max HP decreased by ${-choice.actionValue}! New max: ${GameState.player.maxHealth}`;
+                }
+            } else if (choice.actionType === 'bustLimit') {
+                GameState.config.bustLimit += choice.actionValue;
+                if (choice.actionValue > 0) {
+                    statText = `Your bust limit increased by ${choice.actionValue}! New limit: ${GameState.config.bustLimit}`;
+                } else {
+                    statText = `Your bust limit decreased by ${-choice.actionValue}! New limit: ${GameState.config.bustLimit}`;
+                }
+            } else if (choice.actionType === 'multiplier') {
+                GameState.multiplier += choice.actionValue;
+                if (choice.actionValue > 0) {
+                    statText = `Your multiplier increased by ${choice.actionValue}! New multiplier: ${GameState.multiplier}x`;
+                } else {
+                    statText = `Your multiplier decreased by ${-choice.actionValue}! New multiplier: ${GameState.multiplier}x`;
+                }
             } else if (choice.actionType === 'gems') {
                 GameState.gems += choice.actionValue;
                 statText = `You gained ${choice.actionValue} gems! Total: ${GameState.gems}`;
@@ -1910,11 +1948,11 @@
                 statText = `You received ${card.value}${card.suit}!`;
             }
 
-            // Show result with resolution text above stat information
-            const resultElement = document.getElementById('story-result');
+            // Show result with resolution text and stats in separate styled elements
             const resolutionText = choice.resolution || '';
-            resultElement.textContent = resolutionText + '\n\n' + statText;
-            resultElement.classList.add('show');
+            document.getElementById('story-resolution-text').textContent = resolutionText;
+            document.getElementById('story-stats-text').textContent = statText;
+            document.getElementById('story-result').classList.add('show');
 
             // Show continue button
             document.getElementById('story-continue-button').classList.add('show');
