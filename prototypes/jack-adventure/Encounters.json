@@ -277,14 +277,14 @@
           "enemies": [
             {
               "name": "Racoon Assassin",
-              "maxHealth": 25,
-              "attackPower": 6,
+              "maxHealth": 15,
+              "attackPower": 5,
               "attackCooldown": 2
             },
             {
               "name": "Racoon Assassin",
-              "maxHealth": 25,
-              "attackPower": 6,
+              "maxHealth": 15,
+              "attackPower": 5,
               "attackCooldown": 2
             }
           ],
@@ -299,7 +299,7 @@
             },
             {
               "suit": "♥",
-              "value": 5
+              "value": "5"
             }
           ]
         }
@@ -310,11 +310,11 @@
       "encounters": [
         {
           "type": "story",
-          "name": "Ancient Fountain",
-          "story": "An ancient fountain bubbles with crystal-clear water. The inscription reads: 'Drink, and be renewed - but at what cost?'",
+          "name": "Ancient Forest Fountain",
+          "story": "An ancient fountain bubbles with crystal-clear water. The inscription reads: 'Drink, and be renewed'",
           "choices": [
             {
-              "name": "Drink deeply",
+              "name": "Drink the liquid",
               "resolution": "The crystal-clear water coursed through you, healing your wounds",
               "actionType": "hp",
               "actionValue": 20
@@ -325,12 +325,12 @@
               "actionType": "card",
               "actionValue": {
                 "suit": "♥",
-                "value": "Q"
+                "value": "10"
               }
             },
             {
-              "name": "Leave it alone",
-              "resolution": "As you turned away respectfully, you noticed gems sparkling in the fountain's basin",
+              "name": "Appreciate its beauty",
+              "resolution": "As you pay your respects to the shrine, you noticed gems sparkling in the fountain's basin",
               "actionType": "gems",
               "actionValue": 10
             }
@@ -343,71 +343,71 @@
       "encounters": [
         {
           "type": "shop",
-          "name": "Shady Merchant",
+          "name": "Tiny Merchant",
           "offers": [
             {
               "type": "card",
-              "gemCost": 25,
+              "gemCost": 4,
               "value": {
                 "suit": "♠",
-                "value": "A"
+                "value": "2"
               }
             },
             {
               "type": "card",
-              "gemCost": 20,
+              "gemCost": 4,
               "value": {
                 "suit": "♥",
-                "value": "K"
+                "value": "2"
               }
             },
             {
-              "type": "bustLimit",
-              "gemCost": 30,
-              "value": 3
+              "type": "card",
+              "gemCost": 4,
+              "value": {
+                "suit": "♦",
+                "value": "2"
+              }
             },
             {
-              "type": "maxHealth",
-              "gemCost": 25,
-              "value": 20
+              "type": "card",
+              "gemCost": 4,
+              "value": {
+                "suit": "♦",
+                "value": "2"
+              }
             }
           ]
         },
         {
           "type": "combat",
-          "name": "Cult Ritual",
+          "name": "Forest Ritual",
           "enemies": [
             {
-              "name": "Cultist",
-              "maxHealth": 20,
-              "attackPower": 5,
-              "attackCooldown": 1
-            },
-            {
-              "name": "Cultist",
-              "maxHealth": 20,
-              "attackPower": 5,
-              "attackCooldown": 1
-            },
-            {
-              "name": "Slime",
+              "name": "Frog Cultist",
               "maxHealth": 15,
-              "attackPower": 3,
-              "attackCooldown": 2
+              "attackPower": 4,
+              "attackCooldown": 1
+            },
+            {
+              "name": "Frog Cultist",
+              "maxHealth": 15,
+              "attackPower": 4,
+              "attackCooldown": 1
             }
           ],
           "rewards": [
             {
-              "suit": "♠",
-              "value": "A"
+              "suit": "♦",
+              "value": "7"
             },
             {
               "suit": "♠",
-              "value": "10"
+              "value": "7"
             },
             {
-              "suit": "♠",
-              "value": "Q"
+              "suit": "♥",
+              "value": "7"
             }
           ]
         }
