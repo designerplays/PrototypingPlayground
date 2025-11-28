@@ -347,6 +347,236 @@
           ]
         }
       ]
+    },
+    {
+      "id": 11,
+      "encounters": [
+        {
+          "type": "story",
+          "name": "The Strengthening Pool",
+          "story": "You discover a mystical pool radiating life energy. Its waters promise to fortify those brave enough to immerse themselves, but the surrounding magic feels unpredictable.",
+          "choices": [
+            {
+              "name": "Fully immerse yourself",
+              "resolution": "The pool's magic surges through you, permanently expanding your vitality!",
+              "actionType": "maxHp",
+              "actionValue": 20
+            },
+            {
+              "name": "Drink from the pool",
+              "resolution": "The sweet water restores your wounds and rejuvenates your body",
+              "actionType": "hp",
+              "actionValue": 30
+            },
+            {
+              "name": "Study the magical runes",
+              "resolution": "The ancient knowledge reveals techniques to push beyond normal limits",
+              "actionType": "bustLimit",
+              "actionValue": 2
+            }
+          ]
+        },
+        {
+          "type": "combat",
+          "name": "Corrupted Knights",
+          "enemies": [
+            { "name": "Dark Knight", "maxHealth": 35, "attackPower": 7, "attackCooldown": 2 },
+            { "name": "Dark Knight", "maxHealth": 35, "attackPower": 7, "attackCooldown": 2 }
+          ],
+          "rewards": [
+            { "suit": "♠", "value": "Q" },
+            { "suit": "♠", "value": "10" },
+            { "suit": "♥", "value": "K" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "encounters": [
+        {
+          "type": "story",
+          "name": "The Luck Altar",
+          "story": "A shimmering altar dedicated to the goddess of fortune stands before you. An inscription reads: 'Those who risk much, gain much - but beware false greed.'",
+          "choices": [
+            {
+              "name": "Offer a grand sacrifice",
+              "resolution": "The goddess smiles upon you! Your attacks will strike with greater precision!",
+              "actionType": "multiplier",
+              "actionValue": 1
+            },
+            {
+              "name": "Offer a modest sacrifice",
+              "resolution": "Your offering is accepted. The goddess grants you deeper reserves of strength",
+              "actionType": "maxHp",
+              "actionValue": 15
+            },
+            {
+              "name": "Take without offering",
+              "resolution": "Your greed angers the goddess! Your body feels weaker...",
+              "actionType": "maxHp",
+              "actionValue": -10
+            }
+          ]
+        },
+        {
+          "type": "combat",
+          "name": "Shadow Assassins",
+          "enemies": [
+            { "name": "Assassin", "maxHealth": 22, "attackPower": 8, "attackCooldown": 1 },
+            { "name": "Assassin", "maxHealth": 22, "attackPower": 8, "attackCooldown": 1 },
+            { "name": "Shadow", "maxHealth": 18, "attackPower": 6, "attackCooldown": 1 }
+          ],
+          "rewards": [
+            { "suit": "♠", "value": "J" },
+            { "suit": "♦", "value": "10" },
+            { "suit": "♠", "value": "9" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "encounters": [
+        {
+          "type": "story",
+          "name": "The Master's Training Ground",
+          "story": "You stumble upon an ancient training ground where legendary warriors once honed their skills. Three different training regimens are inscribed on stone tablets.",
+          "choices": [
+            {
+              "name": "Train in Precision Arts",
+              "resolution": "After intense training, your strikes become devastatingly accurate!",
+              "actionType": "multiplier",
+              "actionValue": 0.5
+            },
+            {
+              "name": "Train in Risk Management",
+              "resolution": "You learn advanced techniques to push your limits further without failing",
+              "actionType": "bustLimit",
+              "actionValue": 3
+            },
+            {
+              "name": "Train in Endurance",
+              "resolution": "Grueling exercises permanently increase your physical capacity",
+              "actionType": "maxHp",
+              "actionValue": 25
+            }
+          ]
+        },
+        {
+          "type": "shop",
+          "name": "Final Armory",
+          "offers": [
+            {
+              "type": "card",
+              "gemCost": 30,
+              "value": { "suit": "♠", "value": "A" }
+            },
+            {
+              "type": "card",
+              "gemCost": 28,
+              "value": { "suit": "♥", "value": "A" }
+            },
+            {
+              "type": "multiplier",
+              "gemCost": 35,
+              "value": 1
+            },
+            {
+              "type": "bustLimit",
+              "gemCost": 40,
+              "value": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "encounters": [
+        {
+          "type": "story",
+          "name": "The Cursed Gambit",
+          "story": "A demon offers you a dark pact. 'I can make you more powerful,' it hisses, 'but such power requires... sacrifice.'",
+          "choices": [
+            {
+              "name": "Accept the power",
+              "resolution": "Dark energy courses through you! Your strikes will hit with supernatural force!",
+              "actionType": "multiplier",
+              "actionValue": 1.5
+            },
+            {
+              "name": "Demand power without cost",
+              "resolution": "The demon laughs and curses you! Your body withers slightly...",
+              "actionType": "maxHp",
+              "actionValue": -15
+            },
+            {
+              "name": "Refuse the demon",
+              "resolution": "The demon respects your resolve and leaves gems as a parting gift",
+              "actionType": "gems",
+              "actionValue": 25
+            }
+          ]
+        },
+        {
+          "type": "combat",
+          "name": "Demonic Guard",
+          "enemies": [
+            { "name": "Demon", "maxHealth": 45, "attackPower": 10, "attackCooldown": 2 },
+            { "name": "Imp", "maxHealth": 20, "attackPower": 5, "attackCooldown": 1 },
+            { "name": "Imp", "maxHealth": 20, "attackPower": 5, "attackCooldown": 1 }
+          ],
+          "rewards": [
+            { "suit": "♠", "value": "K" },
+            { "suit": "♠", "value": "A" },
+            { "suit": "♥", "value": "Q" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "encounters": [
+        {
+          "type": "story",
+          "name": "The Final Choice",
+          "story": "Before the ultimate battle, you find three ancient artifacts. Each holds immense power, but you can only claim one. Choose wisely.",
+          "choices": [
+            {
+              "name": "Claim the Crown of Precision",
+              "resolution": "The crown's magic enhances your accuracy to legendary levels!",
+              "actionType": "multiplier",
+              "actionValue": 2
+            },
+            {
+              "name": "Claim the Ring of Resilience",
+              "resolution": "The ring's magic dramatically expands your life force!",
+              "actionType": "maxHp",
+              "actionValue": 40
+            },
+            {
+              "name": "Claim the Amulet of Daring",
+              "resolution": "The amulet allows you to push far beyond normal limits!",
+              "actionType": "bustLimit",
+              "actionValue": 5
+            }
+          ]
+        },
+        {
+          "type": "combat",
+          "name": "The Final Boss",
+          "enemies": [
+            { "name": "Ancient Evil", "maxHealth": 80, "attackPower": 15, "attackCooldown": 2 },
+            { "name": "Demon Lord", "maxHealth": 50, "attackPower": 10, "attackCooldown": 2 }
+          ],
+          "rewards": [
+            { "suit": "♠", "value": "A" },
+            { "suit": "♥", "value": "A" },
+            { "suit": "♦", "value": "A" }
+          ]
+        }
+      ]
     }
   ]
 }
