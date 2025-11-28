@@ -470,6 +470,24 @@
             text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
+        .summary-item.multiplier-active {
+            background: linear-gradient(270deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            background-size: 400% 400%;
+            animation: rainbow 3s ease infinite;
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+
+        .summary-item.multiplier-active .summary-label {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .summary-item.multiplier-active .summary-value {
+            color: #fff !important;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
         #gem-card {
             display: flex;
             align-items: center;
@@ -1501,7 +1519,7 @@
             </button>
 
             <div id="thermometer-card" class="tracker-card">
-                <div class="tracker-title">Limit</div>
+                <div class="tracker-title" id="limit-title">Limit</div>
                 <div id="thermometer-bar">
                     <div id="thermometer-fill"></div>
                 </div>
@@ -2285,13 +2303,34 @@
             const cardsDisplay = document.getElementById('cards-display');
             cardsDisplay.innerHTML = '';
 
-            const spadeValue = calculateSuitValue(GameState.player.hand, '♠');
-            const heartValue = calculateSuitValue(GameState.player.hand, '♥');
-            const diamondValue = calculateSuitValue(GameState.player.hand, '♦');
+            const handValue = calculateHandValue(GameState.player.hand);
+            const bustLimit = GameState.config.bustLimit;
+            const isExactMatch = handValue === bustLimit && handValue > 0;
+
+            let spadeValue = calculateSuitValue(GameState.player.hand, '♠');
+            let heartValue = calculateSuitValue(GameState.player.hand, '♥');
+            let diamondValue = calculateSuitValue(GameState.player.hand, '♦');
+
+            // Apply multiplier to displayed values if exact match
+            if (isExactMatch) {
+                spadeValue = Math.floor(spadeValue * GameState.multiplier);
+                heartValue = Math.floor(heartValue * GameState.multiplier);
+                diamondValue = Math.floor(diamondValue * GameState.multiplier);
+            }
 
             document.getElementById('summary-damage').textContent = spadeValue;
             document.getElementById('summary-heal').textContent = heartValue;
             document.getElementById('summary-gems').textContent = diamondValue;
+
+            // Add/remove rainbow animation on summary items when multiplier is active
+            const summaryItems = document.querySelectorAll('.summary-item');
+            summaryItems.forEach(item => {
+                if (isExactMatch && GameState.multiplier > 1) {
+                    item.classList.add('multiplier-active');
+                } else {
+                    item.classList.remove('multiplier-active');
+                }
+            });
 
             if (GameState.player.hand.length === 0) {
                 // Show placeholder cards when hand is empty
@@ -2315,8 +2354,6 @@
             }
 
             // Hand total
-            const handValue = calculateHandValue(GameState.player.hand);
-            const bustLimit = GameState.config.bustLimit;
             const summaryValues = document.querySelectorAll('.summary-value');
             summaryValues.forEach(element => {
                 if (handValue > bustLimit) {
@@ -2330,14 +2367,21 @@
             const thermometerFill = document.getElementById('thermometer-fill');
             const thermometerValue = document.getElementById('thermometer-value');
             const thermometerCard = document.getElementById('thermometer-card');
+            const limitTitle = document.getElementById('limit-title');
             const thermometerPercent = Math.min(100, (handValue / bustLimit) * 100);
             thermometerFill.style.width = `${thermometerPercent}%`;
 
+            // Update limit title with multiplier
+            if (GameState.multiplier > 1) {
+                limitTitle.textContent = `Limit (${GameState.multiplier}x mult)`;
+            } else {
+                limitTitle.textContent = 'Limit';
+            }
+
             // Check for exact match
-            const isExactMatch = handValue === bustLimit && handValue > 0;
             if (isExactMatch) {
                 thermometerCard.classList.add('exact-match');
-                thermometerValue.textContent = `${handValue} / ${bustLimit} x${GameState.multiplier}`;
+                thermometerValue.textContent = `${handValue} / ${bustLimit}`;
             } else {
                 thermometerCard.classList.remove('exact-match');
                 thermometerValue.textContent = `${handValue} / ${bustLimit}`;
