@@ -73,6 +73,11 @@
               "type": "bustLimit",
               "gemCost": 25,
               "value": 2
+            },
+            {
+              "type": "multiplier",
+              "gemCost": 20,
+              "value": 0.5
             }
           ]
         },
