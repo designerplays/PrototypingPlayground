@@ -269,6 +269,12 @@
             color: #d62839;
         }
 
+        .card.placeholder {
+            background: transparent;
+            border: 2px dotted rgba(255, 255, 255, 0.3);
+            box-shadow: none;
+        }
+
         /* Player Stats */
         #player-stats {
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.35));
@@ -361,6 +367,7 @@
             text-transform: uppercase;
             letter-spacing: 0.6px;
             color: #5a3a2a;
+            text-align: center;
         }
 
         .tracker-sub {
@@ -1242,7 +1249,6 @@
             // Check if all enemies are dead
             if (GameState.enemies.every(e => e.currentHealth <= 0)) {
                 // Encounter cleared!
-                GameState.gems += 5;
                 updateUI();
                 setTimeout(() => {
                     showFeedback('Encounter Cleared!', 1500);
@@ -1382,15 +1388,24 @@
             document.getElementById('summary-heal').textContent = heartValue;
             document.getElementById('summary-gems').textContent = diamondValue;
 
-            GameState.player.hand.forEach(card => {
-                const cardElement = document.createElement('div');
-                cardElement.className = 'card';
-                if (card.suit === '♥' || card.suit === '♦') {
-                    cardElement.classList.add('red');
+            if (GameState.player.hand.length === 0) {
+                // Show placeholder cards when hand is empty
+                for (let i = 0; i < 3; i++) {
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'card placeholder';
+                    cardsDisplay.appendChild(cardElement);
                 }
-                cardElement.textContent = `${card.rank}${card.suit}`;
-                cardsDisplay.appendChild(cardElement);
-            });
+            } else {
+                GameState.player.hand.forEach(card => {
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'card';
+                    if (card.suit === '♥' || card.suit === '♦') {
+                        cardElement.classList.add('red');
+                    }
+                    cardElement.textContent = `${card.rank}${card.suit}`;
+                    cardsDisplay.appendChild(cardElement);
+                });
+            }
 
             // Hand total
             const handValue = calculateHandValue(GameState.player.hand);
