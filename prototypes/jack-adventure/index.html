@@ -231,17 +231,33 @@
             border-radius: 10px;
             padding: 8px;
             display: flex;
-            flex-direction: column;
-            gap: 4px;
+            flex-direction: row;
+            gap: 6px;
+            align-items: center;
+            justify-content: center;
         }
 
         .summary-label {
-            font-size: 11px;
+            font-size: 14px;
             opacity: 0.8;
+            text-transform: lowercase;
         }
 
         .summary-value {
-            font-size: 16px;
+            font-size: 22px;
+            font-weight: 900;
+        }
+
+        .summary-value.damage {
+            color: #ffffff;
+        }
+
+        .summary-value.healing {
+            color: #ff4444;
+        }
+
+        .summary-value.gems {
+            color: #ffd700;
         }
 
         #cards-display {
@@ -858,6 +874,29 @@
             transform: scale(0.95);
         }
 
+        #ignore-button {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #666, #888);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #fff;
+            transition: all 0.2s;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        #ignore-button:hover {
+            background: linear-gradient(135deg, #777, #999);
+        }
+
+        #ignore-button:active {
+            transform: scale(0.98);
+        }
+
     </style>
 </head>
 <body>
@@ -866,7 +905,7 @@
     <div id="debug-popup">
         <div id="debug-popup-content">
             <strong>Jack Adventure</strong><br>
-            Version: 1.1<br>
+            Version: 1.2<br>
             A blackjack dungeon crawler
         </div>
         <button id="debug-close">Close</button>
@@ -900,16 +939,16 @@
         <div id="player-cards-area">
             <div id="card-summary">
                 <div class="summary-item">
-                    <div class="summary-label">Damage</div>
-                    <div class="summary-value" id="summary-damage">0</div>
+                    <div class="summary-label">damage</div>
+                    <div class="summary-value damage" id="summary-damage">0</div>
                 </div>
                 <div class="summary-item">
-                    <div class="summary-label">Healing</div>
-                    <div class="summary-value" id="summary-heal">0</div>
+                    <div class="summary-label">healing</div>
+                    <div class="summary-value healing" id="summary-heal">0</div>
                 </div>
                 <div class="summary-item">
-                    <div class="summary-label">Gems</div>
-                    <div class="summary-value" id="summary-gems">0</div>
+                    <div class="summary-label">gems</div>
+                    <div class="summary-value gems" id="summary-gems">0</div>
                 </div>
             </div>
             <div id="cards-display"></div>
@@ -969,6 +1008,7 @@
     <div id="reward-popup">
         <div id="reward-popup-title">Choose Your Reward!</div>
         <div id="reward-cards"></div>
+        <button id="ignore-button">Ignore</button>
     </div>
 
     <script>
@@ -1635,6 +1675,16 @@
             startEncounter();
         }
 
+        // Ignore reward (skip card selection)
+        function ignoreReward() {
+            // Hide popup without adding a card
+            hideRewardPopup();
+
+            // Move to next encounter
+            GameState.currentEncounterIndex++;
+            startEncounter();
+        }
+
         // Restart game
         function restartGame() {
             GameState.gameOver = false;
@@ -1654,6 +1704,7 @@
         document.getElementById('restart-button').addEventListener('click', restartGame);
         document.getElementById('deck-widget').addEventListener('click', showDeckPopup);
         document.getElementById('deck-close').addEventListener('click', hideDeckPopup);
+        document.getElementById('ignore-button').addEventListener('click', ignoreReward);
 
         // Debug popup
         document.getElementById('debug-button').addEventListener('click', () => {
