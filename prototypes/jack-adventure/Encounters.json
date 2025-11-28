@@ -65,6 +65,43 @@
       ]
     },
     {
+      "id": 2,
+      "encounters": [
+        {
+          "type": "combat",
+          "name": "Forest Bushes",
+          "enemies": [
+            {
+              "name": "Wild Bunny",
+              "maxHealth": 10,
+              "attackPower": 2,
+              "attackCooldown": 1
+            },
+            {
+              "name": "Boar",
+              "maxHealth": 12,
+              "attackPower": 3,
+              "attackCooldown": 2
+            }
+          ],
+          "rewards": [
+            {
+              "suit": "♦",
+              "value": "2"
+            },
+            {
+              "suit": "♥",
+              "value": "2"
+            },
+            {
+              "suit": "♠",
+              "value": "2"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": 3,
       "encounters": [
         {
@@ -128,6 +165,43 @@
             {
               "suit": "♠",
               "value": "3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "encounters": [
+        {
+          "type": "combat",
+          "name": "Carcass Pile",
+          "enemies": [
+            {
+              "name": "Boar",
+              "maxHealth": 12,
+              "attackPower": 3,
+              "attackCooldown": 2
+            },
+            {
+              "name": "Boar",
+              "maxHealth": 12,
+              "attackPower": 3,
+              "attackCooldown": 2
+            }
+          ],
+          "rewards": [
+            {
+              "suit": "♦",
+              "value": "4"
+            },
+            {
+              "suit": "♥",
+              "value": "4"
+            },
+            {
+              "suit": "♠",
+              "value": "4"
             }
           ]
         }
@@ -284,6 +358,43 @@
             {
               "name": "Racoon Assassin",
               "maxHealth": 15,
+              "attackPower": 4,
+              "attackCooldown": 2
+            }
+          ],
+          "rewards": [
+            {
+              "suit": "♦",
+              "value": "5"
+            },
+            {
+              "suit": "♠",
+              "value": "5"
+            },
+            {
+              "suit": "♥",
+              "value": "5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "encounters": [
+        {
+          "type": "combat",
+          "name": "Racoon Base",
+          "enemies": [
+            {
+              "name": "Racoon Assassin",
+              "maxHealth": 15,
+              "attackPower": 4,
+              "attackCooldown": 2
+            },
+            {
+              "name": "Racoon Boss",
+              "maxHealth": 20,
               "attackPower": 4,
               "attackCooldown": 2
             }
