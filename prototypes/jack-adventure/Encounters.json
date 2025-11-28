@@ -278,13 +278,13 @@
             {
               "name": "Racoon Assassin",
               "maxHealth": 15,
-              "attackPower": 5,
+              "attackPower": 4,
               "attackCooldown": 2
             },
             {
               "name": "Racoon Assassin",
               "maxHealth": 15,
-              "attackPower": 5,
+              "attackPower": 4,
               "attackCooldown": 2
             }
           ],
@@ -419,7 +419,7 @@
         {
           "type": "story",
           "name": "The Offering Chamber",
-          "story": "Before the final battle, you find a chamber with three pedestals. Each holds a different offering to the gods of battle.",
+          "story": "Before your next fight, you find a chamber with three pedestals. Each holds a different offering to the gods of the forest.",
           "choices": [
             {
               "name": "Pray for strength",
@@ -433,46 +433,14 @@
             {
               "name": "Pray for endurance",
               "resolution": "Divine energy washed over you, healing your wounds and fortifying your body",
-              "actionType": "hp",
-              "actionValue": 25
+              "actionType": "maxHp",
+              "actionValue": 5
             },
             {
               "name": "Pray for fortune",
               "resolution": "A shower of gems rained down as the gods blessed your quest",
               "actionType": "gems",
               "actionValue": 30
-            }
-          ]
-        },
-        {
-          "type": "combat",
-          "name": "Lich's Antechamber",
-          "enemies": [
-            {
-              "name": "Golem",
-              "maxHealth": 35,
-              "attackPower": 8,
-              "attackCooldown": 3
-            },
-            {
-              "name": "Lich",
-              "maxHealth": 40,
-              "attackPower": 9,
-              "attackCooldown": 2
-            }
-          ],
-          "rewards": [
-            {
-              "suit": "♥",
-              "value": "K"
-            },
-            {
-              "suit": "♠",
-              "value": "A"
-            },
-            {
-              "suit": "♠",
-              "value": "J"
             }
           ]
         }
@@ -483,32 +451,38 @@
       "encounters": [
         {
           "type": "combat",
-          "name": "Dragon's Lair",
+          "name": "guardian of the Forest",
           "enemies": [
             {
-              "name": "Demon Hound",
-              "maxHealth": 30,
-              "attackPower": 7,
+              "name": "Wild Bunny",
+              "maxHealth": 10,
+              "attackPower": 2,
               "attackCooldown": 1
             },
             {
-              "name": "Dragon",
-              "maxHealth": 60,
-              "attackPower": 12,
-              "attackCooldown": 2
+              "name": "Wise Bear",
+              "maxHealth": 30,
+              "attackPower": 6,
+              "attackCooldown": 3
+            },
+            {
+              "name": "Wild Bunny",
+              "maxHealth": 10,
+              "attackPower": 2,
+              "attackCooldown": 1
             }
           ],
           "rewards": [
+            {
+              "suit": "♦",
+              "value": "A"
+            },
             {
               "suit": "♠",
               "value": "A"
             },
             {
               "suit": "♥",
-              "value": "A"
-            },
-            {
-              "suit": "♠",
               "value": "K"
             }
           ]
@@ -520,58 +494,29 @@
       "encounters": [
         {
           "type": "story",
-          "name": "The Strengthening Pool",
-          "story": "You discover a mystical pool radiating life energy. Its waters promise to fortify those brave enough to immerse themselves, but the surrounding magic feels unpredictable.",
+          "name": "The Forest Exit",
+          "story": "You see a clearing in the forest, and you walk into the shadow plains, the land of the foxes",
           "choices": [
             {
-              "name": "Fully immerse yourself",
-              "resolution": "The pool's magic surges through you, permanently expanding your vitality!",
+              "name": "Look back on your adventure",
+              "resolution": "You meditate on your adventure so far, and gain resilience",
               "actionType": "maxHp",
-              "actionValue": 20
+              "actionValue": 5
             },
             {
-              "name": "Drink from the pool",
-              "resolution": "The sweet water restores your wounds and rejuvenates your body",
-              "actionType": "hp",
-              "actionValue": 30
+              "name": "Sharpen your tools",
+              "resolution": "As you look to the future, you carefully prepare for the next battle.",
+              "actionType": "card",
+              "actionValue": {
+                "suit": "♠",
+                "value": "K"
+              }
             },
             {
-              "name": "Study the magical runes",
-              "resolution": "The ancient knowledge reveals techniques to push beyond normal limits",
+              "name": "Pray to the forest gods",
+              "resolution": "It's your last chance to worship the forest. They give you their favour",
               "actionType": "bustLimit",
               "actionValue": 2
-            }
-          ]
-        },
-        {
-          "type": "combat",
-          "name": "Corrupted Knights",
-          "enemies": [
-            {
-              "name": "Dark Knight",
-              "maxHealth": 35,
-              "attackPower": 7,
-              "attackCooldown": 2
-            },
-            {
-              "name": "Dark Knight",
-              "maxHealth": 35,
-              "attackPower": 7,
-              "attackCooldown": 2
-            }
-          ],
-          "rewards": [
-            {
-              "suit": "♠",
-              "value": "Q"
-            },
-            {
-              "suit": "♠",
-              "value": "10"
-            },
-            {
-              "suit": "♥",
-              "value": "K"
             }
           ]
         }
@@ -583,7 +528,7 @@
         {
           "type": "story",
           "name": "The Luck Altar",
-          "story": "A shimmering altar dedicated to the goddess of fortune stands before you. An inscription reads: 'Those who risk much, gain much - but beware false greed.'",
+          "story": "A shimmering altar dedicated to the goddess of the plains stands before you. An inscription reads: 'Those who risk much, gain much - but beware false greed.'",
           "choices": [
             {
               "name": "Offer a grand sacrifice",
@@ -595,7 +540,7 @@
               "name": "Offer a modest sacrifice",
               "resolution": "Your offering is accepted. The goddess grants you deeper reserves of strength",
               "actionType": "maxHp",
-              "actionValue": 15
+              "actionValue": 5
             },
             {
               "name": "Take without offering",
@@ -607,39 +552,39 @@
         },
         {
           "type": "combat",
-          "name": "Shadow Assassins",
+          "name": "Party of the plains",
           "enemies": [
             {
-              "name": "Assassin",
-              "maxHealth": 22,
-              "attackPower": 8,
-              "attackCooldown": 1
-            },
-            {
-              "name": "Assassin",
-              "maxHealth": 22,
-              "attackPower": 8,
-              "attackCooldown": 1
-            },
-            {
-              "name": "Shadow",
-              "maxHealth": 18,
+              "name": "Fox Drunkard",
+              "maxHealth": 20,
               "attackPower": 6,
-              "attackCooldown": 1
+              "attackCooldown": 3
+            },
+            {
+              "name": "Fox Drunkard",
+              "maxHealth": 20,
+              "attackPower": 6,
+              "attackCooldown": 3
+            },
+            {
+              "name": "Fox Drunkard",
+              "maxHealth": 20,
+              "attackPower": 6,
+              "attackCooldown": 3
             }
           ],
           "rewards": [
+            {
+              "suit": "♦",
+              "value": "J"
+            },
             {
               "suit": "♠",
               "value": "J"
             },
             {
-              "suit": "♦",
-              "value": "10"
-            },
-            {
-              "suit": "♠",
-              "value": "9"
+              "suit": "♥",
+              "value": "J"
             }
           ]
         }
@@ -669,7 +614,7 @@
               "name": "Train in Endurance",
               "resolution": "Grueling exercises permanently increase your physical capacity",
               "actionType": "maxHp",
-              "actionValue": 25
+              "actionValue": 5
             }
           ]
         },
@@ -679,7 +624,7 @@
           "offers": [
             {
               "type": "card",
-              "gemCost": 30,
+              "gemCost": 20,
               "value": {
                 "suit": "♠",
                 "value": "A"
@@ -687,7 +632,7 @@
             },
             {
               "type": "card",
-              "gemCost": 28,
+              "gemCost": 20,
               "value": {
                 "suit": "♥",
                 "value": "A"
@@ -695,12 +640,12 @@
             },
             {
               "type": "multiplier",
-              "gemCost": 35,
+              "gemCost": 10,
               "value": 1
             },
             {
               "type": "bustLimit",
-              "gemCost": 40,
+              "gemCost": 10,
               "value": 4
             }
           ]
@@ -725,13 +670,13 @@
               "name": "Demand power without cost",
               "resolution": "The demon laughs and curses you! Your body withers slightly...",
               "actionType": "maxHp",
-              "actionValue": -15
+              "actionValue": -5
             },
             {
               "name": "Refuse the demon",
               "resolution": "The demon respects your resolve and leaves gems as a parting gift",
               "actionType": "gems",
-              "actionValue": 25
+              "actionValue": 10
             }
           ]
         },
@@ -760,8 +705,8 @@
           ],
           "rewards": [
             {
-              "suit": "♠",
-              "value": "K"
+              "suit": "♦",
+              "value": "A"
             },
             {
               "suit": "♠",
@@ -769,7 +714,7 @@
             },
             {
               "suit": "♥",
-              "value": "Q"
+              "value": "A"
             }
           ]
         }
@@ -779,40 +724,9 @@
       "id": 15,
       "encounters": [
         {
-          "type": "story",
-          "name": "The Final Choice",
-          "story": "Before the ultimate battle, you find three ancient artifacts. Each holds immense power, but you can only claim one. Choose wisely.",
-          "choices": [
-            {
-              "name": "Claim the Crown of Precision",
-              "resolution": "The crown's magic enhances your accuracy to legendary levels!",
-              "actionType": "multiplier",
-              "actionValue": 2
-            },
-            {
-              "name": "Claim the Ring of Resilience",
-              "resolution": "The ring's magic dramatically expands your life force!",
-              "actionType": "maxHp",
-              "actionValue": 40
-            },
-            {
-              "name": "Claim the Amulet of Daring",
-              "resolution": "The amulet allows you to push far beyond normal limits!",
-              "actionType": "bustLimit",
-              "actionValue": 5
-            }
-          ]
-        },
-        {
           "type": "combat",
           "name": "The Final Boss",
           "enemies": [
-            {
-              "name": "Ancient Evil",
-              "maxHealth": 80,
-              "attackPower": 15,
-              "attackCooldown": 2
-            },
             {
               "name": "Demon Lord",
               "maxHealth": 50,
