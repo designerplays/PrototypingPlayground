@@ -1,5 +1,5 @@
 {
-  "playerStartingHealth": 50,
+  "playerStartingHealth": 10,
   "bustLimit": 21,
   "playerStartingGems": 25,
   "playerStartingMultiplier": 2
