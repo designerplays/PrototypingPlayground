@@ -446,6 +446,30 @@
             text-align: right;
         }
 
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #thermometer-card.exact-match {
+            background: linear-gradient(270deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            background-size: 400% 400%;
+            animation: rainbow 3s ease infinite;
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+
+        #thermometer-card.exact-match #thermometer-value {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        #thermometer-card.exact-match .tracker-title {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
         #gem-card {
             display: flex;
             align-items: center;
@@ -1343,8 +1367,13 @@
         }
 
         .shop-buy-button:disabled {
-            opacity: 0.4;
+            opacity: 0.3;
             cursor: not-allowed;
+            transform: none;
+            filter: grayscale(100%);
+        }
+
+        .shop-buy-button:disabled:hover {
             transform: none;
         }
 
@@ -1543,6 +1572,7 @@
             hasChargedThisTurn: false,
             showingRewards: false,
             gems: 0,
+            multiplier: 1,
             shopPurchases: [] // Track purchased items in current shop
         };
 
@@ -1567,6 +1597,7 @@
                 GameState.player.maxHealth = GameState.config.playerStartingHealth;
                 GameState.player.currentHealth = GameState.config.playerStartingHealth;
                 GameState.gems = GameState.config.playerStartingGems;
+                GameState.multiplier = GameState.config.playerStartingMultiplier;
 
                 // Show starting setup view
                 showStartingSetupView();
@@ -1910,6 +1941,9 @@
                 } else if (offer.type === 'maxHealth') {
                     offerName = `Max Health +${offer.value}`;
                     offerDescription = `Increase your max health by ${offer.value}`;
+                } else if (offer.type === 'multiplier') {
+                    offerName = `Multiplier +${offer.value}`;
+                    offerDescription = `Increase your exact match multiplier by ${offer.value}`;
                 }
 
                 const nameDiv = document.createElement('div');
@@ -1927,10 +1961,32 @@
                 const buyButton = document.createElement('button');
                 buyButton.className = 'shop-buy-button';
                 buyButton.textContent = `${offer.gemCost} 💎`;
+                buyButton.id = `shop-buy-${index}`;
                 buyButton.addEventListener('click', () => purchaseShopOffer(index));
+
+                // Disable if can't afford
+                if (GameState.gems < offer.gemCost) {
+                    buyButton.disabled = true;
+                }
+
                 offerDiv.appendChild(buyButton);
 
                 offersContainer.appendChild(offerDiv);
+            });
+
+            // Update button states
+            updateShopButtonStates();
+        }
+
+        // Update shop button states based on current gems
+        function updateShopButtonStates() {
+            if (!GameState.currentEncounter || GameState.currentEncounter.type !== 'shop') return;
+
+            GameState.currentEncounter.offers.forEach((offer, index) => {
+                const buyButton = document.getElementById(`shop-buy-${index}`);
+                if (buyButton && !GameState.shopPurchases.includes(index)) {
+                    buyButton.disabled = GameState.gems < offer.gemCost;
+                }
             });
         }
 
@@ -1961,6 +2017,9 @@
                 GameState.player.maxHealth += offer.value;
                 GameState.player.currentHealth += offer.value;
                 showFeedback(`Max health increased to ${GameState.player.maxHealth}!`, 1000);
+            } else if (offer.type === 'multiplier') {
+                GameState.multiplier += offer.value;
+                showFeedback(`Multiplier increased to ${GameState.multiplier}x!`, 1000);
             }
 
             // Mark as purchased
@@ -1969,6 +2028,9 @@
             // Update display
             document.getElementById('shop-gems-display').textContent = `Your Gems: ${GameState.gems} 💎`;
             document.getElementById(`shop-offer-${offerIndex}`).classList.add('purchased');
+
+            // Update button states for all offers
+            updateShopButtonStates();
         }
 
         // Player action: Charge
@@ -2023,7 +2085,9 @@
             if (GameState.gameOver) return;
 
             const handValue = calculateHandValue(GameState.player.hand);
-            const isBust = handValue > 21;
+            const bustLimit = GameState.config.bustLimit;
+            const isBust = handValue > bustLimit;
+            const isExactMatch = handValue === bustLimit;
 
             if (isBust) {
                 // Bust - no damage or healing
@@ -2034,14 +2098,17 @@
                 const heartCards = GameState.player.hand.filter(card => card.suit === '♥');
                 const diamondCards = GameState.player.hand.filter(card => card.suit === '♦');
 
-                // Calculate damage from spade cards
-                const damageAmount = calculateHandValue(spadeCards);
+                // Calculate base values from cards
+                let damageAmount = calculateHandValue(spadeCards);
+                let healAmount = calculateHandValue(heartCards);
+                let gemGain = calculateHandValue(diamondCards);
 
-                // Calculate healing from heart cards
-                const healAmount = calculateHandValue(heartCards);
-
-                // Calculate gems from diamond cards
-                const gemGain = calculateHandValue(diamondCards);
+                // Apply multiplier if exact match
+                if (isExactMatch) {
+                    damageAmount = Math.floor(damageAmount * GameState.multiplier);
+                    healAmount = Math.floor(healAmount * GameState.multiplier);
+                    gemGain = Math.floor(gemGain * GameState.multiplier);
+                }
 
                 // Deal damage to target enemy if there are spade cards
                 if (damageAmount > 0) {
@@ -2262,9 +2329,19 @@
             // Thermometer
             const thermometerFill = document.getElementById('thermometer-fill');
             const thermometerValue = document.getElementById('thermometer-value');
+            const thermometerCard = document.getElementById('thermometer-card');
             const thermometerPercent = Math.min(100, (handValue / bustLimit) * 100);
             thermometerFill.style.width = `${thermometerPercent}%`;
-            thermometerValue.textContent = `${handValue} / ${bustLimit}`;
+
+            // Check for exact match
+            const isExactMatch = handValue === bustLimit && handValue > 0;
+            if (isExactMatch) {
+                thermometerCard.classList.add('exact-match');
+                thermometerValue.textContent = `${handValue} / ${bustLimit} x${GameState.multiplier}`;
+            } else {
+                thermometerCard.classList.remove('exact-match');
+                thermometerValue.textContent = `${handValue} / ${bustLimit}`;
+            }
 
             // Deck info
             document.getElementById('deck-count').textContent =
@@ -2519,6 +2596,7 @@
             GameState.player.fullDeck = [];
             GameState.player.maxHealth = GameState.config.playerStartingHealth;
             GameState.gems = GameState.config.playerStartingGems;
+            GameState.multiplier = GameState.config.playerStartingMultiplier;
             GameState.config.bustLimit = 21; // Reset bust limit
 
             document.getElementById('game-over-screen').style.display = 'none';
