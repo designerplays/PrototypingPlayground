@@ -1,134 +1,335 @@
 {
-  "encounters": [
+  "mapNodes": [
     {
       "id": 1,
-      "name": "Dungeon Entrance",
-      "enemies": [
-        { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2 }
-      ],
-      "rewards": [
-        { "suit": "♦", "value": "5" },
-        { "suit": "♥", "value": "5" },
-        { "suit": "♠", "value": "1" }
+      "encounters": [
+        {
+          "type": "combat",
+          "name": "Dungeon Entrance",
+          "enemies": [
+            { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2 }
+          ],
+          "rewards": [
+            { "suit": "♦", "value": "5" },
+            { "suit": "♥", "value": "5" },
+            { "suit": "♠", "value": "2" }
+          ]
+        },
+        {
+          "type": "story",
+          "name": "Mysterious Shrine",
+          "story": "You find a glowing shrine with ancient symbols. A voice whispers in your mind: 'Offer your vitality, or take my blessing?'",
+          "choices": [
+            {
+              "name": "Take the blessing",
+              "actionType": "card",
+              "actionValue": { "suit": "♠", "value": "K" }
+            },
+            {
+              "name": "Offer vitality",
+              "actionType": "hp",
+              "actionValue": -10
+            }
+          ]
+        }
       ]
     },
     {
       "id": 2,
-      "name": "Rat Nest",
-      "enemies": [
-        { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2 },
-        { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2 }
-      ],
-      "rewards": [
-        { "suit": "♠", "value": "6" },
-        { "suit": "♥", "value": "8" },
-        { "suit": "♠", "value": "4" }
+      "encounters": [
+        {
+          "type": "combat",
+          "name": "Rat Nest",
+          "enemies": [
+            { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2 },
+            { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2 }
+          ],
+          "rewards": [
+            { "suit": "♠", "value": "6" },
+            { "suit": "♥", "value": "8" },
+            { "suit": "♠", "value": "4" }
+          ]
+        }
       ]
     },
     {
       "id": 3,
-      "name": "Dripping Cavern",
-      "enemies": [
-        { "name": "Slime", "maxHealth": 15, "attackPower": 3, "attackCooldown": 2 },
-        { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1 }
-      ],
-      "rewards": [
-        { "suit": "♠", "value": "9" },
-        { "suit": "♠", "value": "J" },
-        { "suit": "♠", "value": "5" }
+      "encounters": [
+        {
+          "type": "shop",
+          "name": "Wandering Trader",
+          "offers": [
+            {
+              "type": "card",
+              "gemCost": 15,
+              "value": { "suit": "♠", "value": "Q" }
+            },
+            {
+              "type": "card",
+              "gemCost": 12,
+              "value": { "suit": "♥", "value": "9" }
+            },
+            {
+              "type": "bustLimit",
+              "gemCost": 25,
+              "value": 2
+            }
+          ]
+        },
+        {
+          "type": "combat",
+          "name": "Dripping Cavern",
+          "enemies": [
+            { "name": "Slime", "maxHealth": 15, "attackPower": 3, "attackCooldown": 2 },
+            { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1 }
+          ],
+          "rewards": [
+            { "suit": "♠", "value": "9" },
+            { "suit": "♠", "value": "J" },
+            { "suit": "♠", "value": "5" }
+          ]
+        }
       ]
     },
     {
       "id": 4,
-      "name": "Pest Swarm",
-      "enemies": [
-        { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2 },
-        { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1 },
-        { "name": "Slime", "maxHealth": 15, "attackPower": 3, "attackCooldown": 2 }
-      ],
-      "rewards": [
-        { "suit": "♥", "value": "10" },
-        { "suit": "♠", "value": "Q" },
-        { "suit": "♠", "value": "6" }
+      "encounters": [
+        {
+          "type": "story",
+          "name": "Ghost Dilemma",
+          "story": "You come upon a ghost weeping over a tomb. The tomb is unmarked. What do you do?",
+          "choices": [
+            {
+              "name": "Run away",
+              "actionType": "gems",
+              "actionValue": 5
+            },
+            {
+              "name": "Ask their name",
+              "actionType": "card",
+              "actionValue": { "suit": "♥", "value": "A" }
+            },
+            {
+              "name": "Help mark the tomb",
+              "actionType": "hp",
+              "actionValue": 10
+            }
+          ]
+        },
+        {
+          "type": "combat",
+          "name": "Pest Swarm",
+          "enemies": [
+            { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2 },
+            { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1 },
+            { "name": "Slime", "maxHealth": 15, "attackPower": 3, "attackCooldown": 2 }
+          ],
+          "rewards": [
+            { "suit": "♥", "value": "10" },
+            { "suit": "♠", "value": "Q" },
+            { "suit": "♠", "value": "6" }
+          ]
+        }
       ]
     },
     {
       "id": 5,
-      "name": "Goblin Scouts",
-      "enemies": [
-        { "name": "Goblin", "maxHealth": 18, "attackPower": 4, "attackCooldown": 2 },
-        { "name": "Goblin", "maxHealth": 18, "attackPower": 4, "attackCooldown": 2 }
-      ],
-      "rewards": [
-        { "suit": "♠", "value": "K" },
-        { "suit": "♥", "value": "7" },
-        { "suit": "♠", "value": "A" }
+      "encounters": [
+        {
+          "type": "combat",
+          "name": "Goblin Scouts",
+          "enemies": [
+            { "name": "Goblin", "maxHealth": 18, "attackPower": 4, "attackCooldown": 2 },
+            { "name": "Goblin", "maxHealth": 18, "attackPower": 4, "attackCooldown": 2 }
+          ],
+          "rewards": [
+            { "suit": "♠", "value": "K" },
+            { "suit": "♥", "value": "7" },
+            { "suit": "♠", "value": "A" }
+          ]
+        },
+        {
+          "type": "shop",
+          "name": "Goblin Merchant",
+          "offers": [
+            {
+              "type": "card",
+              "gemCost": 18,
+              "value": { "suit": "♠", "value": "A" }
+            },
+            {
+              "type": "maxHealth",
+              "gemCost": 20,
+              "value": 15
+            },
+            {
+              "type": "card",
+              "gemCost": 10,
+              "value": { "suit": "♦", "value": "8" }
+            }
+          ]
+        }
       ]
     },
     {
       "id": 6,
-      "name": "Ambush in the Dark",
-      "enemies": [
-        { "name": "Orc", "maxHealth": 25, "attackPower": 6, "attackCooldown": 2 },
-        { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1 },
-        { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1 }
-      ],
-      "rewards": [
-        { "suit": "♠", "value": "9" },
-        { "suit": "♠", "value": "10" },
-        { "suit": "♥", "value": "J" }
+      "encounters": [
+        {
+          "type": "combat",
+          "name": "Ambush in the Dark",
+          "enemies": [
+            { "name": "Orc", "maxHealth": 25, "attackPower": 6, "attackCooldown": 2 },
+            { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1 },
+            { "name": "Bat", "maxHealth": 8, "attackPower": 3, "attackCooldown": 1 }
+          ],
+          "rewards": [
+            { "suit": "♠", "value": "9" },
+            { "suit": "♠", "value": "10" },
+            { "suit": "♥", "value": "J" }
+          ]
+        },
+        {
+          "type": "story",
+          "name": "Ancient Fountain",
+          "story": "An ancient fountain bubbles with crystal-clear water. The inscription reads: 'Drink, and be renewed - but at what cost?'",
+          "choices": [
+            {
+              "name": "Drink deeply",
+              "actionType": "hp",
+              "actionValue": 20
+            },
+            {
+              "name": "Bottle some water",
+              "actionType": "card",
+              "actionValue": { "suit": "♥", "value": "Q" }
+            },
+            {
+              "name": "Leave it alone",
+              "actionType": "gems",
+              "actionValue": 10
+            }
+          ]
+        }
       ]
     },
     {
       "id": 7,
-      "name": "Stone Guardian",
-      "enemies": [
-        { "name": "Golem", "maxHealth": 35, "attackPower": 8, "attackCooldown": 3 }
-      ],
-      "rewards": [
-        { "suit": "♠", "value": "K" },
-        { "suit": "♠", "value": "8" },
-        { "suit": "♥", "value": "Q" }
+      "encounters": [
+        {
+          "type": "combat",
+          "name": "Stone Guardian",
+          "enemies": [
+            { "name": "Golem", "maxHealth": 35, "attackPower": 8, "attackCooldown": 3 }
+          ],
+          "rewards": [
+            { "suit": "♠", "value": "K" },
+            { "suit": "♠", "value": "8" },
+            { "suit": "♥", "value": "Q" }
+          ]
+        }
       ]
     },
     {
       "id": 8,
-      "name": "Cult Ritual",
-      "enemies": [
-        { "name": "Cultist", "maxHealth": 20, "attackPower": 5, "attackCooldown": 1 },
-        { "name": "Cultist", "maxHealth": 20, "attackPower": 5, "attackCooldown": 1 },
-        { "name": "Slime", "maxHealth": 15, "attackPower": 3, "attackCooldown": 2 }
-      ],
-      "rewards": [
-        { "suit": "♠", "value": "A" },
-        { "suit": "♠", "value": "10" },
-        { "suit": "♠", "value": "Q" }
+      "encounters": [
+        {
+          "type": "shop",
+          "name": "Shady Merchant",
+          "offers": [
+            {
+              "type": "card",
+              "gemCost": 25,
+              "value": { "suit": "♠", "value": "A" }
+            },
+            {
+              "type": "card",
+              "gemCost": 20,
+              "value": { "suit": "♥", "value": "K" }
+            },
+            {
+              "type": "bustLimit",
+              "gemCost": 30,
+              "value": 3
+            },
+            {
+              "type": "maxHealth",
+              "gemCost": 25,
+              "value": 20
+            }
+          ]
+        },
+        {
+          "type": "combat",
+          "name": "Cult Ritual",
+          "enemies": [
+            { "name": "Cultist", "maxHealth": 20, "attackPower": 5, "attackCooldown": 1 },
+            { "name": "Cultist", "maxHealth": 20, "attackPower": 5, "attackCooldown": 1 },
+            { "name": "Slime", "maxHealth": 15, "attackPower": 3, "attackCooldown": 2 }
+          ],
+          "rewards": [
+            { "suit": "♠", "value": "A" },
+            { "suit": "♠", "value": "10" },
+            { "suit": "♠", "value": "Q" }
+          ]
+        }
       ]
     },
     {
       "id": 9,
-      "name": "Lich's Antechamber",
-      "enemies": [
-        { "name": "Golem", "maxHealth": 35, "attackPower": 8, "attackCooldown": 3 },
-        { "name": "Lich", "maxHealth": 40, "attackPower": 9, "attackCooldown": 2 }
-      ],
-      "rewards": [
-        { "suit": "♥", "value": "K" },
-        { "suit": "♠", "value": "A" },
-        { "suit": "♠", "value": "J" }
+      "encounters": [
+        {
+          "type": "story",
+          "name": "The Offering Chamber",
+          "story": "Before the final battle, you find a chamber with three pedestals. Each holds a different offering to the gods of battle.",
+          "choices": [
+            {
+              "name": "Pray for strength",
+              "actionType": "card",
+              "actionValue": { "suit": "♠", "value": "K" }
+            },
+            {
+              "name": "Pray for endurance",
+              "actionType": "hp",
+              "actionValue": 25
+            },
+            {
+              "name": "Pray for fortune",
+              "actionType": "gems",
+              "actionValue": 30
+            }
+          ]
+        },
+        {
+          "type": "combat",
+          "name": "Lich's Antechamber",
+          "enemies": [
+            { "name": "Golem", "maxHealth": 35, "attackPower": 8, "attackCooldown": 3 },
+            { "name": "Lich", "maxHealth": 40, "attackPower": 9, "attackCooldown": 2 }
+          ],
+          "rewards": [
+            { "suit": "♥", "value": "K" },
+            { "suit": "♠", "value": "A" },
+            { "suit": "♠", "value": "J" }
+          ]
+        }
       ]
     },
     {
       "id": 10,
-      "name": "Dragon's Lair",
-      "enemies": [
-        { "name": "Demon Hound", "maxHealth": 30, "attackPower": 7, "attackCooldown": 1 },
-        { "name": "Dragon", "maxHealth": 60, "attackPower": 12, "attackCooldown": 2 }
-      ],
-      "rewards": [
-        { "suit": "♠", "value": "A" },
-        { "suit": "♥", "value": "A" },
-        { "suit": "♠", "value": "K" }
+      "encounters": [
+        {
+          "type": "combat",
+          "name": "Dragon's Lair",
+          "enemies": [
+            { "name": "Demon Hound", "maxHealth": 30, "attackPower": 7, "attackCooldown": 1 },
+            { "name": "Dragon", "maxHealth": 60, "attackPower": 12, "attackCooldown": 2 }
+          ],
+          "rewards": [
+            { "suit": "♠", "value": "A" },
+            { "suit": "♥", "value": "A" },
+            { "suit": "♠", "value": "K" }
+          ]
+        }
       ]
     }
   ]
