@@ -7,7 +7,7 @@
         { "name": "Cave Rat", "maxHealth": 10, "attackPower": 2, "attackCooldown": 2 }
       ],
       "rewards": [
-        { "suit": "♠", "value": "5" },
+        { "suit": "♦", "value": "5" },
         { "suit": "♥", "value": "5" },
         { "suit": "♠", "value": "1" }
       ]
