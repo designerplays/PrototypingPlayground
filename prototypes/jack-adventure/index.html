@@ -1443,7 +1443,7 @@
     <div id="debug-popup">
         <div id="debug-popup-content">
             <strong>Jack Adventure</strong><br>
-            Version: 1.7<br>
+            Version: 1.8<br>
             A blackjack dungeon crawler
         </div>
         <button id="force-reload-button">Force Reload</button>
@@ -2095,8 +2095,7 @@
             if (GameState.gameOver) return;
 
             if (GameState.player.deck.length === 0) {
-                // Deck exhausted
-                endGame(false, 'You ran out of cards!');
+                // Deck exhausted - can't draw
                 return;
             }
 
@@ -2126,6 +2125,14 @@
                         // Clear hand for next turn
                         GameState.player.hand = [];
                         GameState.hasChargedThisTurn = false;
+
+                        // If deck is empty, reshuffle played cards back into deck
+                        if (GameState.player.deck.length === 0 && GameState.player.playedCards.length > 0) {
+                            GameState.player.deck = shuffleDeck([...GameState.player.playedCards]);
+                            GameState.player.playedCards = [];
+                            showFeedback('Deck reshuffled!', 1000);
+                        }
+
                         updateUI();
 
                         // Check if player died
@@ -2227,6 +2234,14 @@
                 // Clear hand for next turn
                 GameState.player.hand = [];
                 GameState.hasChargedThisTurn = false;
+
+                // If deck is empty, reshuffle played cards back into deck
+                if (GameState.player.deck.length === 0 && GameState.player.playedCards.length > 0) {
+                    GameState.player.deck = shuffleDeck([...GameState.player.playedCards]);
+                    GameState.player.playedCards = [];
+                    showFeedback('Deck reshuffled!', 1000);
+                }
+
                 updateUI();
 
                 // Check if player died
@@ -2454,7 +2469,8 @@
             } else {
                 // Normal button state: attack button based on whether player has charged
                 attackButton.disabled = !GameState.hasChargedThisTurn;
-                chargeButton.disabled = false;
+                // Disable charge button if deck is empty
+                chargeButton.disabled = GameState.player.deck.length === 0;
                 deckWidget.disabled = false;
             }
         }
