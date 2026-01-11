@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Me | Prototyping Playground</title>
+    <title>Prototypes | Prototyping Playground</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -136,38 +136,46 @@
             box-shadow: 0 0 24px var(--color-glow-secondary);
         }
 
-        .hero {
+        .prototype-list {
+            list-style: none;
             display: grid;
-            gap: 32px;
+            gap: 20px;
+            margin-top: 24px;
         }
 
-        .hero p {
-            max-width: 640px;
-        }
-
-        .hero-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .glow-divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--color-accent-secondary), transparent);
-            opacity: 0.5;
-            margin: 32px 0;
-        }
-
-        .link-grid {
-            display: grid;
-            gap: 16px;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        }
-
-        .link-card {
+        .prototype-link {
             display: flex;
             flex-direction: column;
+            gap: 8px;
+            text-decoration: none;
+            color: inherit;
+            border-radius: 14px;
+            padding: 24px;
+            border: 1px solid var(--color-border-subtle);
+            background: var(--color-bg-elevated);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .prototype-link:hover {
+            transform: translateY(-2px);
+            border-color: var(--color-accent-primary);
+            box-shadow: 0 0 30px rgba(108, 242, 194, 0.25);
+        }
+
+        .prototype-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .prototype-description {
+            color: var(--color-text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            flex-wrap: wrap;
             gap: 12px;
+            margin-top: 24px;
         }
 
         .small {
@@ -178,44 +186,54 @@
 </head>
 <body>
     <main class="section">
-        <div class="card hero">
-            <div>
-                <h1>Hey, I'm [Your Name]</h1>
-                <p>
-                    I design, prototype, and build interactive experiences that blend gameplay with bold visuals. Welcome to my
-                    personal playground—here you can explore my experiments, learn more about my work, and connect with me.
-                </p>
-            </div>
-            <div class="hero-links">
-                <a class="button" href="Prototypes.html">Explore Prototypes</a>
+        <div class="card">
+            <h1>Prototyping Playground</h1>
+            <p>A collection of interactive prototypes and experiments.</p>
+            <div class="header-actions">
+                <a class="button" href="index.html">Back to About</a>
                 <a class="button button--secondary" href="https://your-portfolio-link.com" target="_blank" rel="noreferrer">
-                    View Portfolio
+                    Portfolio
                 </a>
-                <a class="button button--secondary" href="mailto:your.email@example.com">Email Me</a>
             </div>
-            <div class="glow-divider"></div>
-            <div>
-                <h2>Find me online</h2>
-                <p class="small">Follow along for updates, experiments, and behind-the-scenes looks.</p>
-            </div>
-            <div class="link-grid">
-                <div class="card link-card">
-                    <h3>LinkedIn</h3>
-                    <p class="small">Professional updates and collaborations.</p>
-                    <a class="button button--secondary" href="https://linkedin.com" target="_blank" rel="noreferrer">Connect</a>
-                </div>
-                <div class="card link-card">
-                    <h3>GitHub</h3>
-                    <p class="small">Open-source experiments and builds.</p>
-                    <a class="button button--secondary" href="https://github.com" target="_blank" rel="noreferrer">Follow</a>
-                </div>
-                <div class="card link-card">
-                    <h3>Twitter / X</h3>
-                    <p class="small">Quick thoughts and prototype drops.</p>
-                    <a class="button button--secondary" href="https://x.com" target="_blank" rel="noreferrer">Follow</a>
-                </div>
-            </div>
+            <ul class="prototype-list" id="prototype-list">
+                <li class="small">Loading prototypes...</li>
+            </ul>
         </div>
     </main>
+
+    <script>
+        fetch('PrototypesConfig.json')
+            .then(response => response.json())
+            .then(data => {
+                const prototypeList = document.getElementById('prototype-list');
+                prototypeList.innerHTML = '';
+
+                data.prototypes.forEach(prototype => {
+                    const li = document.createElement('li');
+
+                    const link = document.createElement('a');
+                    link.href = prototype.path;
+                    link.className = 'prototype-link';
+
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'prototype-name';
+                    nameDiv.textContent = prototype.name;
+
+                    const descDiv = document.createElement('div');
+                    descDiv.className = 'prototype-description';
+                    descDiv.textContent = prototype.description;
+
+                    link.appendChild(nameDiv);
+                    link.appendChild(descDiv);
+                    li.appendChild(link);
+                    prototypeList.appendChild(li);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading prototypes:', error);
+                document.getElementById('prototype-list').innerHTML =
+                    '<li class="small">Error loading prototypes.</li>';
+            });
+    </script>
 </body>
 </html>
