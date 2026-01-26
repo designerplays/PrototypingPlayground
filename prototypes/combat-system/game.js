@@ -8,6 +8,10 @@ const magFill = document.getElementById('mag-fill');
 const hpText = document.getElementById('hp-text');
 const magText = document.getElementById('mag-text');
 const targetMessage = document.getElementById('target-message');
+const timeToKillText = document.getElementById('time-to-kill');
+const dpsValueText = document.getElementById('dps-value');
+const ttkResetButton = document.getElementById('ttk-reset');
+const dpsResetButton = document.getElementById('dps-reset');
 
 const inputs = {
   hitDamage: document.getElementById('hit-damage'),
@@ -34,6 +38,9 @@ const state = {
   shotsInBurst: 0,
   lastBurstTime: 0,
   crosshairPos: { x: 0, y: 0 },
+  firstShotTime: null,
+  lastKillTime: null,
+  damageLog: [],
 };
 
 const ringCircumference = 2 * Math.PI * 52;
@@ -52,23 +59,59 @@ const updateBars = () => {
   magText.textContent = `${state.ammo} / ${state.magSize}`;
 };
 
+const updateTimeToKill = () => {
+  if (state.lastKillTime === null) {
+    timeToKillText.textContent = '--';
+    return;
+  }
+  timeToKillText.textContent = `${state.lastKillTime.toFixed(2)}s`;
+};
+
+const updateDamagePerSecond = (now) => {
+  const cutoff = now - 60000;
+  state.damageLog = state.damageLog.filter((entry) => entry.time >= cutoff);
+  const totalDamage = state.damageLog.reduce((sum, entry) => sum + entry.damage, 0);
+  const dps = totalDamage / 60;
+  dpsValueText.textContent = dps.toFixed(1);
+};
+
+const resetTimeToKill = () => {
+  state.firstShotTime = null;
+  state.lastKillTime = null;
+  updateTimeToKill();
+};
+
+const resetDamagePerSecond = () => {
+  state.damageLog = [];
+  updateDamagePerSecond(performance.now());
+};
+
 const showTargetDown = () => {
   targetMessage.classList.add('show');
   setTimeout(() => targetMessage.classList.remove('show'), 700);
 };
 
-const applyDamage = () => {
+const applyDamage = (now) => {
   const baseDamage = Number(inputs.hitDamage.value);
   const variance = Number(inputs.damageVariance.value);
   const offset = variance > 0 ? Math.floor(Math.random() * (variance * 2 + 1)) - variance : 0;
   const damage = Math.max(0, baseDamage + offset);
 
+  if (state.firstShotTime === null) {
+    state.firstShotTime = now;
+  }
+
+  state.damageLog.push({ time: now, damage });
   state.currentHP = clamp(state.currentHP - damage, 0, state.maxHP);
   if (state.currentHP === 0) {
+    state.lastKillTime = (now - state.firstShotTime) / 1000;
+    state.firstShotTime = null;
     showTargetDown();
     state.currentHP = state.maxHP;
   }
   updateBars();
+  updateTimeToKill();
+  updateDamagePerSecond(now);
 };
 
 const startReload = () => {
@@ -158,7 +201,7 @@ const attemptShot = (now) => {
     absoluteY >= targetRect.top &&
     absoluteY <= targetRect.bottom
   ) {
-    applyDamage();
+    applyDamage(now);
   }
 
   state.ammo = clamp(state.ammo - 1, 0, state.magSize);
@@ -181,7 +224,8 @@ const setCrosshairPosition = (event) => {
     x: clamp(x, 0, rect.width),
     y: clamp(y, 0, rect.height),
   };
-  crosshair.style.transform = `translate(${state.crosshairPos.x - 60}px, ${state.crosshairPos.y - 60}px)`;
+  crosshair.style.left = `${state.crosshairPos.x}px`;
+  crosshair.style.top = `${state.crosshairPos.y}px`;
 };
 
 const handlePointerDown = (event) => {
@@ -222,6 +266,7 @@ bindInput(inputs.magSize, () => {
 bindInput(inputs.targetHealth, () => {
   state.maxHP = Math.max(1, Number(inputs.targetHealth.value));
   state.currentHP = state.maxHP;
+  resetTimeToKill();
 });
 
 inputs.holdFire.addEventListener('change', () => {
@@ -229,6 +274,8 @@ inputs.holdFire.addEventListener('change', () => {
 });
 
 updateBars();
+resetTimeToKill();
+resetDamagePerSecond();
 
 const loop = (now) => {
   if (state.isFiring && inputs.holdFire.checked) {
@@ -240,6 +287,7 @@ const loop = (now) => {
   }
 
   updateReloadRing(now);
+  updateDamagePerSecond(now);
   requestAnimationFrame(loop);
 };
 
@@ -269,3 +317,6 @@ targetArea.addEventListener('pointerleave', handlePointerLeave);
 targetArea.addEventListener('pointerenter', handlePointerEnter);
 
 document.addEventListener('pointerup', handlePointerUp);
+
+ttkResetButton.addEventListener('click', resetTimeToKill);
+dpsResetButton.addEventListener('click', resetDamagePerSecond);

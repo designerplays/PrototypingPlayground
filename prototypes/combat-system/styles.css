@@ -47,6 +47,52 @@ header p {
   box-shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
 }
 
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  background: rgba(15, 20, 34, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.85rem;
+  color: #9aa4bf;
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #e9edf4;
+}
+
+.stat-reset {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(90, 169, 255, 0.15);
+  color: #e9edf4;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.stat-reset:hover {
+  background: rgba(90, 169, 255, 0.28);
+  border-color: rgba(90, 169, 255, 0.5);
+}
+
 .target-area {
   position: relative;
   background: linear-gradient(180deg, rgba(32, 42, 66, 0.85), rgba(16, 20, 32, 0.9));
@@ -115,6 +161,7 @@ header p {
   place-items: center;
   opacity: 0;
   transition: opacity 0.2s ease;
+  transform: translate(-50%, -50%);
 }
 
 .crosshair.visible {
