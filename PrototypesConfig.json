@@ -24,6 +24,11 @@
       "name": "Jack Adventure",
       "description": "A dungeon crawler with blackjack-based combat. Charge to draw cards, attack to deal damage. Clear 10 encounters to win!",
       "path": "prototypes/jack-adventure/index.html"
+    },
+    {
+      "name": "Combat System Range",
+      "description": "Test weapon damage, spread, and reload balance on a shooting range target.",
+      "path": "prototypes/combat-system/index.html"
     }
   ]
 }

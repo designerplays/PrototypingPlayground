@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Combat System Prototype</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1>Combat System Prototype</h1>
+      <p>Dial in weapon balance, spread, and reload behavior on a static target.</p>
+    </header>
+
+    <section class="range">
+      <div class="bar-group">
+        <div class="bar-header">
+          <span>HP</span>
+          <span id="hp-text">100 / 100</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" id="hp-fill"></div>
+        </div>
+      </div>
+
+      <div class="target-area" id="target-area">
+        <div class="target" id="target">
+          <div class="head"></div>
+          <div class="body"></div>
+        </div>
+        <div class="target-message" id="target-message">Target down</div>
+        <div class="crosshair" id="crosshair" aria-hidden="true">
+          <svg class="reload-ring" viewBox="0 0 120 120">
+            <circle class="ring-bg" cx="60" cy="60" r="52" />
+            <circle class="ring" cx="60" cy="60" r="52" />
+          </svg>
+          <div class="crosshair-center"></div>
+        </div>
+      </div>
+
+      <div class="bar-group">
+        <div class="bar-header">
+          <span>Magazine</span>
+          <span id="mag-text">8 / 8</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" id="mag-fill"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls">
+      <h2>Tweakables</h2>
+      <div class="control-grid">
+        <label>
+          <span>Hit Damage</span>
+          <input type="number" id="hit-damage" value="10" min="0" step="1" />
+        </label>
+        <label>
+          <span>Damage Variance</span>
+          <input type="number" id="damage-variance" value="3" min="0" step="1" />
+        </label>
+        <label>
+          <span>Mag Size</span>
+          <input type="number" id="mag-size" value="8" min="1" step="1" />
+        </label>
+        <label>
+          <span>Reload Speed (sec)</span>
+          <input type="number" id="reload-speed" value="2.5" min="0.1" step="0.1" />
+        </label>
+        <label class="checkbox">
+          <span>Hold to Fire</span>
+          <input type="checkbox" id="hold-fire" checked />
+        </label>
+        <label>
+          <span>Fire Rate (sec)</span>
+          <input type="number" id="fire-rate" value="0.18" min="0.05" step="0.01" />
+        </label>
+        <label>
+          <span>Horizontal Spread (px)</span>
+          <input type="number" id="horizontal-spread" value="18" min="0" step="1" />
+        </label>
+        <label>
+          <span>Vertical Spread (px)</span>
+          <input type="number" id="vertical-spread" value="12" min="0" step="1" />
+        </label>
+        <label>
+          <span>Spread Recovery (sec)</span>
+          <input type="number" id="spread-recovery" value="0.5" min="0" step="0.05" />
+        </label>
+        <label>
+          <span>Target Health</span>
+          <input type="number" id="target-health" value="100" min="1" step="1" />
+        </label>
+      </div>
+      <p class="hint">Click or hold on the target to fire. Shots faster than the fire rate are ignored.</p>
+    </section>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
