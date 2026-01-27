@@ -42,6 +42,7 @@ const state = {
   firstShotTime: null,
   lastKillTime: null,
   damageLog: [],
+  lastPointerType: 'mouse',
 };
 
 const ringCircumference = 2 * Math.PI * 52;
@@ -289,17 +290,25 @@ const handlePointerDown = (event) => {
   if (event.button !== 0) {
     return;
   }
+  state.lastPointerType = event.pointerType || 'mouse';
+  crosshair.classList.add('visible');
   if (inputs.holdFire.checked) {
     state.isFiring = true;
   }
   attemptShot(performance.now());
 };
 
-const handlePointerUp = () => {
+const handlePointerUp = (event) => {
+  if (event?.pointerType) {
+    state.lastPointerType = event.pointerType;
+  }
   state.isFiring = false;
 };
 
 const handlePointerLeave = () => {
+  if (state.lastPointerType === 'touch') {
+    return;
+  }
   crosshair.classList.remove('visible');
   state.isFiring = false;
 };
