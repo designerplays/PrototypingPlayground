@@ -1,0 +1,41 @@
+[
+  {
+    "name": "Magnum",
+    "hitDamage": 48,
+    "damageVariance": 6,
+    "magSize": 6,
+    "reloadSpeed": 2.8,
+    "holdFire": false,
+    "fireRate": 0.5,
+    "horizontalSpread": 10,
+    "verticalSpread": 8,
+    "spreadRecovery": 0.7,
+    "targetHealth": 120
+  },
+  {
+    "name": "Sniper",
+    "hitDamage": 90,
+    "damageVariance": 5,
+    "magSize": 5,
+    "reloadSpeed": 3.2,
+    "holdFire": false,
+    "fireRate": 1.2,
+    "horizontalSpread": 4,
+    "verticalSpread": 2,
+    "spreadRecovery": 0.9,
+    "targetHealth": 150
+  },
+  {
+    "name": "Machine Gun",
+    "hitDamage": 8,
+    "damageVariance": 2,
+    "magSize": 30,
+    "reloadSpeed": 2.2,
+    "holdFire": true,
+    "fireRate": 0.08,
+    "horizontalSpread": 26,
+    "verticalSpread": 18,
+    "spreadRecovery": 0.4,
+    "targetHealth": 120
+  }
+]

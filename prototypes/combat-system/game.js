@@ -12,6 +12,7 @@ const timeToKillText = document.getElementById('time-to-kill');
 const dpsValueText = document.getElementById('dps-value');
 const ttkResetButton = document.getElementById('ttk-reset');
 const dpsResetButton = document.getElementById('dps-reset');
+const weaponPresetSelect = document.getElementById('weapon-preset');
 
 const inputs = {
   hitDamage: document.getElementById('hit-damage'),
@@ -47,6 +48,8 @@ const ringCircumference = 2 * Math.PI * 52;
 ringCircle.style.strokeDasharray = `${ringCircumference}`;
 ringCircle.style.strokeDashoffset = `${ringCircumference}`;
 
+let weaponPresets = [];
+
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
 const updateBars = () => {
@@ -57,6 +60,33 @@ const updateBars = () => {
   const magPercent = (state.ammo / state.magSize) * 100;
   magFill.style.width = `${magPercent}%`;
   magText.textContent = `${state.ammo} / ${state.magSize}`;
+};
+
+const applyWeaponPreset = (preset) => {
+  inputs.hitDamage.value = preset.hitDamage;
+  inputs.damageVariance.value = preset.damageVariance;
+  inputs.magSize.value = preset.magSize;
+  inputs.reloadSpeed.value = preset.reloadSpeed;
+  inputs.holdFire.checked = preset.holdFire;
+  inputs.fireRate.value = preset.fireRate;
+  inputs.horizontalSpread.value = preset.horizontalSpread;
+  inputs.verticalSpread.value = preset.verticalSpread;
+  inputs.spreadRecovery.value = preset.spreadRecovery;
+  inputs.targetHealth.value = preset.targetHealth;
+
+  state.magSize = Math.max(1, Number(preset.magSize));
+  state.ammo = state.magSize;
+  state.maxHP = Math.max(1, Number(preset.targetHealth));
+  state.currentHP = state.maxHP;
+  state.isReloading = false;
+  state.shotsInBurst = 0;
+  state.lastBurstTime = 0;
+  ring.classList.remove('active');
+  ringCircle.style.strokeDashoffset = `${ringCircumference}`;
+
+  resetTimeToKill();
+  resetDamagePerSecond();
+  updateBars();
 };
 
 const updateTimeToKill = () => {
@@ -84,6 +114,33 @@ const resetTimeToKill = () => {
 const resetDamagePerSecond = () => {
   state.damageLog = [];
   updateDamagePerSecond(performance.now());
+};
+
+const loadWeaponPresets = () => {
+  if (!weaponPresetSelect) {
+    return;
+  }
+
+  fetch('WeaponPresets.json')
+    .then((response) => response.json())
+    .then((presets) => {
+      weaponPresets = Array.isArray(presets) ? presets : [];
+      weaponPresetSelect.innerHTML = '';
+      weaponPresets.forEach((preset) => {
+        const option = document.createElement('option');
+        option.value = preset.name;
+        option.textContent = preset.name;
+        weaponPresetSelect.appendChild(option);
+      });
+
+      if (weaponPresets.length > 0) {
+        weaponPresetSelect.value = weaponPresets[0].name;
+        applyWeaponPreset(weaponPresets[0]);
+      }
+    })
+    .catch((error) => {
+      console.error('Failed to load weapon presets.', error);
+    });
 };
 
 const showTargetDown = () => {
@@ -273,9 +330,21 @@ inputs.holdFire.addEventListener('change', () => {
   state.isFiring = false;
 });
 
+if (weaponPresetSelect) {
+  weaponPresetSelect.addEventListener('change', () => {
+    const selectedPreset = weaponPresets.find(
+      (preset) => preset.name === weaponPresetSelect.value,
+    );
+    if (selectedPreset) {
+      applyWeaponPreset(selectedPreset);
+    }
+  });
+}
+
 updateBars();
 resetTimeToKill();
 resetDamagePerSecond();
+loadWeaponPresets();
 
 const loop = (now) => {
   if (state.isFiring && inputs.holdFire.checked) {
