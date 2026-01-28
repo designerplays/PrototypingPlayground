@@ -286,6 +286,8 @@ const shuffle = (arr) => {
   return copy;
 };
 
+const MAX_GENERATION_ATTEMPTS = 10;
+
 const findPlacementForRoom = (room, placedRooms) => {
   const candidates = Array.from(placedRooms.values());
   const shuffled = shuffle(candidates);
@@ -327,6 +329,67 @@ const findPlacementForRoom = (room, placedRooms) => {
   return null;
 };
 
+const attemptRoomPlacement = async (rooms, attempt) => {
+  resetGrid();
+  const placedRooms = new Map();
+  const unplacedRooms = shuffle(rooms);
+
+  const root = unplacedRooms.shift();
+  const rootOrigin = { x: 0, y: 0 };
+  if (!canPlaceRoomOnGrid(root, rootOrigin, null)) {
+    logMessage(`Attempt ${attempt}: root room does not fit inside grid.`, "Warning");
+    return { success: false };
+  }
+
+  placedRooms.set(root.id, {
+    room: root,
+    origin: rootOrigin,
+    usedSockets: new Set()
+  });
+  placeRoomOnGrid(root, rootOrigin, null);
+  drawGrid();
+  logMessage(`Attempt ${attempt}: placed root room ${root.id} at (0,0).`, "OK");
+  await sleep(STEP_DELAY_MS);
+
+  while (unplacedRooms.length > 0) {
+    let progress = false;
+    const shuffledRemaining = shuffle(unplacedRooms);
+
+    for (const room of shuffledRemaining) {
+      const placement = findPlacementForRoom(room, placedRooms);
+
+      if (placement) {
+        const source = placedRooms.get(placement.sourceId);
+        source.usedSockets.add(placement.sourceSocketIndex);
+        placedRooms.set(room.id, {
+          room,
+          origin: placement.origin,
+          usedSockets: new Set([placement.targetSocketIndex])
+        });
+        placeRoomOnGrid(room, placement.origin, placement.door);
+        drawGrid();
+        logMessage(
+          `Connected ${room.id} to ${placement.sourceId} using sockets ${placement.sourceSocketIndex}→${placement.targetSocketIndex}.`,
+          "OK"
+        );
+        await sleep(STEP_DELAY_MS);
+        const roomIndex = unplacedRooms.findIndex((entry) => entry.id === room.id);
+        if (roomIndex !== -1) {
+          unplacedRooms.splice(roomIndex, 1);
+        }
+        progress = true;
+      }
+    }
+
+    if (!progress) {
+      logMessage(`Attempt ${attempt}: no valid placements this pass.`, "Warning");
+      return { success: false };
+    }
+  }
+
+  return { success: true, placedRooms };
+};
+
 const generateHouse = async () => {
   generateButton.disabled = true;
   statusLabel.textContent = "Generating...";
@@ -356,63 +419,26 @@ const generateHouse = async () => {
 
   logMessage("Placing rooms incrementally...", "Step 4");
 
-  const placedRooms = new Map();
-  const unplacedRooms = [...rooms];
+  let finalPlacedRooms = null;
+  for (let attempt = 1; attempt <= MAX_GENERATION_ATTEMPTS; attempt += 1) {
+    logMessage(`Generation attempt ${attempt} of ${MAX_GENERATION_ATTEMPTS}.`, "Step 4");
+    const result = await attemptRoomPlacement(rooms, attempt);
+    if (result.success) {
+      finalPlacedRooms = result.placedRooms;
+      break;
+    }
+    await sleep(STEP_DELAY_MS);
+  }
 
-  const root = unplacedRooms.shift();
-  const rootOrigin = { x: 0, y: 0 };
-  if (!canPlaceRoomOnGrid(root, rootOrigin, null)) {
-    logMessage("Root room does not fit inside grid.", "Error");
+  if (!finalPlacedRooms) {
+    logMessage("No valid layout found after all attempts.", "Error");
     statusLabel.textContent = "Failed";
     generateButton.disabled = false;
     return;
   }
 
-  placedRooms.set(root.id, {
-    room: root,
-    origin: rootOrigin,
-    usedSockets: new Set()
-  });
-  placeRoomOnGrid(root, rootOrigin, null);
-  drawGrid();
-  logMessage(`Placed root room ${root.id} at (0,0).`, "OK");
-  await sleep(STEP_DELAY_MS);
-
-  while (unplacedRooms.length > 0) {
-    let progress = false;
-
-    for (let i = unplacedRooms.length - 1; i >= 0; i -= 1) {
-      const room = unplacedRooms[i];
-      const placement = findPlacementForRoom(room, placedRooms);
-
-      if (placement) {
-        const source = placedRooms.get(placement.sourceId);
-        source.usedSockets.add(placement.sourceSocketIndex);
-        placedRooms.set(room.id, {
-          room,
-          origin: placement.origin,
-          usedSockets: new Set([placement.targetSocketIndex])
-        });
-        placeRoomOnGrid(room, placement.origin, placement.door);
-        drawGrid();
-        logMessage(
-          `Connected ${room.id} to ${placement.sourceId} using sockets ${placement.sourceSocketIndex}→${placement.targetSocketIndex}.`,
-          "OK"
-        );
-        await sleep(STEP_DELAY_MS);
-        unplacedRooms.splice(i, 1);
-        progress = true;
-      }
-    }
-
-    if (!progress) {
-      logMessage("No valid placement found for remaining rooms. Generation halted.", "Warning");
-      break;
-    }
-  }
-
   bakeWalls(
-    Array.from(placedRooms.values()).map((entry) => ({
+    Array.from(finalPlacedRooms.values()).map((entry) => ({
       room: entry.room,
       origin: entry.origin
     })),
@@ -423,13 +449,8 @@ const generateHouse = async () => {
   );
   drawGrid();
 
-  if (unplacedRooms.length === 0) {
-    logMessage("Generation complete. All rooms connected.", "Step 5");
-    statusLabel.textContent = "Complete";
-  } else {
-    logMessage(`${unplacedRooms.length} rooms were not placed.`, "Notice");
-    statusLabel.textContent = "Partial";
-  }
+  logMessage("Generation complete. All rooms connected.", "Step 5");
+  statusLabel.textContent = "Complete";
 
   generateButton.disabled = false;
 };
