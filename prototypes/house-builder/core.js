@@ -41,6 +41,22 @@
 
   const canPlaceRoom = (room, origin, doorPosition, isInside, getCell) => {
     const interior = getInteriorCells(room, origin);
+    const minX = origin.x - 1;
+    const maxX = origin.x + room.width;
+    const minY = origin.y - 1;
+    const maxY = origin.y + room.height;
+
+    for (let x = minX; x <= maxX; x += 1) {
+      for (let y = minY; y <= maxY; y += 1) {
+        if (!isInside(x, y)) {
+          continue;
+        }
+        const existing = getCell(x, y);
+        if (existing && existing.type === "interior") {
+          return false;
+        }
+      }
+    }
 
     for (const cell of interior) {
       if (!isInside(cell.x, cell.y)) {

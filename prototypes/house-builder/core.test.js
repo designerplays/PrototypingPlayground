@@ -65,6 +65,12 @@ assert(
 );
 placeRoom(room, rootOrigin, null, setCell, "#f59e0b");
 
+const touchingOrigin = { x: room.width, y: rootOrigin.y };
+assert(
+  !canPlaceRoom(room, touchingOrigin, null, isInside, getCell),
+  "Rooms should not be edge-adjacent without a wall gap."
+);
+
 const eastDoor = getDoorPosition(room, rootOrigin, room.doorSockets[2]);
 const eastOrigin = computeOriginFromDoor(room, room.doorSockets[3], eastDoor);
 assert(
