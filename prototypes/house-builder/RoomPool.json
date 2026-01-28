@@ -1,0 +1,94 @@
+{
+  "rooms": [
+    { "typeID": "LivingRoom", "width": 7, "height": 6, "doorSockets": [
+      { "edge": "N", "offset": 3 },
+      { "edge": "E", "offset": 2 },
+      { "edge": "W", "offset": 3 }
+    ]},
+    { "typeID": "LivingRoom", "width": 8, "height": 6, "doorSockets": [
+      { "edge": "N", "offset": 4 },
+      { "edge": "S", "offset": 3 },
+      { "edge": "E", "offset": 3 }
+    ]},
+    { "typeID": "LivingRoom", "width": 6, "height": 6, "doorSockets": [
+      { "edge": "N", "offset": 2 },
+      { "edge": "W", "offset": 2 }
+    ]},
+    { "typeID": "LivingRoom", "width": 9, "height": 7, "doorSockets": [
+      { "edge": "E", "offset": 3 },
+      { "edge": "W", "offset": 3 },
+      { "edge": "S", "offset": 4 }
+    ]},
+    { "typeID": "LivingRoom", "width": 7, "height": 5, "doorSockets": [
+      { "edge": "N", "offset": 3 },
+      { "edge": "E", "offset": 2 }
+    ]},
+    { "typeID": "Kitchen", "width": 5, "height": 4, "doorSockets": [
+      { "edge": "W", "offset": 2 },
+      { "edge": "S", "offset": 2 }
+    ]},
+    { "typeID": "Kitchen", "width": 6, "height": 4, "doorSockets": [
+      { "edge": "N", "offset": 3 }
+    ]},
+    { "typeID": "Kitchen", "width": 5, "height": 5, "doorSockets": [
+      { "edge": "E", "offset": 2 },
+      { "edge": "S", "offset": 2 }
+    ]},
+    { "typeID": "Kitchen", "width": 6, "height": 5, "doorSockets": [
+      { "edge": "W", "offset": 3 }
+    ]},
+    { "typeID": "Kitchen", "width": 4, "height": 4, "doorSockets": [
+      { "edge": "N", "offset": 1 }
+    ]},
+    { "typeID": "Bedroom", "width": 5, "height": 5, "doorSockets": [
+      { "edge": "S", "offset": 2 }
+    ]},
+    { "typeID": "Bedroom", "width": 6, "height": 5, "doorSockets": [
+      { "edge": "W", "offset": 2 }
+    ]},
+    { "typeID": "Bedroom", "width": 6, "height": 6, "doorSockets": [
+      { "edge": "S", "offset": 3 }
+    ]},
+    { "typeID": "Bedroom", "width": 5, "height": 6, "doorSockets": [
+      { "edge": "E", "offset": 2 }
+    ]},
+    { "typeID": "Bedroom", "width": 7, "height": 6, "doorSockets": [
+      { "edge": "N", "offset": 3 }
+    ]},
+    { "typeID": "Bathroom", "width": 3, "height": 3, "doorSockets": [
+      { "edge": "S", "offset": 1 }
+    ]},
+    { "typeID": "Bathroom", "width": 3, "height": 4, "doorSockets": [
+      { "edge": "W", "offset": 1 }
+    ]},
+    { "typeID": "Bathroom", "width": 4, "height": 3, "doorSockets": [
+      { "edge": "E", "offset": 1 }
+    ]},
+    { "typeID": "Bathroom", "width": 3, "height": 3, "doorSockets": [
+      { "edge": "N", "offset": 1 }
+    ]},
+    { "typeID": "Bathroom", "width": 4, "height": 4, "doorSockets": [
+      { "edge": "S", "offset": 2 }
+    ]},
+    { "typeID": "Corridor", "width": 3, "height": 6, "doorSockets": [
+      { "edge": "N", "offset": 1 },
+      { "edge": "S", "offset": 1 }
+    ]},
+    { "typeID": "Corridor", "width": 6, "height": 3, "doorSockets": [
+      { "edge": "E", "offset": 2 },
+      { "edge": "W", "offset": 2 }
+    ]},
+    { "typeID": "Corridor", "width": 4, "height": 4, "doorSockets": [
+      { "edge": "N", "offset": 2 },
+      { "edge": "E", "offset": 2 }
+    ]},
+    { "typeID": "Corridor", "width": 5, "height": 3, "doorSockets": [
+      { "edge": "W", "offset": 2 },
+      { "edge": "E", "offset": 2 }
+    ]},
+    { "typeID": "Corridor", "width": 3, "height": 5, "doorSockets": [
+      { "edge": "N", "offset": 1 },
+      { "edge": "S", "offset": 1 }
+    ]}
+  ]
+}

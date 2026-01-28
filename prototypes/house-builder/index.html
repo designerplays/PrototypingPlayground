@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>House Builder Prototype</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <a class="back-button" href="../../index.html">← Back to Menu</a>
+    <header>
+      <h1>House Builder</h1>
+      <p class="subtitle">Prototype for room placement rules, prefabs, and step-by-step generation.</p>
+    </header>
+
+    <section class="canvas-section">
+      <canvas id="gridCanvas" width="960" height="640" aria-label="House grid"></canvas>
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <section class="controls">
+      <div class="inputs" id="typeInputs"></div>
+      <div class="actions">
+        <button id="generateButton" class="generate">Generate House</button>
+        <span id="status" class="status">Idle</span>
+      </div>
+    </section>
+
+    <section class="log-section">
+      <h2>Debug Log</h2>
+      <div id="log" class="log" aria-live="polite"></div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

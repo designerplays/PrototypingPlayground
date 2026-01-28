@@ -29,6 +29,11 @@
       "name": "Combat System Range",
       "description": "Test weapon damage, spread, and reload balance on a shooting range target.",
       "path": "prototypes/combat-system/index.html"
+    },
+    {
+      "name": "House Builder",
+      "description": "Test a room placement algorithm that builds a house from room prefabs and adjacency rules.",
+      "path": "prototypes/house-builder/index.html"
     }
   ]
 }
