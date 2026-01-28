@@ -1,0 +1,29 @@
+{
+  "roomTypes": [
+    {
+      "typeID": "LivingRoom",
+      "color": "#6A8CAF",
+      "allowedNeighborTypeIDs": ["Kitchen", "Corridor", "Bedroom"]
+    },
+    {
+      "typeID": "Kitchen",
+      "color": "#C97C5D",
+      "allowedNeighborTypeIDs": ["LivingRoom", "Corridor"]
+    },
+    {
+      "typeID": "Bedroom",
+      "color": "#8FAF7A",
+      "allowedNeighborTypeIDs": ["LivingRoom", "Corridor", "Bathroom"]
+    },
+    {
+      "typeID": "Bathroom",
+      "color": "#7FA7B5",
+      "allowedNeighborTypeIDs": ["Bedroom", "Corridor"]
+    },
+    {
+      "typeID": "Corridor",
+      "color": "#9A9A9A",
+      "allowedNeighborTypeIDs": ["LivingRoom", "Kitchen", "Bedroom", "Bathroom", "Corridor"]
+    }
+  ]
+}
