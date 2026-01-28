@@ -23,6 +23,14 @@ const offset = {
 const doorColor = "#f59e0b";
 const wallColor = "#4b5563";
 
+const {
+  getDoorPosition,
+  computeOriginFromDoor,
+  canPlaceRoom,
+  placeRoom,
+  bakeWalls
+} = window.HouseBuilderCore;
+
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const toGridCoords = (worldX, worldY) => ({
@@ -263,98 +271,11 @@ const buildConnectionPlan = (rooms) => {
   return plan;
 };
 
-const getDoorPosition = (room, origin, socket) => {
-  switch (socket.edge) {
-    case "N":
-      return { x: origin.x + socket.offset, y: origin.y + room.height };
-    case "S":
-      return { x: origin.x + socket.offset, y: origin.y - 1 };
-    case "E":
-      return { x: origin.x + room.width, y: origin.y + socket.offset };
-    case "W":
-      return { x: origin.x - 1, y: origin.y + socket.offset };
-    default:
-      return { x: origin.x, y: origin.y };
-  }
-};
+const canPlaceRoomOnGrid = (room, origin, doorPosition) =>
+  canPlaceRoom(room, origin, doorPosition, isInside, getCell);
 
-const computeOriginFromDoor = (room, socket, doorPosition) => {
-  switch (socket.edge) {
-    case "N":
-      return { x: doorPosition.x - socket.offset, y: doorPosition.y - room.height };
-    case "S":
-      return { x: doorPosition.x - socket.offset, y: doorPosition.y + 1 };
-    case "E":
-      return { x: doorPosition.x - room.width, y: doorPosition.y - socket.offset };
-    case "W":
-      return { x: doorPosition.x + 1, y: doorPosition.y - socket.offset };
-    default:
-      return { x: doorPosition.x, y: doorPosition.y };
-  }
-};
-
-const getRoomCells = (room, origin) => {
-  const interior = [];
-  const walls = [];
-
-  for (let x = origin.x - 1; x <= origin.x + room.width; x += 1) {
-    for (let y = origin.y - 1; y <= origin.y + room.height; y += 1) {
-      if (x >= origin.x && x < origin.x + room.width && y >= origin.y && y < origin.y + room.height) {
-        interior.push({ x, y });
-      } else {
-        walls.push({ x, y });
-      }
-    }
-  }
-
-  return { interior, walls };
-};
-
-const canPlaceRoom = (room, origin, doorPosition) => {
-  const { interior, walls } = getRoomCells(room, origin);
-  const doorKey = `${doorPosition.x},${doorPosition.y}`;
-
-  for (const cell of interior) {
-    if (!isInside(cell.x, cell.y)) {
-      return false;
-    }
-    const existing = getCell(cell.x, cell.y);
-    if (existing && existing.type !== "empty") {
-      return false;
-    }
-  }
-
-  for (const cell of walls) {
-    if (!isInside(cell.x, cell.y)) {
-      return false;
-    }
-    const key = `${cell.x},${cell.y}`;
-    const existing = getCell(cell.x, cell.y);
-    if (key === doorKey) {
-      if (existing && existing.type === "interior") {
-        return false;
-      }
-    } else if (existing && existing.type !== "empty") {
-      return false;
-    }
-  }
-
-  return true;
-};
-
-const placeRoom = (room, origin, doorPosition) => {
-  const { interior, walls } = getRoomCells(room, origin);
-
-  walls.forEach((cell) => {
-    setCell(cell.x, cell.y, { type: "wall", color: wallColor });
-  });
-
-  interior.forEach((cell) => {
-    setCell(cell.x, cell.y, { type: "interior", color: room.color });
-  });
-
-  setCell(doorPosition.x, doorPosition.y, { type: "door", color: doorColor });
-};
+const placeRoomOnGrid = (room, origin, doorPosition) =>
+  placeRoom(room, origin, doorPosition, setCell, doorColor);
 
 const shuffle = (arr) => {
   const copy = [...arr];
@@ -390,7 +311,7 @@ const findPlacementForRoom = (room, placedRooms) => {
           continue;
         }
         const targetOrigin = computeOriginFromDoor(room, target.socket, sourceDoor);
-        if (canPlaceRoom(room, targetOrigin, sourceDoor)) {
+        if (canPlaceRoomOnGrid(room, targetOrigin, sourceDoor)) {
           return {
             sourceId: placed.room.id,
             sourceSocketIndex: source.index,
@@ -440,8 +361,7 @@ const generateHouse = async () => {
 
   const root = unplacedRooms.shift();
   const rootOrigin = { x: 0, y: 0 };
-  const rootDoor = getDoorPosition(root, rootOrigin, root.doorSockets[0]);
-  if (!canPlaceRoom(root, rootOrigin, rootDoor)) {
+  if (!canPlaceRoomOnGrid(root, rootOrigin, null)) {
     logMessage("Root room does not fit inside grid.", "Error");
     statusLabel.textContent = "Failed";
     generateButton.disabled = false;
@@ -451,9 +371,9 @@ const generateHouse = async () => {
   placedRooms.set(root.id, {
     room: root,
     origin: rootOrigin,
-    usedSockets: new Set([0])
+    usedSockets: new Set()
   });
-  placeRoom(root, rootOrigin, rootDoor);
+  placeRoomOnGrid(root, rootOrigin, null);
   drawGrid();
   logMessage(`Placed root room ${root.id} at (0,0).`, "OK");
   await sleep(STEP_DELAY_MS);
@@ -473,7 +393,7 @@ const generateHouse = async () => {
           origin: placement.origin,
           usedSockets: new Set([placement.targetSocketIndex])
         });
-        placeRoom(room, placement.origin, placement.door);
+        placeRoomOnGrid(room, placement.origin, placement.door);
         drawGrid();
         logMessage(
           `Connected ${room.id} to ${placement.sourceId} using sockets ${placement.sourceSocketIndex}→${placement.targetSocketIndex}.`,
@@ -490,6 +410,18 @@ const generateHouse = async () => {
       break;
     }
   }
+
+  bakeWalls(
+    Array.from(placedRooms.values()).map((entry) => ({
+      room: entry.room,
+      origin: entry.origin
+    })),
+    isInside,
+    getCell,
+    setCell,
+    wallColor
+  );
+  drawGrid();
 
   if (unplacedRooms.length === 0) {
     logMessage("Generation complete. All rooms connected.", "Step 5");
