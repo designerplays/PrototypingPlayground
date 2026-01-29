@@ -286,6 +286,21 @@ const shuffle = (arr) => {
   return copy;
 };
 
+const getOppositeEdge = (edge) => {
+  switch (edge) {
+    case "N":
+      return "S";
+    case "S":
+      return "N";
+    case "E":
+      return "W";
+    case "W":
+      return "E";
+    default:
+      return null;
+  }
+};
+
 const MAX_GENERATION_ATTEMPTS = 10;
 
 const findPlacementForRoom = (room, placedRooms) => {
@@ -307,8 +322,12 @@ const findPlacementForRoom = (room, placedRooms) => {
         continue;
       }
       const sourceDoor = getDoorPosition(placed.room, placed.origin, source.socket);
+      const requiredEdge = getOppositeEdge(source.socket.edge);
 
       for (const target of targetSockets) {
+        if (requiredEdge && target.socket.edge !== requiredEdge) {
+          continue;
+        }
         if (placedRooms.get(room.id)?.usedSockets?.has(target.index)) {
           continue;
         }
