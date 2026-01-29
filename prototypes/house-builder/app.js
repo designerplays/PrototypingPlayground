@@ -9,6 +9,7 @@ const legend = document.getElementById("legend");
 const logContainer = document.getElementById("log");
 const generateButton = document.getElementById("generateButton");
 const statusLabel = document.getElementById("status");
+const rootRoomSelect = document.getElementById("rootRoomType");
 
 let roomTypes = [];
 let roomPool = [];
@@ -183,6 +184,16 @@ const createInputs = () => {
   });
 };
 
+const createRootRoomSelector = () => {
+  rootRoomSelect.innerHTML = "";
+  roomTypes.forEach((type) => {
+    const option = document.createElement("option");
+    option.value = type.typeID;
+    option.textContent = type.typeID;
+    rootRoomSelect.appendChild(option);
+  });
+};
+
 const getCountsFromInputs = () => {
   const counts = {};
   document.querySelectorAll(".input-card").forEach((card) => {
@@ -248,6 +259,16 @@ const selectRooms = (counts) => {
 
   logMessage(`Selected ${selections.length} room prefabs.`, "OK");
   return selections;
+};
+
+const orderRoomsByRoot = (rooms, rootType) => {
+  const index = rooms.findIndex((room) => room.typeID === rootType);
+  if (index === -1) {
+    return { orderedRooms: [...rooms], rootRoom: null };
+  }
+  const rootRoom = rooms[index];
+  const orderedRooms = [rootRoom, ...rooms.slice(0, index), ...rooms.slice(index + 1)];
+  return { orderedRooms, rootRoom };
 };
 
 const buildConnectionPlan = (rooms) => {
@@ -348,12 +369,25 @@ const findPlacementForRoom = (room, placedRooms) => {
   return null;
 };
 
-const attemptRoomPlacement = async (rooms, attempt) => {
+const hasMetMinimums = (placedCounts, minimumCounts) =>
+  Object.entries(minimumCounts).every(([typeId, min]) => (placedCounts[typeId] || 0) >= min);
+
+const attemptRoomPlacement = async (rooms, minimumCounts, attempt) => {
   resetGrid();
   const placedRooms = new Map();
   const unplacedRooms = shuffle(rooms);
+  const placedCounts = Object.fromEntries(
+    Object.keys(minimumCounts).map((typeId) => [typeId, 0])
+  );
 
-  const root = unplacedRooms.shift();
+  const selectedRootType = rootRoomSelect.value;
+  const rootIndex = unplacedRooms.findIndex((room) => room.typeID === selectedRootType);
+  if (rootIndex === -1) {
+    logMessage(`Root room type ${selectedRootType} was not selected.`, "Error");
+    return { success: false };
+  }
+
+  const root = unplacedRooms.splice(rootIndex, 1)[0];
   const rootOrigin = { x: 0, y: 0 };
   if (!canPlaceRoomOnGrid(root, rootOrigin, null)) {
     logMessage(`Attempt ${attempt}: root room does not fit inside grid.`, "Warning");
@@ -365,10 +399,16 @@ const attemptRoomPlacement = async (rooms, attempt) => {
     origin: rootOrigin,
     usedSockets: new Set()
   });
+  placedCounts[root.typeID] = (placedCounts[root.typeID] || 0) + 1;
   placeRoomOnGrid(root, rootOrigin, null);
   drawGrid();
   logMessage(`Attempt ${attempt}: placed root room ${root.id} at (0,0).`, "OK");
   await sleep(STEP_DELAY_MS);
+
+  if (hasMetMinimums(placedCounts, minimumCounts)) {
+    logMessage("Minimum room counts reached with root placement.", "OK");
+    return { success: true, placedRooms };
+  }
 
   while (unplacedRooms.length > 0) {
     let progress = false;
@@ -392,15 +432,24 @@ const attemptRoomPlacement = async (rooms, attempt) => {
           "OK"
         );
         await sleep(STEP_DELAY_MS);
+        placedCounts[room.typeID] = (placedCounts[room.typeID] || 0) + 1;
         const roomIndex = unplacedRooms.findIndex((entry) => entry.id === room.id);
         if (roomIndex !== -1) {
           unplacedRooms.splice(roomIndex, 1);
+        }
+        if (hasMetMinimums(placedCounts, minimumCounts)) {
+          logMessage("Minimum room counts reached. Stopping early.", "OK");
+          return { success: true, placedRooms };
         }
         progress = true;
       }
     }
 
     if (!progress) {
+      if (hasMetMinimums(placedCounts, minimumCounts)) {
+        logMessage("Minimum room counts reached. Finalizing layout.", "OK");
+        return { success: true, placedRooms };
+      }
       logMessage(`Attempt ${attempt}: no valid placements this pass.`, "Warning");
       return { success: false };
     }
@@ -432,8 +481,21 @@ const generateHouse = async () => {
     return;
   }
 
+  const minimumCounts = Object.fromEntries(
+    Object.entries(counts).map(([typeId, range]) => [typeId, range.min])
+  );
+  const rootType = rootRoomSelect.value;
+  const orderedRoomsResult = orderRoomsByRoot(rooms, rootType);
+  if (!orderedRoomsResult.rootRoom) {
+    logMessage(`Root room type ${rootType} is not available in the selection.`, "Error");
+    statusLabel.textContent = "Idle";
+    generateButton.disabled = false;
+    return;
+  }
+  const orderedRooms = orderedRoomsResult.orderedRooms;
+
   await sleep(STEP_DELAY_MS);
-  buildConnectionPlan(rooms);
+  buildConnectionPlan(orderedRooms);
   await sleep(STEP_DELAY_MS);
 
   logMessage("Placing rooms incrementally...", "Step 4");
@@ -441,7 +503,7 @@ const generateHouse = async () => {
   let finalPlacedRooms = null;
   for (let attempt = 1; attempt <= MAX_GENERATION_ATTEMPTS; attempt += 1) {
     logMessage(`Generation attempt ${attempt} of ${MAX_GENERATION_ATTEMPTS}.`, "Step 4");
-    const result = await attemptRoomPlacement(rooms, attempt);
+    const result = await attemptRoomPlacement(orderedRooms, minimumCounts, attempt);
     if (result.success) {
       finalPlacedRooms = result.placedRooms;
       break;
@@ -489,6 +551,7 @@ const init = async () => {
 
   createLegend();
   createInputs();
+  createRootRoomSelector();
   resetGrid();
 
   generateButton.addEventListener("click", generateHouse);
