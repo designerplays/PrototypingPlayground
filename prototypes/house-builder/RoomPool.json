@@ -1,27 +1,52 @@
 {
   "rooms": [
     { "typeID": "LivingRoom", "width": 7, "height": 6, "doorSockets": [
-      { "edge": "N", "offset": 3 },
-      { "edge": "E", "offset": 2 },
-      { "edge": "W", "offset": 3 }
-    ]},
-    { "typeID": "LivingRoom", "width": 8, "height": 6, "doorSockets": [
+      { "edge": "N", "offset": 1 },
       { "edge": "N", "offset": 4 },
-      { "edge": "S", "offset": 3 },
-      { "edge": "E", "offset": 3 }
+      { "edge": "E", "offset": 1 },
+      { "edge": "E", "offset": 4 },
+      { "edge": "W", "offset": 3 },
+      { "edge": "S", "offset": 1 },
+      { "edge": "S", "offset": 5 }
+    ]},
+    { "typeID": "LivingRoom", "width": 10, "height": 7, "doorSockets": [
+      { "edge": "N", "offset": 1 },
+      { "edge": "N", "offset": 4 },
+      { "edge": "E", "offset": 1 },
+      { "edge": "E", "offset": 4 },
+      { "edge": "W", "offset": 1 },
+      { "edge": "W", "offset": 5 },
+      { "edge": "S", "offset": 1 },
+      { "edge": "S", "offset": 4 },
+      { "edge": "S", "offset": 8 }
     ]},
     { "typeID": "LivingRoom", "width": 6, "height": 6, "doorSockets": [
-      { "edge": "N", "offset": 2 },
-      { "edge": "W", "offset": 2 }
+      { "edge": "N", "offset": 1 },
+      { "edge": "N", "offset": 4 },
+      { "edge": "E", "offset": 1 },
+      { "edge": "E", "offset": 4 },
+      { "edge": "W", "offset": 1 },
+      { "edge": "W", "offset": 4 },
+      { "edge": "S", "offset": 1 },
+      { "edge": "S", "offset": 4 }
     ]},
     { "typeID": "LivingRoom", "width": 9, "height": 7, "doorSockets": [
-      { "edge": "E", "offset": 3 },
-      { "edge": "W", "offset": 3 },
+      { "edge": "N", "offset": 1 },
+      { "edge": "N", "offset": 4 },
+      { "edge": "E", "offset": 1 },
+      { "edge": "E", "offset": 4 },
+      { "edge": "W", "offset": 1 },
+      { "edge": "W", "offset": 4 },
+      { "edge": "S", "offset": 1 },
       { "edge": "S", "offset": 4 }
     ]},
     { "typeID": "LivingRoom", "width": 7, "height": 5, "doorSockets": [
-      { "edge": "N", "offset": 3 },
-      { "edge": "E", "offset": 2 }
+      { "edge": "N", "offset": 1 },
+      { "edge": "N", "offset": 4 },
+      { "edge": "E", "offset": 3 },
+      { "edge": "W", "offset": 3 },
+      { "edge": "S", "offset": 1 },
+      { "edge": "S", "offset": 4 }
     ]},
     { "typeID": "Kitchen", "width": 5, "height": 4, "doorSockets": [
       { "edge": "W", "offset": 2 },
