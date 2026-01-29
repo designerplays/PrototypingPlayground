@@ -322,6 +322,8 @@ const getOppositeEdge = (edge) => {
   }
 };
 
+const getDoorKey = (socket) => `${socket.edge}:${socket.offset}`;
+
 const MAX_GENERATION_ATTEMPTS = 10;
 
 const findPlacementForRoom = (room, placedRooms) => {
@@ -339,7 +341,8 @@ const findPlacementForRoom = (room, placedRooms) => {
     const targetSockets = shuffle(room.doorSockets.map((socket, index) => ({ socket, index })));
 
     for (const source of sourceSockets) {
-      if (placed.usedSockets.has(source.index)) {
+      const sourceKey = getDoorKey(source.socket);
+      if (placed.usedSockets.has(sourceKey)) {
         continue;
       }
       const sourceDoor = getDoorPosition(placed.room, placed.origin, source.socket);
@@ -349,7 +352,8 @@ const findPlacementForRoom = (room, placedRooms) => {
         if (requiredEdge && target.socket.edge !== requiredEdge) {
           continue;
         }
-        if (placedRooms.get(room.id)?.usedSockets?.has(target.index)) {
+        const targetKey = getDoorKey(target.socket);
+        if (placedRooms.get(room.id)?.usedSockets?.has(targetKey)) {
           continue;
         }
         const targetOrigin = computeOriginFromDoor(room, target.socket, sourceDoor);
@@ -358,6 +362,8 @@ const findPlacementForRoom = (room, placedRooms) => {
             sourceId: placed.room.id,
             sourceSocketIndex: source.index,
             targetSocketIndex: target.index,
+            sourceSocketKey: sourceKey,
+            targetSocketKey: targetKey,
             origin: targetOrigin,
             door: sourceDoor
           };
@@ -419,11 +425,11 @@ const attemptRoomPlacement = async (rooms, minimumCounts, attempt) => {
 
       if (placement) {
         const source = placedRooms.get(placement.sourceId);
-        source.usedSockets.add(placement.sourceSocketIndex);
+        source.usedSockets.add(placement.sourceSocketKey);
         placedRooms.set(room.id, {
           room,
           origin: placement.origin,
-          usedSockets: new Set([placement.targetSocketIndex])
+          usedSockets: new Set([placement.targetSocketKey])
         });
         placeRoomOnGrid(room, placement.origin, placement.door);
         drawGrid();
