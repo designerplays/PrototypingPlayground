@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Me | Prototyping Playground</title>
+    <title>Coming Soon | Prototyping Playground</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -17,7 +17,6 @@
             --color-text-disabled: #5b647a;
             --color-accent-primary: #6cf2c2;
             --color-accent-secondary: #5aa9ff;
-            --color-accent-danger: #ff6b6b;
             --color-border-subtle: rgba(255, 255, 255, 0.08);
             --color-glow-primary: rgba(108, 242, 194, 0.65);
             --color-glow-secondary: rgba(90, 169, 255, 0.55);
@@ -43,11 +42,6 @@
             letter-spacing: -0.02em;
         }
 
-        h2 {
-            font-size: 2rem;
-            font-weight: 600;
-        }
-
         p {
             font-size: 1rem;
             line-height: 1.6;
@@ -56,16 +50,40 @@
 
         .section {
             padding: 64px 24px;
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
         .card {
             background: var(--color-bg-secondary);
-            border-radius: 14px;
-            padding: 32px;
+            border-radius: 18px;
+            padding: 48px;
             border: 1px solid var(--color-border-subtle);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+            display: grid;
+            gap: 24px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(108, 242, 194, 0.4);
+            color: var(--color-accent-primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            width: fit-content;
+        }
+
+        .glow-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--color-accent-secondary), transparent);
+            opacity: 0.5;
+            margin: 8px 0;
         }
 
         .button {
@@ -85,6 +103,7 @@
             overflow: hidden;
             text-decoration: none;
             transition: transform 0.25s ease, box-shadow 0.25s ease;
+            width: fit-content;
         }
 
         .button::before {
@@ -121,105 +140,56 @@
             transform: translateY(0);
         }
 
-        .button--secondary {
-            background: transparent;
-            color: var(--color-text-primary);
+        .small {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+        }
+
+        .status-grid {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .status-item {
+            background: var(--color-bg-elevated);
+            padding: 18px;
+            border-radius: 14px;
             border: 1px solid var(--color-border-subtle);
         }
 
-        .button--secondary::before {
-            display: none;
-        }
-
-        .button--secondary:hover {
-            border-color: var(--color-accent-secondary);
-            box-shadow: 0 0 24px var(--color-glow-secondary);
-        }
-
-        .hero {
-            display: grid;
-            gap: 32px;
-        }
-
-        .hero p {
-            max-width: 640px;
-        }
-
-        .hero-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .glow-divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--color-accent-secondary), transparent);
-            opacity: 0.5;
-            margin: 32px 0;
-        }
-
-        .link-grid {
-            display: grid;
-            gap: 16px;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        }
-
-        .link-card {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .small {
-            font-size: 0.875rem;
-            color: var(--color-text-secondary);
+        .status-item span {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
         }
     </style>
 </head>
 <body>
     <main class="section">
-        <div class="hero">
-            <div>
-                <h1>Hey, I'm Alessandro</h1>
-                <p>
-                    I design, prototype, and build interactive experiences that blend gameplay with bold visuals. Welcome to my
-                    personal playground—here you can explore my experiments, learn more about my work, and connect with me.
-                </p>
-            </div>
-            <div class="hero-links">
-                <a class="button" href="Prototypes.html">Explore Prototypes</a>
-                <a class="button button--secondary" href="coming-soon.html">
-                    View Portfolio
-                </a>
-                <a class="button button--secondary" href="coming-soon.html">Email Me</a>
-            </div>
+        <div class="card">
+            <span class="pill">Coming Soon</span>
+            <h1>New updates are in the works.</h1>
+            <p>
+                Thanks for stopping by. The portfolio and social links will be live shortly while I polish the next set of
+                prototypes and case studies.
+            </p>
             <div class="glow-divider"></div>
-            <div>
-                <h2>Find me online</h2>
-                <p class="small">Follow along for updates, experiments, and behind-the-scenes looks.</p>
-            </div>
-            <div class="link-grid">
-                <div class="card link-card">
-                    <h3>LinkedIn</h3>
-                    <p class="small">Professional updates and collaborations.</p>
-                    <a class="button button--secondary" href="coming-soon.html">Connect</a>
+            <div class="status-grid">
+                <div class="status-item">
+                    <span>Portfolio</span>
+                    <p class="small">Curated case studies and motion explorations.</p>
                 </div>
-                <div class="card link-card">
-                    <h3>GitHub</h3>
-                    <p class="small">Open-source experiments and builds.</p>
-                    <a class="button button--secondary" href="https://github.com" target="_blank" rel="noreferrer">Follow</a>
+                <div class="status-item">
+                    <span>Social links</span>
+                    <p class="small">LinkedIn, X, and Instagram profiles are being refreshed.</p>
                 </div>
-                <div class="card link-card">
-                    <h3>Twitter / X</h3>
-                    <p class="small">Quick thoughts and prototype drops.</p>
-                    <a class="button button--secondary" href="coming-soon.html">Follow</a>
-                </div>
-                <div class="card link-card">
-                    <h3>Instagram</h3>
-                    <p class="small">Visual diaries and in-progress snapshots.</p>
-                    <a class="button button--secondary" href="coming-soon.html">Follow</a>
+                <div class="status-item">
+                    <span>Contact</span>
+                    <p class="small">Email intake is paused while I streamline my inbox.</p>
                 </div>
             </div>
+            <a class="button" href="index.html">Back to home</a>
         </div>
     </main>
 </body>
