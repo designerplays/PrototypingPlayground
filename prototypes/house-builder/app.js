@@ -153,33 +153,29 @@ const createInputs = () => {
     const title = document.createElement("h3");
     title.textContent = type.typeID;
 
-    const minRow = document.createElement("div");
-    minRow.className = "input-row";
-    const minLabel = document.createElement("label");
-    minLabel.textContent = "Min";
-    const minInput = document.createElement("input");
-    minInput.type = "number";
-    minInput.min = "0";
-    minInput.value = "1";
+    const amountRow = document.createElement("div");
+    amountRow.className = "input-row";
+    const amountLabel = document.createElement("label");
+    amountLabel.textContent = "Amount";
+    const amountInput = document.createElement("input");
+    amountInput.type = "range";
+    amountInput.min = "0";
+    amountInput.max = "5";
+    amountInput.value = "1";
+    amountInput.className = "amount-slider";
+    const amountValue = document.createElement("span");
+    amountValue.className = "amount-value";
+    amountValue.textContent = amountInput.value;
+    amountInput.addEventListener("input", () => {
+      amountValue.textContent = amountInput.value;
+    });
 
-    const maxRow = document.createElement("div");
-    maxRow.className = "input-row";
-    const maxLabel = document.createElement("label");
-    maxLabel.textContent = "Max";
-    const maxInput = document.createElement("input");
-    maxInput.type = "number";
-    maxInput.min = "0";
-    maxInput.value = "2";
-
-    minRow.appendChild(minLabel);
-    minRow.appendChild(minInput);
-
-    maxRow.appendChild(maxLabel);
-    maxRow.appendChild(maxInput);
+    amountRow.appendChild(amountLabel);
+    amountRow.appendChild(amountInput);
+    amountRow.appendChild(amountValue);
 
     card.appendChild(title);
-    card.appendChild(minRow);
-    card.appendChild(maxRow);
+    card.appendChild(amountRow);
     inputsContainer.appendChild(card);
   });
 };
@@ -198,10 +194,9 @@ const getCountsFromInputs = () => {
   const counts = {};
   document.querySelectorAll(".input-card").forEach((card) => {
     const typeId = card.dataset.typeId;
-    const inputs = card.querySelectorAll("input");
-    const min = Number(inputs[0].value);
-    const max = Number(inputs[1].value);
-    counts[typeId] = { min, max };
+    const input = card.querySelector("input[type='range']");
+    const amount = Number(input.value);
+    counts[typeId] = { amount };
   });
   return counts;
 };
@@ -218,9 +213,13 @@ const validateFeasibility = (counts) => {
   });
 
   Object.entries(counts).forEach(([typeId, range]) => {
-    if (range.min > range.max) {
+    if (Number.isNaN(range.amount) || range.amount < 0 || range.amount > 5) {
       valid = false;
-      logMessage(`${typeId} has min > max.`, "Error");
+      logMessage(`${typeId} has an invalid amount.`, "Error");
+    }
+    if (range.amount > 0 && !roomPool.some((room) => room.typeID === typeId)) {
+      valid = false;
+      logMessage(`${typeId} has no prefabs in the room pool.`, "Error");
     }
   });
 
@@ -233,64 +232,14 @@ const validateFeasibility = (counts) => {
 
 const randomFromArray = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-const selectRooms = (counts) => {
-  logMessage("Selecting concrete room prefabs...", "Step 2");
-  const selections = [];
-  let idCounter = 1;
-
-  roomTypes.forEach((type) => {
-    const range = counts[type.typeID];
-    const count = range.min + Math.floor(Math.random() * (range.max - range.min + 1));
-    const pool = roomPool.filter((room) => room.typeID === type.typeID);
-
-    for (let i = 0; i < count; i += 1) {
-      const prefab = randomFromArray(pool);
-      selections.push({
-        id: `${type.typeID}-${idCounter}`,
-        typeID: type.typeID,
-        width: prefab.width,
-        height: prefab.height,
-        doorSockets: prefab.doorSockets,
-        color: type.color
-      });
-      idCounter += 1;
-    }
-  });
-
-  logMessage(`Selected ${selections.length} room prefabs.`, "OK");
-  return selections;
-};
-
-const orderRoomsByRoot = (rooms, rootType) => {
-  const index = rooms.findIndex((room) => room.typeID === rootType);
-  if (index === -1) {
-    return { orderedRooms: [...rooms], rootRoom: null };
-  }
-  const rootRoom = rooms[index];
-  const orderedRooms = [rootRoom, ...rooms.slice(0, index), ...rooms.slice(index + 1)];
-  return { orderedRooms, rootRoom };
-};
-
-const buildConnectionPlan = (rooms) => {
-  logMessage("Building connection plan (socket-aware)...", "Step 3");
-  const plan = [];
-  const placed = [rooms[0]];
-
-  for (let i = 1; i < rooms.length; i += 1) {
-    const target = rooms[i];
-    const candidate = placed.find((room) =>
-      roomTypeLookup.get(room.typeID).allowedNeighborTypeIDs.includes(target.typeID)
-    );
-
-    if (candidate) {
-      plan.push({ sourceId: candidate.id, targetId: target.id });
-      placed.push(target);
-    }
-  }
-
-  logMessage(`Prepared ${plan.length} planned connections.`, "OK");
-  return plan;
-};
+const buildRoomInstance = (prefab, typeId, idCounter) => ({
+  id: `${typeId}-${idCounter}`,
+  typeID: typeId,
+  width: prefab.width,
+  height: prefab.height,
+  doorSockets: prefab.doorSockets,
+  color: roomTypeLookup.get(typeId).color
+});
 
 const canPlaceRoomOnGrid = (room, origin, doorPosition) =>
   canPlaceRoom(room, origin, doorPosition, isInside, getCell);
@@ -326,48 +275,65 @@ const getDoorKey = (socket) => `${socket.edge}:${socket.offset}`;
 
 const MAX_GENERATION_ATTEMPTS = 10;
 
-const findPlacementForRoom = (room, placedRooms) => {
-  const candidates = Array.from(placedRooms.values());
-  const shuffled = shuffle(candidates);
+const hasSatisfiedCounts = (placedCounts, requiredCounts) =>
+  Object.entries(requiredCounts).every(
+    ([typeId, required]) => (placedCounts[typeId] || 0) === required
+  );
 
-  for (const placed of shuffled) {
-    const allowedNeighbors = roomTypeLookup.get(placed.room.typeID).allowedNeighborTypeIDs;
+const collectAvailableDoors = (placedRooms) => {
+  const allowedNeighborsGlobalList = new Set();
+  const availablePlacedDoors = [];
+
+  placedRooms.forEach(({ room, origin, usedSockets }) => {
+    const allowedNeighbors = roomTypeLookup.get(room.typeID).allowedNeighborTypeIDs;
+    room.doorSockets.forEach((socket, index) => {
+      const socketKey = getDoorKey(socket);
+      if (usedSockets.has(socketKey)) {
+        return;
+      }
+      allowedNeighbors.forEach((neighbor) => allowedNeighborsGlobalList.add(neighbor));
+      availablePlacedDoors.push({
+        room,
+        roomId: room.id,
+        origin,
+        socket,
+        socketIndex: index,
+        socketKey,
+        doorPosition: getDoorPosition(room, origin, socket)
+      });
+    });
+  });
+
+  return { allowedNeighborsGlobalList, availablePlacedDoors };
+};
+
+const findPlacementForRoom = (room, availablePlacedDoors) => {
+  const targetSockets = shuffle(room.doorSockets.map((socket, index) => ({ socket, index })));
+
+  for (const source of availablePlacedDoors) {
+    const allowedNeighbors = roomTypeLookup.get(source.room.typeID).allowedNeighborTypeIDs;
     const allowedReverse = roomTypeLookup.get(room.typeID).allowedNeighborTypeIDs;
-    if (!allowedNeighbors.includes(room.typeID) || !allowedReverse.includes(placed.room.typeID)) {
+    if (!allowedNeighbors.includes(room.typeID) || !allowedReverse.includes(source.room.typeID)) {
       continue;
     }
 
-    const sourceSockets = shuffle(placed.room.doorSockets.map((socket, index) => ({ socket, index })));
-    const targetSockets = shuffle(room.doorSockets.map((socket, index) => ({ socket, index })));
-
-    for (const source of sourceSockets) {
-      const sourceKey = getDoorKey(source.socket);
-      if (placed.usedSockets.has(sourceKey)) {
+    const requiredEdge = getOppositeEdge(source.socket.edge);
+    for (const target of targetSockets) {
+      if (requiredEdge && target.socket.edge !== requiredEdge) {
         continue;
       }
-      const sourceDoor = getDoorPosition(placed.room, placed.origin, source.socket);
-      const requiredEdge = getOppositeEdge(source.socket.edge);
-
-      for (const target of targetSockets) {
-        if (requiredEdge && target.socket.edge !== requiredEdge) {
-          continue;
-        }
-        const targetKey = getDoorKey(target.socket);
-        if (placedRooms.get(room.id)?.usedSockets?.has(targetKey)) {
-          continue;
-        }
-        const targetOrigin = computeOriginFromDoor(room, target.socket, sourceDoor);
-        if (canPlaceRoomOnGrid(room, targetOrigin, sourceDoor)) {
-          return {
-            sourceId: placed.room.id,
-            sourceSocketIndex: source.index,
-            targetSocketIndex: target.index,
-            sourceSocketKey: sourceKey,
-            targetSocketKey: targetKey,
-            origin: targetOrigin,
-            door: sourceDoor
-          };
-        }
+      const targetKey = getDoorKey(target.socket);
+      const targetOrigin = computeOriginFromDoor(room, target.socket, source.doorPosition);
+      if (canPlaceRoomOnGrid(room, targetOrigin, source.doorPosition)) {
+        return {
+          sourceId: source.roomId,
+          sourceSocketIndex: source.socketIndex,
+          targetSocketIndex: target.index,
+          sourceSocketKey: source.socketKey,
+          targetSocketKey: targetKey,
+          origin: targetOrigin,
+          door: source.doorPosition
+        };
       }
     }
   }
@@ -375,25 +341,27 @@ const findPlacementForRoom = (room, placedRooms) => {
   return null;
 };
 
-const hasMetMinimums = (placedCounts, minimumCounts) =>
-  Object.entries(minimumCounts).every(([typeId, min]) => (placedCounts[typeId] || 0) >= min);
-
-const attemptRoomPlacement = async (rooms, minimumCounts, attempt) => {
+const attemptRoomPlacement = async (requiredCounts, attempt) => {
   resetGrid();
   const placedRooms = new Map();
-  const unplacedRooms = shuffle(rooms);
-  const placedCounts = Object.fromEntries(
-    Object.keys(minimumCounts).map((typeId) => [typeId, 0])
-  );
+  let idCounter = 1;
+  const placedCounts = Object.fromEntries(Object.keys(requiredCounts).map((typeId) => [typeId, 0]));
 
   const selectedRootType = rootRoomSelect.value;
-  const rootIndex = unplacedRooms.findIndex((room) => room.typeID === selectedRootType);
-  if (rootIndex === -1) {
-    logMessage(`Root room type ${selectedRootType} was not selected.`, "Error");
+  if (requiredCounts[selectedRootType] === 0) {
+    logMessage(`Root room type ${selectedRootType} must have amount > 0.`, "Error");
     return { success: false };
   }
 
-  const root = unplacedRooms.splice(rootIndex, 1)[0];
+  const rootPool = roomPool.filter((room) => room.typeID === selectedRootType);
+  if (rootPool.length === 0) {
+    logMessage(`No prefabs for root room type ${selectedRootType}.`, "Error");
+    return { success: false };
+  }
+
+  const rootPrefab = randomFromArray(rootPool);
+  const root = buildRoomInstance(rootPrefab, selectedRootType, idCounter);
+  idCounter += 1;
   const rootOrigin = { x: 0, y: 0 };
   if (!canPlaceRoomOnGrid(root, rootOrigin, null)) {
     logMessage(`Attempt ${attempt}: root room does not fit inside grid.`, "Warning");
@@ -411,17 +379,40 @@ const attemptRoomPlacement = async (rooms, minimumCounts, attempt) => {
   logMessage(`Attempt ${attempt}: placed root room ${root.id} at (0,0).`, "OK");
   await sleep(STEP_DELAY_MS);
 
-  if (hasMetMinimums(placedCounts, minimumCounts)) {
-    logMessage("Minimum room counts reached with root placement.", "OK");
+  if (hasSatisfiedCounts(placedCounts, requiredCounts)) {
+    logMessage("All required rooms placed with root placement.", "OK");
     return { success: true, placedRooms };
   }
 
-  while (unplacedRooms.length > 0) {
-    let progress = false;
-    const shuffledRemaining = shuffle(unplacedRooms);
+  while (!hasSatisfiedCounts(placedCounts, requiredCounts)) {
+    const { allowedNeighborsGlobalList, availablePlacedDoors } = collectAvailableDoors(placedRooms);
 
-    for (const room of shuffledRemaining) {
-      const placement = findPlacementForRoom(room, placedRooms);
+    if (availablePlacedDoors.length === 0) {
+      logMessage(`Attempt ${attempt}: no available doors to expand from.`, "Warning");
+      return { success: false };
+    }
+
+    const placeableRoomPrefabs = shuffle(
+      roomPool.filter(
+        (prefab) =>
+          allowedNeighborsGlobalList.has(prefab.typeID) &&
+          (placedCounts[prefab.typeID] || 0) < requiredCounts[prefab.typeID]
+      )
+    );
+
+    if (placeableRoomPrefabs.length === 0) {
+      logMessage(
+        `Attempt ${attempt}: no remaining rooms match allowed neighbor types.`,
+        "Warning"
+      );
+      return { success: false };
+    }
+
+    let placedRoomThisLoop = false;
+    for (const prefab of placeableRoomPrefabs) {
+      const room = buildRoomInstance(prefab, prefab.typeID, idCounter);
+      idCounter += 1;
+      const placement = findPlacementForRoom(room, availablePlacedDoors);
 
       if (placement) {
         const source = placedRooms.get(placement.sourceId);
@@ -439,24 +430,16 @@ const attemptRoomPlacement = async (rooms, minimumCounts, attempt) => {
         );
         await sleep(STEP_DELAY_MS);
         placedCounts[room.typeID] = (placedCounts[room.typeID] || 0) + 1;
-        const roomIndex = unplacedRooms.findIndex((entry) => entry.id === room.id);
-        if (roomIndex !== -1) {
-          unplacedRooms.splice(roomIndex, 1);
-        }
-        if (hasMetMinimums(placedCounts, minimumCounts)) {
-          logMessage("Minimum room counts reached. Stopping early.", "OK");
-          return { success: true, placedRooms };
-        }
-        progress = true;
+        placedRoomThisLoop = true;
+        break;
       }
     }
 
-    if (!progress) {
-      if (hasMetMinimums(placedCounts, minimumCounts)) {
-        logMessage("Minimum room counts reached. Finalizing layout.", "OK");
-        return { success: true, placedRooms };
-      }
-      logMessage(`Attempt ${attempt}: no valid placements this pass.`, "Warning");
+    if (!placedRoomThisLoop) {
+      logMessage(
+        `Attempt ${attempt}: no placeable rooms fit available doors. Aborting.`,
+        "Warning"
+      );
       return { success: false };
     }
   }
@@ -479,37 +462,31 @@ const generateHouse = async () => {
 
   await sleep(STEP_DELAY_MS);
 
-  const rooms = selectRooms(counts);
-  if (rooms.length === 0) {
-    logMessage("No rooms selected. Adjust minimum counts.", "Error");
-    statusLabel.textContent = "Idle";
-    generateButton.disabled = false;
-    return;
-  }
-
-  const minimumCounts = Object.fromEntries(
-    Object.entries(counts).map(([typeId, range]) => [typeId, range.min])
+  const requiredCounts = Object.fromEntries(
+    Object.entries(counts).map(([typeId, range]) => [typeId, range.amount])
   );
-  const rootType = rootRoomSelect.value;
-  const orderedRoomsResult = orderRoomsByRoot(rooms, rootType);
-  if (!orderedRoomsResult.rootRoom) {
-    logMessage(`Root room type ${rootType} is not available in the selection.`, "Error");
+  const totalRooms = Object.values(requiredCounts).reduce((sum, value) => sum + value, 0);
+  if (totalRooms === 0) {
+    logMessage("No rooms selected. Increase the amount sliders.", "Error");
     statusLabel.textContent = "Idle";
     generateButton.disabled = false;
     return;
   }
-  const orderedRooms = orderedRoomsResult.orderedRooms;
+  const rootType = rootRoomSelect.value;
+  if (requiredCounts[rootType] === 0) {
+    logMessage(`Root room type ${rootType} must have amount > 0.`, "Error");
+    statusLabel.textContent = "Idle";
+    generateButton.disabled = false;
+    return;
+  }
 
   await sleep(STEP_DELAY_MS);
-  buildConnectionPlan(orderedRooms);
-  await sleep(STEP_DELAY_MS);
-
-  logMessage("Placing rooms incrementally...", "Step 4");
+  logMessage("Placing rooms incrementally...", "Step 2");
 
   let finalPlacedRooms = null;
   for (let attempt = 1; attempt <= MAX_GENERATION_ATTEMPTS; attempt += 1) {
-    logMessage(`Generation attempt ${attempt} of ${MAX_GENERATION_ATTEMPTS}.`, "Step 4");
-    const result = await attemptRoomPlacement(orderedRooms, minimumCounts, attempt);
+    logMessage(`Generation attempt ${attempt} of ${MAX_GENERATION_ATTEMPTS}.`, "Step 2");
+    const result = await attemptRoomPlacement(requiredCounts, attempt);
     if (result.success) {
       finalPlacedRooms = result.placedRooms;
       break;

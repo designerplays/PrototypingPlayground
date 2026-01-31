@@ -141,11 +141,16 @@ header {
   min-width: 44px;
 }
 
-.input-row input {
-  width: 70px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  border: 1px solid #cbd5f5;
+.input-row input[type="range"] {
+  flex: 1;
+  accent-color: #2563eb;
+}
+
+.amount-value {
+  min-width: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: right;
 }
 
 .actions {
