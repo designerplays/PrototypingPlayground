@@ -3,7 +3,7 @@
     {
       "typeID": "LivingRoom",
       "color": "#6A8CAF",
-      "allowedNeighborTypeIDs": ["Kitchen", "Corridor", "Bedroom"]
+      "allowedNeighborTypeIDs": ["Kitchen", "Corridor", "Bedroom", "Bathroom"]
     },
     {
       "typeID": "Kitchen",
@@ -18,7 +18,7 @@
     {
       "typeID": "Bathroom",
       "color": "#7FA7B5",
-      "allowedNeighborTypeIDs": ["Bedroom", "Corridor"]
+      "allowedNeighborTypeIDs": ["Bedroom", "Corridor", "LivingRoom"]
     },
     {
       "typeID": "Corridor",
