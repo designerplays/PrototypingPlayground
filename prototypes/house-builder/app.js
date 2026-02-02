@@ -9,8 +9,6 @@ const legend = document.getElementById("legend");
 const logContainer = document.getElementById("log");
 const generateButton = document.getElementById("generateButton");
 const statusLabel = document.getElementById("status");
-const rootRoomSelect = document.getElementById("rootRoomType");
-
 let roomTypes = [];
 let roomPool = [];
 let grid = [];
@@ -180,16 +178,6 @@ const createInputs = () => {
   });
 };
 
-const createRootRoomSelector = () => {
-  rootRoomSelect.innerHTML = "";
-  roomTypes.forEach((type) => {
-    const option = document.createElement("option");
-    option.value = type.typeID;
-    option.textContent = type.typeID;
-    rootRoomSelect.appendChild(option);
-  });
-};
-
 const getCountsFromInputs = () => {
   const counts = {};
   document.querySelectorAll(".input-card").forEach((card) => {
@@ -232,6 +220,11 @@ const validateFeasibility = (counts) => {
 
 const randomFromArray = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
+const getTypeOrder = (typeId) => {
+  const type = roomTypeLookup.get(typeId);
+  return Number.isFinite(type?.order) ? type.order : 0;
+};
+
 const buildRoomInstance = (prefab, typeId, idCounter) => ({
   id: `${typeId}-${idCounter}`,
   typeID: typeId,
@@ -254,6 +247,35 @@ const shuffle = (arr) => {
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
   return copy;
+};
+
+const getOrderedPrefabs = (prefabs) => {
+  const grouped = new Map();
+  prefabs.forEach((prefab) => {
+    const order = getTypeOrder(prefab.typeID);
+    if (!grouped.has(order)) {
+      grouped.set(order, []);
+    }
+    grouped.get(order).push(prefab);
+  });
+
+  return [...grouped.entries()]
+    .sort(([orderA], [orderB]) => orderA - orderB)
+    .flatMap(([, group]) => shuffle(group));
+};
+
+const getRootRoomType = (requiredCounts) => {
+  const eligible = Object.entries(requiredCounts)
+    .filter(([, amount]) => amount > 0)
+    .map(([typeId]) => typeId);
+
+  if (eligible.length === 0) {
+    return null;
+  }
+
+  const minOrder = Math.min(...eligible.map((typeId) => getTypeOrder(typeId)));
+  const lowestOrderTypes = eligible.filter((typeId) => getTypeOrder(typeId) === minOrder);
+  return randomFromArray(lowestOrderTypes);
 };
 
 const getOppositeEdge = (edge) => {
@@ -394,9 +416,9 @@ const attemptRoomPlacement = async (requiredCounts, attempt) => {
   let idCounter = 1;
   const placedCounts = Object.fromEntries(Object.keys(requiredCounts).map((typeId) => [typeId, 0]));
 
-  const selectedRootType = rootRoomSelect.value;
-  if (requiredCounts[selectedRootType] === 0) {
-    logMessage(`Root room type ${selectedRootType} must have amount > 0.`, "Error");
+  const selectedRootType = getRootRoomType(requiredCounts);
+  if (!selectedRootType) {
+    logMessage("Root room type must have amount > 0.", "Error");
     return { success: false };
   }
 
@@ -440,7 +462,7 @@ const attemptRoomPlacement = async (requiredCounts, attempt) => {
       return { success: false };
     }
 
-    const placeableRoomPrefabs = shuffle(
+    const placeableRoomPrefabs = getOrderedPrefabs(
       roomPool.filter(
         (prefab) =>
           allowedNeighborsGlobalList.has(prefab.typeID) &&
@@ -521,13 +543,6 @@ const generateHouse = async () => {
     generateButton.disabled = false;
     return;
   }
-  const rootType = rootRoomSelect.value;
-  if (requiredCounts[rootType] === 0) {
-    logMessage(`Root room type ${rootType} must have amount > 0.`, "Error");
-    statusLabel.textContent = "Idle";
-    generateButton.disabled = false;
-    return;
-  }
 
   await sleep(STEP_DELAY_MS);
   logMessage("Placing rooms incrementally...", "Step 2");
@@ -584,7 +599,6 @@ const init = async () => {
 
   createLegend();
   createInputs();
-  createRootRoomSelector();
   resetGrid();
 
   generateButton.addEventListener("click", generateHouse);
