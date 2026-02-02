@@ -3,26 +3,31 @@
     {
       "typeID": "LivingRoom",
       "color": "#6A8CAF",
+      "order": 0,
       "allowedNeighborTypeIDs": ["Kitchen", "Corridor", "Bedroom", "Bathroom"]
     },
     {
       "typeID": "Kitchen",
       "color": "#C97C5D",
+      "order": 2,
       "allowedNeighborTypeIDs": ["LivingRoom", "Corridor"]
     },
     {
       "typeID": "Bedroom",
       "color": "#8FAF7A",
+      "order": 3,
       "allowedNeighborTypeIDs": ["LivingRoom", "Corridor", "Bathroom"]
     },
     {
       "typeID": "Bathroom",
       "color": "#7FA7B5",
+      "order": 4,
       "allowedNeighborTypeIDs": ["Bedroom", "Corridor", "LivingRoom"]
     },
     {
       "typeID": "Corridor",
       "color": "#9A9A9A",
+      "order": 1,
       "allowedNeighborTypeIDs": ["LivingRoom", "Kitchen", "Bedroom", "Bathroom", "Corridor"]
     }
   ]
