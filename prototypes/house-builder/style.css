@@ -88,26 +88,6 @@ header {
   gap: 16px;
 }
 
-.root-room {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.root-room label {
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.root-room select {
-  min-width: 200px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #cbd5f5;
-  background: #ffffff;
-}
-
 .inputs {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
