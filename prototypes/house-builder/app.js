@@ -272,6 +272,7 @@ const getOppositeEdge = (edge) => {
 };
 
 const getDoorKey = (socket) => `${socket.edge}:${socket.offset}`;
+const getDoorPositionKey = (position) => `${position.x},${position.y}`;
 
 const MAX_GENERATION_ATTEMPTS = 10;
 
@@ -341,6 +342,52 @@ const findPlacementForRoom = (room, availablePlacedDoors) => {
   return null;
 };
 
+const renderDoorSockets = (placedRooms) => {
+  placedRooms.forEach(({ room, origin }) => {
+    room.doorSockets.forEach((socket) => {
+      const doorPosition = getDoorPosition(room, origin, socket);
+      if (!isInside(doorPosition.x, doorPosition.y)) {
+        return;
+      }
+      const existing = getCell(doorPosition.x, doorPosition.y);
+      if (existing && existing.type === "interior") {
+        return;
+      }
+      setCell(doorPosition.x, doorPosition.y, { type: "door", color: doorColor });
+    });
+  });
+};
+
+const removeUnusedDoorSockets = (placedRooms) => {
+  const usedDoorPositions = new Set();
+  placedRooms.forEach(({ room, origin, usedSockets }) => {
+    usedSockets.forEach((socketKey) => {
+      const socket = room.doorSockets.find((entry) => getDoorKey(entry) === socketKey);
+      if (!socket) {
+        return;
+      }
+      const doorPosition = getDoorPosition(room, origin, socket);
+      usedDoorPositions.add(getDoorPositionKey(doorPosition));
+    });
+  });
+
+  placedRooms.forEach(({ room, origin }) => {
+    room.doorSockets.forEach((socket) => {
+      const doorPosition = getDoorPosition(room, origin, socket);
+      if (!isInside(doorPosition.x, doorPosition.y)) {
+        return;
+      }
+      if (usedDoorPositions.has(getDoorPositionKey(doorPosition))) {
+        return;
+      }
+      const existing = getCell(doorPosition.x, doorPosition.y);
+      if (existing && existing.type === "door") {
+        setCell(doorPosition.x, doorPosition.y, { type: "empty", color: "#ffffff" });
+      }
+    });
+  });
+};
+
 const attemptRoomPlacement = async (requiredCounts, attempt) => {
   resetGrid();
   const placedRooms = new Map();
@@ -375,6 +422,7 @@ const attemptRoomPlacement = async (requiredCounts, attempt) => {
   });
   placedCounts[root.typeID] = (placedCounts[root.typeID] || 0) + 1;
   placeRoomOnGrid(root, rootOrigin, null);
+  renderDoorSockets(placedRooms);
   drawGrid();
   logMessage(`Attempt ${attempt}: placed root room ${root.id} at (0,0).`, "OK");
   await sleep(STEP_DELAY_MS);
@@ -423,6 +471,7 @@ const attemptRoomPlacement = async (requiredCounts, attempt) => {
           usedSockets: new Set([placement.targetSocketKey])
         });
         placeRoomOnGrid(room, placement.origin, placement.door);
+        renderDoorSockets(placedRooms);
         drawGrid();
         logMessage(
           `Connected ${room.id} to ${placement.sourceId} using sockets ${placement.sourceSocketIndex}→${placement.targetSocketIndex}.`,
@@ -501,6 +550,7 @@ const generateHouse = async () => {
     return;
   }
 
+  removeUnusedDoorSockets(finalPlacedRooms);
   bakeWalls(
     Array.from(finalPlacedRooms.values()).map((entry) => ({
       room: entry.room,
