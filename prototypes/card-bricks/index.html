@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Card Bricks Prototype</title>
+  <style>
+    :root {
+      --unit: 60px;
+      --card-width: var(--unit);
+      --card-height: calc(var(--unit) * 2);
+      --board-bg: #1f2433;
+      --panel-bg: #2d3348;
+      --accent: #ffce4b;
+      --text: #f4f6fb;
+      --muted: #a4b0c6;
+      --success: #59d18f;
+      --danger: #ff6b6b;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #151823;
+      color: var(--text);
+    }
+
+    .page {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 24px;
+      gap: 20px;
+    }
+
+    a.back {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    header {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 32px;
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .board-panel {
+      background: var(--panel-bg);
+      border-radius: 16px;
+      padding: 16px;
+      position: relative;
+      min-height: 420px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .board-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .status {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 14px;
+    }
+
+    .badge.success {
+      background: rgba(89, 209, 143, 0.2);
+      color: var(--success);
+    }
+
+    .badge.danger {
+      background: rgba(255, 107, 107, 0.2);
+      color: var(--danger);
+    }
+
+    .board {
+      position: relative;
+      background: var(--board-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      min-height: 340px;
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+    }
+
+    .board-grid {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+      background-size: var(--unit) var(--unit);
+      pointer-events: none;
+    }
+
+    .board-content {
+      position: relative;
+      min-height: 340px;
+    }
+
+    .card {
+      position: absolute;
+      width: var(--card-width);
+      height: var(--card-height);
+      background: #fef4d1;
+      border-radius: 10px;
+      border: 2px solid #d8b74e;
+      color: #1f2433;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      gap: 6px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+    }
+
+    .card .id {
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+
+    .card .type {
+      font-size: 20px;
+    }
+
+    .connector {
+      position: absolute;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .connector.top-left {
+      top: 6px;
+      left: 6px;
+    }
+
+    .connector.top-right {
+      top: 6px;
+      right: 6px;
+    }
+
+    .connector.bottom-left {
+      bottom: 6px;
+      left: 6px;
+    }
+
+    .connector.bottom-right {
+      bottom: 6px;
+      right: 6px;
+    }
+
+    .placement {
+      position: absolute;
+      width: var(--card-width);
+      height: var(--card-height);
+      border-radius: 10px;
+      border: 2px dashed rgba(89, 209, 143, 0.8);
+      background: rgba(89, 209, 143, 0.15);
+      cursor: pointer;
+    }
+
+    .placement:hover {
+      background: rgba(89, 209, 143, 0.3);
+    }
+
+    .hand-panel {
+      background: var(--panel-bg);
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .hand-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .hand {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .hand .card {
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .hand .card.selected {
+      outline: 3px solid var(--accent);
+      transform: translateY(-6px) scale(1.03);
+    }
+
+    .deck-panel {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .deck {
+      background: linear-gradient(135deg, #5a6cff, #7f57ff);
+      border-radius: 12px;
+      padding: 16px 24px;
+      color: white;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .rules {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 18, 30, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .overlay.active {
+      display: flex;
+    }
+
+    .overlay .message {
+      background: #1a1f2f;
+      padding: 24px 32px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .overlay h2 {
+      margin-top: 0;
+    }
+
+    @media (max-width: 768px) {
+      :root {
+        --unit: 46px;
+      }
+
+      .hand {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <a class="back" href="../../index.html">← Back to Menu</a>
+    <header>
+      <h1>Card Bricks</h1>
+      <p>Place vertical cards in a staggered brick pattern and connect arrows to circles.</p>
+    </header>
+
+    <section class="board-panel">
+      <div class="board-header">
+        <div class="status">
+          <span class="badge" id="deckCount">Deck: 0</span>
+          <span class="badge" id="handCount">Hand: 0</span>
+          <span class="badge" id="selectionStatus">No card selected</span>
+        </div>
+        <span class="badge" id="gameStatus">Game in progress</span>
+      </div>
+      <div class="board" id="board">
+        <div class="board-grid"></div>
+        <div class="board-content" id="boardContent"></div>
+        <div class="overlay" id="overlay">
+          <div class="message" id="overlayMessage"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hand-panel">
+      <div class="hand-header">
+        <h2>Hand</h2>
+        <span class="rules">Tap a selected card to rotate it 180°.</span>
+      </div>
+      <div class="hand" id="hand"></div>
+    </section>
+
+    <section class="deck-panel">
+      <button class="deck" id="deckButton">Draw Card</button>
+    </section>
+
+    <section class="rules">
+      <strong>Rules recap:</strong> Cards connect only horizontally with a 1-unit vertical offset. Every touching corner must be Arrow ↔ Circle, and the arrow must point toward the other card. The first card ignores adjacency. Empty your hand to win.
+    </section>
+  </div>
+
+  <script>
+    const state = {
+      deck: [],
+      hand: [],
+      board: [],
+      selectedIndex: null,
+      selectedRotation: false,
+      gameOver: false,
+    };
+
+    const unit = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--unit"));
+
+    const deckCountEl = document.getElementById("deckCount");
+    const handCountEl = document.getElementById("handCount");
+    const selectionStatusEl = document.getElementById("selectionStatus");
+    const gameStatusEl = document.getElementById("gameStatus");
+    const boardContentEl = document.getElementById("boardContent");
+    const handEl = document.getElementById("hand");
+    const deckButton = document.getElementById("deckButton");
+    const overlayEl = document.getElementById("overlay");
+    const overlayMessageEl = document.getElementById("overlayMessage");
+
+    const connectorSymbols = {
+      circle: "○",
+      arrowLeft: "←",
+      arrowRight: "→",
+    };
+
+    const cornerOrder = ["top_left", "top_right", "bottom_left", "bottom_right"];
+
+    const shuffle = (array) => {
+      for (let i = array.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    };
+
+    const cloneCard = (card) => ({
+      ...card,
+      connectors: { ...card.connectors },
+    });
+
+    const rotateConnectors = (connectors) => ({
+      top_left: connectors.bottom_left,
+      top_right: connectors.bottom_right,
+      bottom_left: connectors.top_left,
+      bottom_right: connectors.top_right,
+    });
+
+    const getCardConnectors = (card, rotated) => {
+      if (!rotated) {
+        return card.connectors;
+      }
+      return rotateConnectors(card.connectors);
+    };
+
+    const getArrowDirection = (corner) => {
+      if (corner.includes("left")) {
+        return "left";
+      }
+      return "right";
+    };
+
+    const connectionForOffset = (dx, dy) => {
+      if (dx === 1 && dy === 1) {
+        return { newCorner: "bottom_right", existingCorner: "top_left", side: "right" };
+      }
+      if (dx === 1 && dy === -1) {
+        return { newCorner: "top_right", existingCorner: "bottom_left", side: "right" };
+      }
+      if (dx === -1 && dy === 1) {
+        return { newCorner: "bottom_left", existingCorner: "top_right", side: "left" };
+      }
+      if (dx === -1 && dy === -1) {
+        return { newCorner: "top_left", existingCorner: "bottom_right", side: "left" };
+      }
+      return null;
+    };
+
+    const isOccupied = (x, y) => state.board.some((card) => card.x === x && card.y === y);
+
+    const validatePlacement = (card, rotated, x, y) => {
+      const connections = [];
+      let hasAdjacent = false;
+      let allValid = true;
+
+      for (const existing of state.board) {
+        const dx = existing.x - x;
+        const dy = existing.y - y;
+        const mapping = connectionForOffset(dx, dy);
+        if (!mapping) {
+          continue;
+        }
+        hasAdjacent = true;
+        const newConnectors = getCardConnectors(card, rotated);
+        const existingConnectors = getCardConnectors(existing.card, existing.rotated);
+        const newConnector = newConnectors[mapping.newCorner];
+        const existingConnector = existingConnectors[mapping.existingCorner];
+        const isArrowOnNew = newConnector === "arrow";
+        const isArrowOnExisting = existingConnector === "arrow";
+
+        const oneArrow = (isArrowOnNew && existingConnector === "circle") ||
+          (isArrowOnExisting && newConnector === "circle");
+
+        let arrowPointsToward = false;
+        if (isArrowOnNew && existingConnector === "circle") {
+          const direction = getArrowDirection(mapping.newCorner);
+          arrowPointsToward = mapping.side === direction;
+        }
+        if (isArrowOnExisting && newConnector === "circle") {
+          const direction = getArrowDirection(mapping.existingCorner);
+          arrowPointsToward = mapping.side !== direction;
+        }
+
+        const valid = oneArrow && arrowPointsToward;
+        if (!valid) {
+          allValid = false;
+        }
+
+        connections.push({
+          existing,
+          mapping,
+          valid,
+        });
+      }
+
+      if (!hasAdjacent) {
+        return { valid: false, connections };
+      }
+
+      if (!connections.some((connection) => connection.valid)) {
+        return { valid: false, connections };
+      }
+
+      return { valid: allValid, connections };
+    };
+
+    const getLegalPlacements = (card, rotated) => {
+      const candidates = new Map();
+
+      for (const existing of state.board) {
+        const options = [
+          { x: existing.x + 1, y: existing.y + 1 },
+          { x: existing.x + 1, y: existing.y - 1 },
+          { x: existing.x - 1, y: existing.y + 1 },
+          { x: existing.x - 1, y: existing.y - 1 },
+        ];
+
+        for (const option of options) {
+          const key = `${option.x},${option.y}`;
+          if (candidates.has(key)) {
+            continue;
+          }
+          if (isOccupied(option.x, option.y)) {
+            continue;
+          }
+          const result = validatePlacement(card, rotated, option.x, option.y);
+          if (result.valid) {
+            candidates.set(key, { ...option, connections: result.connections });
+          }
+        }
+      }
+
+      return Array.from(candidates.values());
+    };
+
+    const renderCard = (card, rotated, extraClasses = []) => {
+      const cardEl = document.createElement("div");
+      cardEl.className = ["card", ...extraClasses].join(" ");
+
+      const connectors = getCardConnectors(card, rotated);
+      const idEl = document.createElement("div");
+      idEl.className = "id";
+      idEl.textContent = card.id;
+
+      const typeEl = document.createElement("div");
+      typeEl.className = "type";
+      typeEl.textContent = card.type;
+
+      cardEl.appendChild(idEl);
+      cardEl.appendChild(typeEl);
+
+      cornerOrder.forEach((corner) => {
+        const connector = connectors[corner];
+        const icon = connector === "circle"
+          ? connectorSymbols.circle
+          : connectorSymbols["arrow" + (corner.includes("left") ? "Left" : "Right")];
+        const cornerEl = document.createElement("span");
+        cornerEl.className = `connector ${corner.replace("_", "-")}`;
+        cornerEl.textContent = icon;
+        cardEl.appendChild(cornerEl);
+      });
+
+      return cardEl;
+    };
+
+    const updateStatus = () => {
+      deckCountEl.textContent = `Deck: ${state.deck.length}`;
+      handCountEl.textContent = `Hand: ${state.hand.length}`;
+      if (state.selectedIndex === null) {
+        selectionStatusEl.textContent = "No card selected";
+      } else {
+        const selectedCard = state.hand[state.selectedIndex];
+        selectionStatusEl.textContent = `Selected: ${selectedCard.id}${state.selectedRotation ? " (rotated)" : ""}`;
+      }
+
+      if (state.gameOver) {
+        if (state.hand.length === 0) {
+          gameStatusEl.textContent = "You win!";
+          gameStatusEl.className = "badge success";
+        } else {
+          gameStatusEl.textContent = "Deck empty - you lose";
+          gameStatusEl.className = "badge danger";
+        }
+      } else {
+        gameStatusEl.textContent = "Game in progress";
+        gameStatusEl.className = "badge";
+      }
+    };
+
+    const renderBoard = () => {
+      boardContentEl.innerHTML = "";
+
+      if (state.board.length === 0) {
+        return;
+      }
+
+      const positions = state.board.map((item) => ({
+        x: item.x,
+        y: item.y,
+      }));
+
+      const selectedCard = state.selectedIndex !== null ? state.hand[state.selectedIndex] : null;
+      const legalPlacements = selectedCard
+        ? getLegalPlacements(selectedCard, state.selectedRotation)
+        : [];
+
+      const allX = positions.map((pos) => pos.x).concat(legalPlacements.map((pos) => pos.x));
+      const allY = positions.map((pos) => pos.y).concat(legalPlacements.map((pos) => pos.y));
+      const minX = Math.min(...allX);
+      const maxX = Math.max(...allX);
+      const minY = Math.min(...allY);
+      const maxY = Math.max(...allY);
+
+      const padding = unit();
+      const width = (maxX - minX + 1) * unit() + padding * 2;
+      const height = (maxY - minY + 2) * unit() + padding * 2;
+      boardContentEl.style.width = `${width}px`;
+      boardContentEl.style.height = `${height}px`;
+
+      const offsetX = padding - minX * unit();
+      const offsetY = padding - minY * unit();
+
+      for (const placed of state.board) {
+        const cardEl = renderCard(placed.card, placed.rotated);
+        cardEl.style.left = `${placed.x * unit() + offsetX}px`;
+        cardEl.style.top = `${placed.y * unit() + offsetY}px`;
+        boardContentEl.appendChild(cardEl);
+      }
+
+      for (const placement of legalPlacements) {
+        const placementEl = document.createElement("div");
+        placementEl.className = "placement";
+        placementEl.style.left = `${placement.x * unit() + offsetX}px`;
+        placementEl.style.top = `${placement.y * unit() + offsetY}px`;
+        placementEl.addEventListener("click", () => {
+          if (state.selectedIndex === null || state.gameOver) {
+            return;
+          }
+          placeCard(placement.x, placement.y);
+        });
+        boardContentEl.appendChild(placementEl);
+      }
+    };
+
+    const renderHand = () => {
+      handEl.innerHTML = "";
+      state.hand.forEach((card, index) => {
+        const isSelected = index === state.selectedIndex;
+        const cardEl = renderCard(card, isSelected ? state.selectedRotation : false, [isSelected ? "selected" : ""]);
+        cardEl.addEventListener("click", () => {
+          if (state.gameOver) {
+            return;
+          }
+          if (state.selectedIndex === index) {
+            state.selectedRotation = !state.selectedRotation;
+          } else {
+            state.selectedIndex = index;
+            state.selectedRotation = false;
+          }
+          update();
+        });
+        handEl.appendChild(cardEl);
+      });
+    };
+
+    const updateOverlay = () => {
+      if (!state.gameOver) {
+        overlayEl.classList.remove("active");
+        return;
+      }
+      overlayEl.classList.add("active");
+      if (state.hand.length === 0) {
+        overlayMessageEl.innerHTML = "<h2>You win!</h2><p>Your hand is empty. Great job.</p>";
+      } else {
+        overlayMessageEl.innerHTML = "<h2>Deck empty</h2><p>No cards remain to draw. Try again.</p>";
+      }
+    };
+
+    const update = () => {
+      updateStatus();
+      renderBoard();
+      renderHand();
+      updateOverlay();
+    };
+
+    const drawCard = () => {
+      if (state.deck.length === 0) {
+        state.gameOver = true;
+        update();
+        return;
+      }
+      const card = state.deck.shift();
+      state.hand.push(card);
+      update();
+    };
+
+    const placeCard = (x, y) => {
+      if (state.selectedIndex === null) {
+        return;
+      }
+      const selectedCard = state.hand[state.selectedIndex];
+      const rotated = state.selectedRotation;
+
+      state.board.push({
+        card: selectedCard,
+        x,
+        y,
+        rotated,
+      });
+
+      state.hand.splice(state.selectedIndex, 1);
+      state.selectedIndex = null;
+      state.selectedRotation = false;
+
+      if (state.hand.length === 0) {
+        state.gameOver = true;
+      }
+
+      update();
+    };
+
+    const startGame = (cards) => {
+      state.deck = shuffle(cards.map(cloneCard));
+      state.hand = [];
+      state.board = [];
+      state.selectedIndex = null;
+      state.selectedRotation = false;
+      state.gameOver = false;
+
+      const startingCard = state.deck.shift();
+      state.board.push({
+        card: startingCard,
+        x: 0,
+        y: 0,
+        rotated: false,
+      });
+
+      for (let i = 0; i < 5; i += 1) {
+        drawCard();
+      }
+
+      update();
+    };
+
+    deckButton.addEventListener("click", () => {
+      if (state.gameOver) {
+        return;
+      }
+      drawCard();
+    });
+
+    fetch("./cards.json")
+      .then((response) => response.json())
+      .then((data) => {
+        startGame(data.cards);
+      })
+      .catch(() => {
+        overlayEl.classList.add("active");
+        overlayMessageEl.innerHTML = "<h2>Missing cards.json</h2><p>Unable to load card data.</p>";
+      });
+  </script>
+</body>
+</html>
