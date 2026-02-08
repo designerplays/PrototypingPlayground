@@ -320,7 +320,7 @@
     </section>
 
     <section class="rules">
-      <strong>Rules recap:</strong> Cards connect only horizontally with a 1-unit vertical offset. Every touching corner must be Arrow ↔ Circle, and the arrow must point toward the other card. The first card ignores adjacency. Empty your hand to win.
+      <strong>Rules recap:</strong> Cards connect only horizontally with a 1-unit vertical offset. Every touching corner must be Arrow ↔ Circle, and the arrow must point toward the other card. Empty corners can touch empty corners, but you must connect to at least one card when placing. The first card ignores adjacency. Empty your hand to win.
     </section>
   </div>
 
@@ -411,6 +411,7 @@
       const connections = [];
       let hasAdjacent = false;
       let allValid = true;
+      let hasConnection = false;
 
       for (const existing of state.board) {
         const dx = existing.x - x;
@@ -427,7 +428,10 @@
         const sameType = existing.card.type === card.type;
         const isArrowOnNew = newConnector === "arrow";
         const isArrowOnExisting = existingConnector === "arrow";
-        const hasEmptyCorner = newConnector === "none" || existingConnector === "none";
+        const newEmpty = newConnector === "none";
+        const existingEmpty = existingConnector === "none";
+        const bothEmpty = newEmpty && existingEmpty;
+        const oneEmpty = newEmpty !== existingEmpty;
 
         const oneArrow = (isArrowOnNew && existingConnector === "circle") ||
           (isArrowOnExisting && newConnector === "circle");
@@ -442,15 +446,19 @@
           arrowPointsToward = mapping.side !== direction;
         }
 
-        const valid = !sameType && !hasEmptyCorner && oneArrow && arrowPointsToward;
-        if (!valid) {
+        const connectionValid = !sameType && !oneEmpty && !bothEmpty && oneArrow && arrowPointsToward;
+        const adjacencyValid = !sameType && (bothEmpty || connectionValid);
+        if (connectionValid) {
+          hasConnection = true;
+        }
+        if (!adjacencyValid) {
           allValid = false;
         }
 
         connections.push({
           existing,
           mapping,
-          valid,
+          valid: adjacencyValid,
         });
       }
 
@@ -458,7 +466,7 @@
         return { valid: false, connections };
       }
 
-      if (!connections.some((connection) => connection.valid)) {
+      if (!hasConnection) {
         return { valid: false, connections };
       }
 
