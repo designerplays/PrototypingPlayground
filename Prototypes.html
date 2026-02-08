@@ -208,7 +208,16 @@
                 const prototypeList = document.getElementById('prototype-list');
                 prototypeList.innerHTML = '';
 
-                data.prototypes.forEach(prototype => {
+                const prototypes = [
+                    ...data.prototypes,
+                    {
+                        name: 'Card Bricks',
+                        description: 'Experiment with modular card layouts built from reusable bricks.',
+                        path: 'prototypes/card-bricks/index.html'
+                    }
+                ];
+
+                prototypes.forEach(prototype => {
                     const li = document.createElement('li');
 
                     const link = document.createElement('a');
