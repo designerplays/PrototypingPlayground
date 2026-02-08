@@ -369,10 +369,10 @@
     });
 
     const rotateConnectors = (connectors) => ({
-      top_left: connectors.bottom_left,
-      top_right: connectors.bottom_right,
-      bottom_left: connectors.top_left,
-      bottom_right: connectors.top_right,
+      top_left: connectors.bottom_right,
+      top_right: connectors.bottom_left,
+      bottom_left: connectors.top_right,
+      bottom_right: connectors.top_left,
     });
 
     const getCardConnectors = (card, rotated) => {
