@@ -34,6 +34,11 @@
       "name": "House Builder",
       "description": "Test a room placement algorithm that builds a house from room prefabs and adjacency rules.",
       "path": "prototypes/house-builder/index.html"
+    },
+    {
+      "name": "Card Bricks",
+      "description": "Experiment with modular card layouts built from reusable bricks.",
+      "path": "prototypes/card-bricks/index.html"
     }
   ]
 }
