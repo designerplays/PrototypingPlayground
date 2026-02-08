@@ -1,49 +1,404 @@
 {
   "cards": [
-
-    { "id": "A01", "type": "A", "connectors": { "top_left": "arrow",  "top_right": "circle", "bottom_left": "circle", "bottom_right": "arrow" } },
-    { "id": "A02", "type": "A", "connectors": { "top_left": "circle", "top_right": "arrow",  "bottom_left": "arrow",  "bottom_right": "circle" } },
-    { "id": "A03", "type": "A", "connectors": { "top_left": "arrow",  "top_right": "arrow",  "bottom_left": "circle", "bottom_right": "circle" } },
-    { "id": "A04", "type": "A", "connectors": { "top_left": "circle", "top_right": "circle", "bottom_left": "arrow",  "bottom_right": "arrow" } },
-    { "id": "A05", "type": "A", "connectors": { "top_left": "arrow",  "top_right": "circle", "bottom_left": "arrow",  "bottom_right": "circle" } },
-    { "id": "A06", "type": "A", "connectors": { "top_left": "circle", "top_right": "arrow",  "bottom_left": "circle", "bottom_right": "arrow" } },
-    { "id": "A07", "type": "A", "connectors": { "top_left": "arrow",  "top_right": "circle", "bottom_left": "circle", "bottom_right": "arrow" } },
-    { "id": "A08", "type": "A", "connectors": { "top_left": "circle", "top_right": "arrow",  "bottom_left": "arrow",  "bottom_right": "circle" } },
-    { "id": "A09", "type": "A", "connectors": { "top_left": "arrow",  "top_right": "arrow",  "bottom_left": "circle", "bottom_right": "circle" } },
-    { "id": "A10", "type": "A", "connectors": { "top_left": "circle", "top_right": "circle", "bottom_left": "arrow",  "bottom_right": "arrow" } },
-
-    { "id": "B01", "type": "B", "connectors": { "top_left": "arrow",  "top_right": "circle", "bottom_left": "circle", "bottom_right": "arrow" } },
-    { "id": "B02", "type": "B", "connectors": { "top_left": "circle", "top_right": "arrow",  "bottom_left": "arrow",  "bottom_right": "circle" } },
-    { "id": "B03", "type": "B", "connectors": { "top_left": "arrow",  "top_right": "arrow",  "bottom_left": "circle", "bottom_right": "circle" } },
-    { "id": "B04", "type": "B", "connectors": { "top_left": "circle", "top_right": "circle", "bottom_left": "arrow",  "bottom_right": "arrow" } },
-    { "id": "B05", "type": "B", "connectors": { "top_left": "arrow",  "top_right": "circle", "bottom_left": "arrow",  "bottom_right": "circle" } },
-    { "id": "B06", "type": "B", "connectors": { "top_left": "circle", "top_right": "arrow",  "bottom_left": "circle", "bottom_right": "arrow" } },
-    { "id": "B07", "type": "B", "connectors": { "top_left": "arrow",  "top_right": "circle", "bottom_left": "circle", "bottom_right": "arrow" } },
-    { "id": "B08", "type": "B", "connectors": { "top_left": "circle", "top_right": "arrow",  "bottom_left": "arrow",  "bottom_right": "circle" } },
-    { "id": "B09", "type": "B", "connectors": { "top_left": "arrow",  "top_right": "arrow",  "bottom_left": "circle", "bottom_right": "circle" } },
-    { "id": "B10", "type": "B", "connectors": { "top_left": "circle", "top_right": "circle", "bottom_left": "arrow",  "bottom_right": "arrow" } },
-
-    { "id": "C01", "type": "C", "connectors": { "top_left": "arrow",  "top_right": "circle", "bottom_left": "circle", "bottom_right": "arrow" } },
-    { "id": "C02", "type": "C", "connectors": { "top_left": "circle", "top_right": "arrow",  "bottom_left": "arrow",  "bottom_right": "circle" } },
-    { "id": "C03", "type": "C", "connectors": { "top_left": "arrow",  "top_right": "arrow",  "bottom_left": "circle", "bottom_right": "circle" } },
-    { "id": "C04", "type": "C", "connectors": { "top_left": "circle", "top_right": "circle", "bottom_left": "arrow",  "bottom_right": "arrow" } },
-    { "id": "C05", "type": "C", "connectors": { "top_left": "arrow",  "top_right": "circle", "bottom_left": "arrow",  "bottom_right": "circle" } },
-    { "id": "C06", "type": "C", "connectors": { "top_left": "circle", "top_right": "arrow",  "bottom_left": "circle", "bottom_right": "arrow" } },
-    { "id": "C07", "type": "C", "connectors": { "top_left": "arrow",  "top_right": "circle", "bottom_left": "circle", "bottom_right": "arrow" } },
-    { "id": "C08", "type": "C", "connectors": { "top_left": "circle", "top_right": "arrow",  "bottom_left": "arrow",  "bottom_right": "circle" } },
-    { "id": "C09", "type": "C", "connectors": { "top_left": "arrow",  "top_right": "arrow",  "bottom_left": "circle", "bottom_right": "circle" } },
-    { "id": "C10", "type": "C", "connectors": { "top_left": "circle", "top_right": "circle", "bottom_left": "arrow",  "bottom_right": "arrow" } },
-
-    { "id": "D01", "type": "D", "connectors": { "top_left": "arrow",  "top_right": "circle", "bottom_left": "circle", "bottom_right": "arrow" } },
-    { "id": "D02", "type": "D", "connectors": { "top_left": "circle", "top_right": "arrow",  "bottom_left": "arrow",  "bottom_right": "circle" } },
-    { "id": "D03", "type": "D", "connectors": { "top_left": "arrow",  "top_right": "arrow",  "bottom_left": "circle", "bottom_right": "circle" } },
-    { "id": "D04", "type": "D", "connectors": { "top_left": "circle", "top_right": "circle", "bottom_left": "arrow",  "bottom_right": "arrow" } },
-    { "id": "D05", "type": "D", "connectors": { "top_left": "arrow",  "top_right": "circle", "bottom_left": "arrow",  "bottom_right": "circle" } },
-    { "id": "D06", "type": "D", "connectors": { "top_left": "circle", "top_right": "arrow",  "bottom_left": "circle", "bottom_right": "arrow" } },
-    { "id": "D07", "type": "D", "connectors": { "top_left": "arrow",  "top_right": "circle", "bottom_left": "circle", "bottom_right": "arrow" } },
-    { "id": "D08", "type": "D", "connectors": { "top_left": "circle", "top_right": "arrow",  "bottom_left": "arrow",  "bottom_right": "circle" } },
-    { "id": "D09", "type": "D", "connectors": { "top_left": "arrow",  "top_right": "arrow",  "bottom_left": "circle", "bottom_right": "circle" } },
-    { "id": "D10", "type": "D", "connectors": { "top_left": "circle", "top_right": "circle", "bottom_left": "arrow",  "bottom_right": "arrow" } }
-
+    {
+      "id": "A01",
+      "type": "A",
+      "connectors": {
+        "top_left": "none",
+        "top_right": "circle",
+        "bottom_left": "arrow",
+        "bottom_right": "none"
+      }
+    },
+    {
+      "id": "A02",
+      "type": "A",
+      "connectors": {
+        "top_left": "arrow",
+        "top_right": "none",
+        "bottom_left": "none",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "A03",
+      "type": "A",
+      "connectors": {
+        "top_left": "arrow",
+        "top_right": "circle",
+        "bottom_left": "none",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "A04",
+      "type": "A",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "arrow",
+        "bottom_left": "none",
+        "bottom_right": "none"
+      }
+    },
+    {
+      "id": "A05",
+      "type": "A",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "none",
+        "bottom_left": "circle",
+        "bottom_right": "arrow"
+      }
+    },
+    {
+      "id": "A06",
+      "type": "A",
+      "connectors": {
+        "top_left": "arrow",
+        "top_right": "circle",
+        "bottom_left": "circle",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "A07",
+      "type": "A",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "arrow",
+        "bottom_left": "circle",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "A08",
+      "type": "A",
+      "connectors": {
+        "top_left": "arrow",
+        "top_right": "circle",
+        "bottom_left": "none",
+        "bottom_right": "none"
+      }
+    },
+    {
+      "id": "A09",
+      "type": "A",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "arrow",
+        "bottom_left": "circle",
+        "bottom_right": "none"
+      }
+    },
+    {
+      "id": "A10",
+      "type": "A",
+      "connectors": {
+        "top_left": "arrow",
+        "top_right": "circle",
+        "bottom_left": "circle",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "B01",
+      "type": "B",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "arrow",
+        "bottom_left": "none",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "B02",
+      "type": "B",
+      "connectors": {
+        "top_left": "arrow",
+        "top_right": "circle",
+        "bottom_left": "circle",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "B03",
+      "type": "B",
+      "connectors": {
+        "top_left": "none",
+        "top_right": "circle",
+        "bottom_left": "arrow",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "B04",
+      "type": "B",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "none",
+        "bottom_left": "arrow",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "B05",
+      "type": "B",
+      "connectors": {
+        "top_left": "none",
+        "top_right": "arrow",
+        "bottom_left": "none",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "B06",
+      "type": "B",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "circle",
+        "bottom_left": "arrow",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "B07",
+      "type": "B",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "circle",
+        "bottom_left": "arrow",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "B08",
+      "type": "B",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "arrow",
+        "bottom_left": "circle",
+        "bottom_right": "none"
+      }
+    },
+    {
+      "id": "B09",
+      "type": "B",
+      "connectors": {
+        "top_left": "none",
+        "top_right": "none",
+        "bottom_left": "circle",
+        "bottom_right": "arrow"
+      }
+    },
+    {
+      "id": "B10",
+      "type": "B",
+      "connectors": {
+        "top_left": "arrow",
+        "top_right": "circle",
+        "bottom_left": "circle",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "C01",
+      "type": "C",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "circle",
+        "bottom_left": "arrow",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "C02",
+      "type": "C",
+      "connectors": {
+        "top_left": "arrow",
+        "top_right": "circle",
+        "bottom_left": "circle",
+        "bottom_right": "none"
+      }
+    },
+    {
+      "id": "C03",
+      "type": "C",
+      "connectors": {
+        "top_left": "arrow",
+        "top_right": "circle",
+        "bottom_left": "circle",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "C04",
+      "type": "C",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "circle",
+        "bottom_left": "arrow",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "C05",
+      "type": "C",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "none",
+        "bottom_left": "circle",
+        "bottom_right": "arrow"
+      }
+    },
+    {
+      "id": "C06",
+      "type": "C",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "none",
+        "bottom_left": "none",
+        "bottom_right": "arrow"
+      }
+    },
+    {
+      "id": "C07",
+      "type": "C",
+      "connectors": {
+        "top_left": "none",
+        "top_right": "none",
+        "bottom_left": "arrow",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "C08",
+      "type": "C",
+      "connectors": {
+        "top_left": "none",
+        "top_right": "arrow",
+        "bottom_left": "circle",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "C09",
+      "type": "C",
+      "connectors": {
+        "top_left": "arrow",
+        "top_right": "none",
+        "bottom_left": "circle",
+        "bottom_right": "none"
+      }
+    },
+    {
+      "id": "C10",
+      "type": "C",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "circle",
+        "bottom_left": "circle",
+        "bottom_right": "arrow"
+      }
+    },
+    {
+      "id": "D01",
+      "type": "D",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "circle",
+        "bottom_left": "arrow",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "D02",
+      "type": "D",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "arrow",
+        "bottom_left": "none",
+        "bottom_right": "none"
+      }
+    },
+    {
+      "id": "D03",
+      "type": "D",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "arrow",
+        "bottom_left": "none",
+        "bottom_right": "none"
+      }
+    },
+    {
+      "id": "D04",
+      "type": "D",
+      "connectors": {
+        "top_left": "none",
+        "top_right": "arrow",
+        "bottom_left": "circle",
+        "bottom_right": "none"
+      }
+    },
+    {
+      "id": "D05",
+      "type": "D",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "arrow",
+        "bottom_left": "circle",
+        "bottom_right": "none"
+      }
+    },
+    {
+      "id": "D06",
+      "type": "D",
+      "connectors": {
+        "top_left": "none",
+        "top_right": "arrow",
+        "bottom_left": "circle",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "D07",
+      "type": "D",
+      "connectors": {
+        "top_left": "none",
+        "top_right": "none",
+        "bottom_left": "arrow",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "D08",
+      "type": "D",
+      "connectors": {
+        "top_left": "arrow",
+        "top_right": "none",
+        "bottom_left": "circle",
+        "bottom_right": "circle"
+      }
+    },
+    {
+      "id": "D09",
+      "type": "D",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "circle",
+        "bottom_left": "none",
+        "bottom_right": "arrow"
+      }
+    },
+    {
+      "id": "D10",
+      "type": "D",
+      "connectors": {
+        "top_left": "circle",
+        "top_right": "circle",
+        "bottom_left": "circle",
+        "bottom_right": "arrow"
+      }
+    }
   ]
 }

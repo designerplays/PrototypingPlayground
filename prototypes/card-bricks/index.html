@@ -350,6 +350,7 @@
       circle: "○",
       arrowLeft: "←",
       arrowRight: "→",
+      none: "",
     };
 
     const cornerOrder = ["top_left", "top_right", "bottom_left", "bottom_right"];
@@ -423,8 +424,10 @@
         const existingConnectors = getCardConnectors(existing.card, existing.rotated);
         const newConnector = newConnectors[mapping.newCorner];
         const existingConnector = existingConnectors[mapping.existingCorner];
+        const sameType = existing.card.type === card.type;
         const isArrowOnNew = newConnector === "arrow";
         const isArrowOnExisting = existingConnector === "arrow";
+        const hasEmptyCorner = newConnector === "none" || existingConnector === "none";
 
         const oneArrow = (isArrowOnNew && existingConnector === "circle") ||
           (isArrowOnExisting && newConnector === "circle");
@@ -439,7 +442,7 @@
           arrowPointsToward = mapping.side !== direction;
         }
 
-        const valid = oneArrow && arrowPointsToward;
+        const valid = !sameType && !hasEmptyCorner && oneArrow && arrowPointsToward;
         if (!valid) {
           allValid = false;
         }
@@ -509,6 +512,9 @@
 
       cornerOrder.forEach((corner) => {
         const connector = connectors[corner];
+        if (connector === "none") {
+          return;
+        }
         const icon = connector === "circle"
           ? connectorSymbols.circle
           : connectorSymbols["arrow" + (corner.includes("left") ? "Left" : "Right")];
